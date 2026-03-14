@@ -641,6 +641,7 @@
         btn.textContent = 'I\'m Interested →';
         btn.disabled = false;
         if (r.error) {
+          console.error('Supabase error (pages_prize_interest):', r.error);
           errEl.textContent = 'Something went wrong. Try again.';
           errEl.style.display = 'block';
           return;

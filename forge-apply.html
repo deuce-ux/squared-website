@@ -736,7 +736,7 @@
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Application →';
             showError('Something went wrong. Please try again.');
-            console.error(r.error);
+            console.error('Supabase error (forge_applications):', r.error);
             return;
           }
           /* success */
