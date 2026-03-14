@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squared — Programs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=25" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+
+    /* ─── CURSOR ─────────────────────────────── */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .3s cubic-bezier(.34,1.56,.64,1),
+                  height .3s cubic-bezier(.34,1.56,.64,1),
+                  opacity .3s ease, background .3s ease;
+    }
+    #sq-cursor.hover   { width: 40px; height: 40px; opacity: .75; }
+    #sq-cursor.clicking{ width: 24px; height: 24px; opacity: 1; }
+    #sq-cursor.hidden  { opacity: 0; }
+    @media (hover:none) and (pointer:coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* ─── SHARED CONTAINER ───────────────────── */
+    .pg-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+    @media (max-width: 768px) {
+      .pg-container { padding: 0 20px; }
+    }
+
+    /* ─── SQUARED CORE ───────────────────────── */
+    .sqc-section {
+      padding: 80px 0 0;
+    }
+    .sqc-grid {
+      display: grid;
+      grid-template-columns: 60fr 40fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* Left column */
+    .sqc-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #F67A3E;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+    .sqc-pill {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      background: rgba(246,122,62,0.1);
+      border: 1px solid rgba(246,122,62,0.2);
+      border-radius: 999px;
+      padding: 5px 14px;
+      margin-bottom: 20px;
+    }
+    .sqc-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 0 0 20px;
+    }
+    .sqc-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      color: rgba(255,241,224,0.6);
+      line-height: 1.7;
+      margin: 0 0 36px;
+      max-width: 520px;
+    }
+
+    /* Feature list */
+    .sqc-features {
+      margin-bottom: 36px;
+    }
+    .sqc-feature {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 16px 0;
+    }
+    .sqc-feature + .sqc-feature {
+      border-top: 1px solid rgba(255,241,224,0.06);
+    }
+    .sqc-feature-plus {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #F67A3E;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .sqc-feature-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFF1E0;
+    }
+    .sqc-feature-detail {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,241,224,0.5);
+    }
+
+    /* Price block */
+    .sqc-price-block {
+      margin-bottom: 32px;
+    }
+    .sqc-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .sqc-price {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .sqc-per-month {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: rgba(255,241,224,0.5);
+    }
+    .sqc-price-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: rgba(255,241,224,0.4);
+      margin: 0;
+    }
+
+    /* Buttons */
+    .sqc-btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Right column */
+    .sqc-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sqc-illus-wrap {
+      width: 100%;
+      min-height: 320px;
+      background: linear-gradient(135deg, #1a1a0d, #2a1f0a);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .sqc-illus-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+    .sqc-illus-placeholder {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      color: rgba(255,241,224,0.15);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 40px;
+    }
+
+    /* Stat chips */
+    .sqc-stats {
+      display: flex;
+      gap: 10px;
+    }
+    .sqc-stat-chip {
+      flex: 1;
+      background: rgba(255,241,224,0.04);
+      border: 1px solid rgba(255,241,224,0.08);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .sqc-stat-value {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #F67A3E;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .sqc-stat-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      color: rgba(255,241,224,0.5);
+      line-height: 1.3;
+    }
+
+    /* Mobile — Squared Core */
+    @media (max-width: 768px) {
+      .sqc-section { padding: 48px 0 0; }
+      .sqc-desc { margin-bottom: 24px; }
+      .sqc-features { margin-bottom: 24px; }
+      .sqc-price-block { margin-bottom: 24px; }
+      .sqc-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .sqc-heading { font-size: 36px; }
+      .sqc-desc { font-size: 15px; }
+      .sqc-price { font-size: 32px; }
+      .sqc-illus-wrap { min-height: 220px; order: -1; }
+    }
+
+    /* ─── COMMUNITY PROGRAMS ─────────────────── */
+    .cp-section {
+      padding: 0 0 80px;
+      margin-top: 64px;
+    }
+    .cp-header {
+      margin-bottom: 48px;
+    }
+    .cp-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 14px;
+    }
+    .cp-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 0 0 12px;
+    }
+    .cp-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      color: rgba(255,241,224,0.5);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* Cards grid */
+    .cp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .cp-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.07);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Card illustration area */
+    .cp-card-image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cp-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: block;
+    }
+    .cp-card--pages .cp-card-image {
+      background: linear-gradient(135deg, #0d1219, #0a1520);
+    }
+    .cp-card--market .cp-card-image {
+      background: linear-gradient(135deg, #0d1a12, #0a1510);
+    }
+    .cp-card-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      color: rgba(255,241,224,0.12);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Card body */
+    .cp-card-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #F67A3E;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      letter-spacing: 0.06em;
+    }
+    .cp-card-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .cp-card-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.6;
+      margin: 0 0 16px;
+      flex: 1;
+    }
+
+    /* Format detail pills */
+    .cp-card-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .cp-card-pill {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255,241,224,0.5);
+      background: rgba(255,241,224,0.06);
+      border-radius: 100px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    /* Text CTA link */
+    .cp-card-cta {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #F67A3E;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.2s ease;
+    }
+    .cp-card-cta:hover { opacity: 0.75; }
+
+    /* Mobile — Community Programs */
+    @media (max-width: 768px) {
+      .cp-section { margin-top: 64px; padding-bottom: 64px; }
+      .cp-title { font-size: 28px; }
+      .cp-sub { font-size: 14px; }
+      .cp-grid { grid-template-columns: 1fr; gap: 16px; }
+      .cp-card { padding: 24px; }
+      .cp-card-name { font-size: 20px; }
+    }
+
+  </style>
+</head>
+<body>
+  <div id="sq-cursor"></div>
+
+  <main>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="pg-hero-outer">
+      <div class="pg-hero-panel">
+
+        <!-- NAV -->
+        <nav class="nav-pill">
+          <div class="nav-left">
+            <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+          </div>
+          <div class="nav-center">
+            <a href="community.html" class="nav-link">Community</a>
+            <a href="programs.html" class="nav-link">Programs</a>
+            <a href="blog.html" class="nav-link">Blog</a>
+            <a href="bookshop.html" class="nav-link">Bookshop</a>
+            <a href="events.html" class="nav-link">Events</a>
+            <a href="join.html" class="nav-link">Join</a>
+          </div>
+          <div class="nav-right">
+            <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+              <span></span><span></span><span></span>
+            </button>
+            <a href="join.html" class="btn-primary">Join Now</a>
+          </div>
+        </nav>
+
+        <!-- HERO BODY -->
+        <div class="pg-hero-body">
+
+          <div class="pg-hero-label">WHAT WE OFFER</div>
+
+          <h1 class="pg-hero-heading">
+            <span class="pg-hero-line">Three ways to</span>
+            <span class="pg-hero-line">show <span class="pg-hero-accent">up.</span></span>
+          </h1>
+
+          <p class="pg-hero-sub">Whether you're here for accountability, reading, or community — there's a program for you.</p>
+
+          <div class="pg-hero-programs">Squared Core <span class="pg-hero-dot">·</span> Pages Reading Sessions <span class="pg-hero-dot">·</span> Market Square</div>
+
+        </div>
+
+        <!-- Sticker: top right -->
+        <img src="Visual Assets/Stickers/Focus mode Sticker.png" class="pg-sticker pg-sticker--focus" alt="" aria-hidden="true" />
+
+        <!-- Sticker: bottom left -->
+        <img src="Visual Assets/Stickers/Stay squared sticker.png" class="pg-sticker pg-sticker--soft" alt="" aria-hidden="true" />
+
+      </div>
+    </section>
+
+    <!-- ===================== SQUARED CORE ===================== -->
+    <section id="squared-core" class="sqc-section">
+      <div class="pg-container">
+        <div class="sqc-grid">
+
+          <!-- LEFT — text -->
+          <div class="sqc-left">
+            <div class="sqc-num">01</div>
+            <div class="sqc-pill">FLAGSHIP PROGRAM</div>
+            <h2 class="sqc-heading" id="sqcHeading">Squared Core</h2>
+            <p class="sqc-desc" id="sqcDesc">The main community. Where goals get set, squads hold you down, and focus sessions keep you moving.</p>
+
+            <!-- Features -->
+            <div class="sqc-features" id="sqcFeatures">
+              <div class="sqc-feature">
+                <span class="sqc-feature-plus">+</span>
+                <div>
+                  <span class="sqc-feature-label">Weekly Goals</span>
+                  <span class="sqc-feature-detail"> — Set 1–2 goals every Monday</span>
+                </div>
+              </div>
+              <div class="sqc-feature">
+                <span class="sqc-feature-plus">+</span>
+                <div>
+                  <span class="sqc-feature-label">Squad Accountability</span>
+                  <span class="sqc-feature-detail"> — 5-person squad checks in all week</span>
+                </div>
+              </div>
+              <div class="sqc-feature">
+                <span class="sqc-feature-plus">+</span>
+                <div>
+                  <span class="sqc-feature-label">Focus Sessions</span>
+                  <span class="sqc-feature-detail"> — Mon, Thu, Fri at 8PM on Jitsi</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="sqc-price-block">
+              <div class="sqc-price-row">
+                <span class="sqc-price" id="sqcPrice">₦4,000</span>
+                <span class="sqc-per-month">/month</span>
+              </div>
+              <p class="sqc-price-note">Paid monthly. Cancel anytime.</p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="sqc-btn-row">
+              <a href="join.html" class="btn-primary" id="sqcJoinBtn">Join Squared Core →</a>
+            </div>
+          </div>
+
+          <!-- RIGHT — illustration + stats -->
+          <div class="sqc-right">
+            <div class="sqc-illus-wrap" id="sqcIllusWrap">
+              <div class="sqc-illus-placeholder" id="sqcIllusPlaceholder">Illustration</div>
+            </div>
+            <div class="sqc-stats" id="sqcStats">
+              <div class="sqc-stat-chip">
+                <div class="sqc-stat-value" id="sqcStat1Val">25+</div>
+                <div class="sqc-stat-label" id="sqcStat1Label">Members</div>
+              </div>
+              <div class="sqc-stat-chip">
+                <div class="sqc-stat-value" id="sqcStat2Val">3x</div>
+                <div class="sqc-stat-label" id="sqcStat2Label">Weekly Sessions</div>
+              </div>
+              <div class="sqc-stat-chip">
+                <div class="sqc-stat-value" id="sqcStat3Val">2</div>
+                <div class="sqc-stat-label" id="sqcStat3Label">Active Squads</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COMMUNITY PROGRAMS ===================== -->
+    <section class="cp-section">
+      <div class="pg-container">
+
+        <!-- Section header -->
+        <div class="cp-header">
+          <div class="cp-eyebrow">COMMUNITY PROGRAMS</div>
+          <h2 class="cp-title">Part of the rhythm.</h2>
+          <p class="cp-sub">These aren't special events. They're just what we do.</p>
+        </div>
+
+        <!-- Two cards -->
+        <div class="cp-grid">
+
+          <!-- PAGES READING SESSIONS -->
+          <div class="cp-card cp-card--pages" id="pgsCard">
+            <div class="cp-card-image" id="pgsImageWrap">
+              <div class="cp-card-image-placeholder">Pages</div>
+            </div>
+            <div class="cp-card-num">02</div>
+            <div class="cp-card-name" id="pgsName">Pages Reading Sessions</div>
+            <p class="cp-card-desc" id="pgsDesc">Twice a week, we read in silence together. Tuesdays and Saturdays at 7PM on Jitsi. Pick your book, show up, read with us.</p>
+            <div class="cp-card-pills">
+              <span class="cp-card-pill">Tue &amp; Sat</span>
+              <span class="cp-card-pill">7PM WAT</span>
+              <span class="cp-card-pill">Free</span>
+              <span class="cp-card-pill">Jitsi</span>
+            </div>
+            <a href="events.html" class="cp-card-cta" id="pgsJoinBtn">Join Next Session →</a>
+          </div>
+
+          <!-- MARKET SQUARE -->
+          <div class="cp-card cp-card--market" id="msqCard">
+            <div class="cp-card-image" id="msqImageWrap">
+              <div class="cp-card-image-placeholder">Market Square</div>
+            </div>
+            <div class="cp-card-num">03</div>
+            <div class="cp-card-name" id="msqName">Market Square</div>
+            <p class="cp-card-desc" id="msqDesc">Our monthly community gathering. Guests, wins, community gist, and honest conversation. Last Sunday of every month online.</p>
+            <div class="cp-card-pills">
+              <span class="cp-card-pill">Last Sunday</span>
+              <span class="cp-card-pill">Monthly</span>
+              <span class="cp-card-pill">Free</span>
+              <span class="cp-card-pill">Online</span>
+            </div>
+            <a href="events.html" class="cp-card-cta" id="msqJoinBtn">See When Next →</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="pgcta-outer">
+      <div class="pgcta-card">
+
+        <div class="pgcta-label">READY?</div>
+
+        <h2 class="pgcta-heading">
+          <span>Start with</span>
+          <span>Squared <span class="pgcta-accent">Core.</span></span>
+        </h2>
+
+        <p class="pgcta-sub">The main community. Goals, squads, focus sessions. Show up consistently and watch things change.</p>
+
+        <a href="join.html" class="btn-primary">Apply to Join →</a>
+
+        <a href="events.html" class="pgcta-secondary-link">Or join a free session first →</a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html" class="mobile-menu-link">Home</a>
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  /* ── PROGRAMS: dynamic data from Supabase ── */
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* kobo → ₦X,XXX */
+    function fmtPrice(kobo) {
+      return '\u20a6' + Math.round(kobo / 100).toLocaleString('en-NG');
+    }
+
+    /* Inject image_url into a wrapper, hiding placeholder */
+    function setImage(wrapId, placeholderId, url, alt) {
+      if (!url) return;
+      var wrap = document.getElementById(wrapId);
+      var ph   = document.getElementById(placeholderId);
+      if (!wrap) return;
+      if (ph) ph.style.display = 'none';
+      var img = document.createElement('img');
+      img.src = url;
+      img.alt = alt || '';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;';
+      wrap.insertBefore(img, wrap.firstChild);
+    }
+
+    /* Match program record by name fragment */
+    function matchBy(progs, fragment) {
+      var lc = fragment.toLowerCase();
+      return progs.find(function (p) {
+        return p.name && p.name.toLowerCase().indexOf(lc) >= 0;
+      }) || null;
+    }
+
+    /* Apply Squared Core data */
+    function applyCore(prog) {
+      var h = document.getElementById('sqcHeading');
+      var d = document.getElementById('sqcDesc');
+      if (h && prog.name)                              h.textContent = prog.name;
+      if (d && (prog.tagline || prog.description))     d.textContent = prog.tagline || prog.description;
+
+      /* Features */
+      if (Array.isArray(prog.features) && prog.features.length) {
+        var featEl = document.getElementById('sqcFeatures');
+        if (featEl) {
+          featEl.innerHTML = prog.features.map(function (f, i) {
+            var parts = String(f).split(/\s*[—–-]\s*/);
+            var label  = parts[0] || f;
+            var detail = parts.length > 1 ? ' \u2014 ' + parts.slice(1).join(' — ') : '';
+            return '<div class="sqc-feature">' +
+              '<span class="sqc-feature-plus">+</span>' +
+              '<div>' +
+                '<span class="sqc-feature-label">' + esc(label) + '</span>' +
+                (detail ? '<span class="sqc-feature-detail">' + esc(detail) + '</span>' : '') +
+              '</div>' +
+            '</div>';
+          }).join('');
+        }
+      }
+
+      /* Price */
+      if (prog.price != null) {
+        var priceEl = document.getElementById('sqcPrice');
+        if (priceEl) priceEl.textContent = fmtPrice(prog.price);
+      }
+
+      /* Image */
+      if (prog.image_url) {
+        setImage('sqcIllusWrap', 'sqcIllusPlaceholder', prog.image_url, prog.name);
+      }
+
+      /* Stats */
+      var stats = [
+        { valId: 'sqcStat1Val', lblId: 'sqcStat1Label', val: prog.stat1_value, lbl: prog.stat1_label },
+        { valId: 'sqcStat2Val', lblId: 'sqcStat2Label', val: prog.stat2_value, lbl: prog.stat2_label },
+        { valId: 'sqcStat3Val', lblId: 'sqcStat3Label', val: prog.stat3_value, lbl: prog.stat3_label }
+      ];
+      stats.forEach(function (s) {
+        if (s.val != null) {
+          var vEl = document.getElementById(s.valId);
+          var lEl = document.getElementById(s.lblId);
+          if (vEl) vEl.textContent = s.val;
+          if (lEl && s.lbl) lEl.textContent = s.lbl;
+        }
+      });
+
+      /* CTA url override */
+      if (prog.cta_url) {
+        var btn = document.getElementById('sqcJoinBtn');
+        if (btn) {
+          btn.href = prog.cta_url;
+          if (prog.cta_text) btn.textContent = prog.cta_text;
+        }
+      }
+    }
+
+    /* Apply compact card program data (Pages / Market Square) */
+    function applyCard(prog, ids) {
+      var nameEl = document.getElementById(ids.name);
+      var descEl = document.getElementById(ids.desc);
+      if (nameEl && prog.name)                              nameEl.textContent = prog.name;
+      if (descEl && (prog.tagline || prog.description))     descEl.textContent = prog.tagline || prog.description;
+      if (prog.image_url) setImage(ids.imgWrap, ids.imgPh, prog.image_url, prog.name);
+    }
+
+    if (!window.supabase) return;
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* ── Fetch programs ── */
+    sb.from('programs').select('*').eq('is_active', true).order('created_at', { ascending: true })
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        var progs  = r.data;
+        var core   = matchBy(progs, 'core') || matchBy(progs, 'squared');
+        var pages  = matchBy(progs, 'pages');
+        var market = matchBy(progs, 'market');
+        if (core)   applyCore(core);
+        if (pages)  applyCard(pages,  { name: 'pgsName',  desc: 'pgsDesc',  imgWrap: 'pgsImageWrap', imgPh: null });
+        if (market) applyCard(market, { name: 'msqName',  desc: 'msqDesc',  imgWrap: 'msqImageWrap', imgPh: null });
+      });
+
+    /* ── Market Square: nearest upcoming event → dynamic CTA ── */
+    sb.from('events').select('id, cta_url, cta_text, event_date')
+      .eq('status', 'upcoming')
+      .eq('category', 'market_square')
+      .order('event_date', { ascending: true })
+      .limit(1)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        var ev  = r.data[0];
+        var btn = document.getElementById('msqJoinBtn');
+        if (!btn || !ev.cta_url) return;
+        btn.href = ev.cta_url;
+        if (ev.cta_text) btn.textContent = ev.cta_text;
+      });
+
+    /* ── Pages: nearest upcoming reading session → dynamic CTA ── */
+    sb.from('events').select('id, cta_url, cta_text')
+      .eq('status', 'upcoming')
+      .eq('category', 'reading_session')
+      .order('event_date', { ascending: true })
+      .limit(1)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        var ev  = r.data[0];
+        var btn = document.getElementById('pgsJoinBtn');
+        if (!btn || !ev.cta_url) return;
+        btn.href = ev.cta_url;
+        if (ev.cta_text) btn.textContent = ev.cta_text;
+      });
+
+  }());
+  </script>
+
+  <script>
+  /* ── CURSOR ── */
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+  function lerp(a, b, f) { return a + (b - a) * f; }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top  = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, input, textarea, select, [data-hover]';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => { cursor.classList.add('clicking'); cursor.classList.remove('hover'); });
+  document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+  document.addEventListener('mouseleave',() => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter',() => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+</body>
+</html>

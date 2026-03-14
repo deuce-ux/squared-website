@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply for Forge — Squared</title>
+  <meta name="description" content="Apply for Forge — Squared's intensive brand identity program. Free. 5 spots. 4 Tuesdays." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Shared site styles (nav, footer, cursor) -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ============================================================
+       FORGE APPLY PAGE — fa- prefix
+    ============================================================ */
+
+    .fa-page {
+      background: #0a0a0a;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .fa-hero {
+      padding: 120px 48px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .fa-back-link {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,241,224,0.4);
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: color 200ms;
+    }
+    .fa-back-link:hover { color: rgba(255,241,224,0.75); }
+
+    .fa-hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 14px;
+    }
+
+    .fa-hero-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      line-height: 1.0;
+      margin: 0 0 24px;
+    }
+
+    .fa-hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .fa-pill {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+    }
+
+    .fa-pill-free {
+      background: rgba(116,166,139,0.15);
+      color: #74A68B;
+      border-color: rgba(116,166,139,0.2);
+    }
+
+    .fa-pill-spots {
+      background: rgba(246,122,62,0.12);
+      color: #F67A3E;
+      border-color: rgba(246,122,62,0.2);
+    }
+
+    .fa-pill-date {
+      background: rgba(255,241,224,0.06);
+      color: rgba(255,241,224,0.6);
+      border-color: rgba(255,241,224,0.08);
+    }
+
+    /* ── FORM SECTION ── */
+    .fa-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .fa-sidebar {
+      position: sticky;
+      top: 80px;
+    }
+
+    .fa-sidebar-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .fa-sidebar-edition {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #F67A3E;
+      letter-spacing: -0.02em;
+    }
+
+    .fa-sidebar-skill {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-top: 4px;
+    }
+
+    .fa-divider {
+      height: 1px;
+      background: rgba(255,241,224,0.06);
+      margin: 20px 0;
+    }
+
+    .fa-info-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fa-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .fa-info-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .fa-info-value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: #FFF1E0;
+      text-align: right;
+    }
+
+    .fa-make-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 12px;
+    }
+
+    .fa-make-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .fa-make-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,241,224,0.6);
+      line-height: 1.45;
+    }
+
+    .fa-make-list li::before {
+      content: '✓';
+      color: #74A68B;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      margin-top: 1px;
+    }
+
+    .fa-questions {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,241,224,0.35);
+      margin-bottom: 6px;
+    }
+
+    .fa-questions-link {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: #F67A3E;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 200ms;
+    }
+    .fa-questions-link:hover { opacity: 0.75; }
+
+    /* ── RIGHT — NATIVE FORM PANEL ── */
+    .fa-form-panel {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    .fa-form-row {
+      margin-bottom: 20px;
+    }
+
+    .fa-form-label {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.5);
+      margin-bottom: 8px;
+    }
+
+    .fa-form-field {
+      width: 100%;
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      color: #FFF1E0;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .fa-form-field::placeholder { color: rgba(255,241,224,0.3); }
+    .fa-form-field:focus         { border-color: #F67A3E; }
+
+    textarea.fa-form-field {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .fa-select-wrap {
+      position: relative;
+    }
+
+    .fa-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 8px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255%2C241%2C224%2C0.4)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      pointer-events: none;
+    }
+
+    select.fa-form-field {
+      cursor: pointer;
+      padding-right: 40px;
+    }
+
+    .fa-form-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }
+
+    .fa-form-success {
+      display: none;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+      padding: 48px 16px;
+      text-align: center;
+    }
+
+    .fa-form-error {
+      display: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #F67A3E;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+
+      .fa-page { overflow-x: hidden; }
+
+      .fa-hero {
+        padding: 100px 20px 24px;
+      }
+
+      .fa-hero-heading { font-size: 2.2rem; }
+
+      .fa-hero-pills { flex-wrap: wrap; gap: 8px; }
+
+      .fa-body {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 0 20px 48px;
+      }
+
+      .fa-sidebar { position: static; top: auto; }
+
+      .fa-sidebar-skill { font-size: 1.5rem; }
+
+    }
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+  </style>
+</head>
+<body class="fa-page">
+<div id="sq-cursor"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav-pill">
+    <div class="nav-left">
+      <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+    </div>
+    <div class="nav-center">
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="programs.html" class="nav-link">Programs</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="bookshop.html" class="nav-link">Bookshop</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <a href="join.html" class="nav-link">Join</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="join.html" class="btn-primary">Join Now</a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <div class="fa-hero">
+    <a href="forge.html" class="fa-back-link">← Back to Forge</a>
+    <div class="fa-hero-label" id="fa-label">Forge 1.0 Applications</div>
+    <h1 class="fa-hero-heading">Apply for <span id="fa-edition-name">Forge 1.0</span></h1>
+    <div class="fa-hero-pills">
+      <span class="fa-pill fa-pill-free" id="fa-pill-price">Free</span>
+      <span class="fa-pill fa-pill-spots" id="fa-pill-spots">5 Spots</span>
+      <span class="fa-pill fa-pill-date" id="fa-pill-date">April 1st</span>
+    </div>
+  </div>
+
+  <!-- ===================== FORM SECTION ===================== -->
+  <div class="fa-body">
+
+    <!-- Left sidebar -->
+    <div class="fa-sidebar">
+      <div class="fa-sidebar-card">
+
+        <div class="fa-sidebar-edition" id="fa-sidebar-edition">Forge 1.0</div>
+        <div class="fa-sidebar-skill" id="fa-sidebar-skill">Brand Identity</div>
+
+        <div class="fa-divider"></div>
+
+        <div class="fa-info-rows">
+          <div class="fa-info-row">
+            <span class="fa-info-label">Start Date</span>
+            <span class="fa-info-value" id="fa-info-start">April 1st</span>
+          </div>
+          <div class="fa-info-row">
+            <span class="fa-info-label">Sessions</span>
+            <span class="fa-info-value" id="fa-info-sessions">4 Tuesdays</span>
+          </div>
+          <div class="fa-info-row">
+            <span class="fa-info-label">Format</span>
+            <span class="fa-info-value" id="fa-info-format">Online · Google Meet</span>
+          </div>
+          <div class="fa-info-row">
+            <span class="fa-info-label">Investment</span>
+            <span class="fa-info-value" id="fa-info-price">Free</span>
+          </div>
+          <div class="fa-info-row">
+            <span class="fa-info-label">Spots Left</span>
+            <span class="fa-info-value" id="fa-info-spots">5</span>
+          </div>
+        </div>
+
+        <div class="fa-divider"></div>
+
+        <div class="fa-make-label">What you'll walk away with:</div>
+        <ul class="fa-make-list" id="fa-make-list">
+          <li>A brand audit and positioning statement</li>
+          <li>A defined visual language (colours, fonts, feel)</li>
+          <li>A logo suite — primary, secondary, mark</li>
+          <li>A brand voice guide</li>
+          <li>A live brand presentation to the cohort</li>
+        </ul>
+
+        <div class="fa-divider"></div>
+
+        <p class="fa-questions">Questions?</p>
+        <a href="https://www.instagram.com/wearsquared" class="fa-questions-link" target="_blank" rel="noopener">DM us on Instagram →</a>
+
+      </div>
+    </div>
+
+    <!-- Right — native form -->
+    <div class="fa-form-panel" id="fa-form-panel">
+
+      <form id="faForm" novalidate>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faName">Full Name *</label>
+          <input type="text" id="faName" class="fa-form-field" placeholder="Your full name" required />
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faEmail">Email *</label>
+          <input type="email" id="faEmail" class="fa-form-field" placeholder="you@email.com" required />
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faPhone">Phone <span style="opacity:0.4;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <input type="tel" id="faPhone" class="fa-form-field" placeholder="+234 800 000 0000" />
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faOccupation">What do you do? *</label>
+          <input type="text" id="faOccupation" class="fa-form-field" placeholder="Student, designer, developer..." required />
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faWhyApply">Why do you want to join Forge? *</label>
+          <textarea id="faWhyApply" class="fa-form-field" rows="4" placeholder="Tell us what brought you here and what you hope to build..." required></textarea>
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faSkillLevel">Your skill level *</label>
+          <div class="fa-select-wrap">
+            <select id="faSkillLevel" class="fa-form-field" required>
+              <option value="" disabled selected>Select your level</option>
+              <option value="beginner">Beginner — just getting started</option>
+              <option value="intermediate">Intermediate — some experience</option>
+              <option value="advanced">Advanced — comfortable with the craft</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fa-form-row">
+          <label class="fa-form-label" for="faReferral">How did you hear about Forge? <span style="opacity:0.4;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <input type="text" id="faReferral" class="fa-form-field" placeholder="Instagram, a friend, events page..." />
+        </div>
+
+        <div class="fa-form-error" id="faFormError"></div>
+
+        <button type="submit" class="btn-primary fa-form-submit">Submit Application →</button>
+
+      </form>
+
+      <div class="fa-form-success" id="faFormSuccess">
+        <div style="font-size:2.5rem;margin-bottom:16px;">🎉</div>
+        <div>Application received.</div>
+        <div style="font-size:1rem;font-weight:400;color:rgba(255,241,224,0.6);margin-top:12px;font-family:'Poppins',sans-serif;letter-spacing:0;">
+          We'll review it and get back to you soon. Keep an eye on your inbox.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <!-- Shared scripts (nav hamburger, etc.) -->
+  <script src="script.js"></script>
+
+  <!-- ===================== FORGE APPLY — DYNAMIC ===================== -->
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    /* track which edition name the user is applying for */
+    var currentEditionName = 'Forge 1.0';
+
+    /* ── helpers ── */
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function setText(id, val) {
+      var el = document.getElementById(id);
+      if (el && val != null) el.textContent = val;
+    }
+
+    function formatDate(iso) {
+      if (!iso) return null;
+      var d = new Date(iso);
+      var months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+      var day = d.getUTCDate();
+      var suffix = day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th';
+      return months[d.getUTCMonth()] + ' ' + day + suffix;
+    }
+
+    /* ── apply edition data to sidebar / pills ── */
+    function applyEdition(ed) {
+      currentEditionName = ed.edition_name || 'Forge 1.0';
+      var skill = ed.skill_focus || 'Brand Identity';
+
+      /* Hero */
+      document.getElementById('fa-label').textContent = '— ' + currentEditionName.toUpperCase() + ' APPLICATIONS';
+      setText('fa-edition-name', currentEditionName);
+
+      /* Price pill */
+      var priceDisplay = (ed.price === 0 || ed.price == null) ? 'Free' : '₦' + Math.round(ed.price / 100).toLocaleString();
+      setText('fa-pill-price', priceDisplay);
+
+      /* Spots pill */
+      if (ed.cohort_size) setText('fa-pill-spots', ed.cohort_size + ' Spots');
+
+      /* Date pill */
+      var dateStr = formatDate(ed.start_date);
+      if (dateStr) setText('fa-pill-date', dateStr);
+
+      /* Sidebar */
+      setText('fa-sidebar-edition', currentEditionName);
+      setText('fa-sidebar-skill', skill);
+
+      /* Info rows */
+      if (dateStr) setText('fa-info-start', dateStr);
+      if (ed.session_count && ed.session_day) {
+        setText('fa-info-sessions', ed.session_count + ' ' + ed.session_day);
+      } else if (ed.session_count) {
+        setText('fa-info-sessions', ed.session_count + ' Sessions');
+      }
+      if (ed.format) setText('fa-info-format', ed.format);
+      setText('fa-info-price', priceDisplay);
+      if (ed.cohort_size) setText('fa-info-spots', ed.cohort_size);
+
+      /* What you'll make list */
+      if (ed.what_you_make && Array.isArray(ed.what_you_make) && ed.what_you_make.length) {
+        var list = document.getElementById('fa-make-list');
+        if (list) {
+          list.innerHTML = ed.what_you_make.map(function (item) {
+            return '<li>' + esc(item) + '</li>';
+          }).join('');
+        }
+      }
+    }
+
+    /* ── form submission ── */
+    var form    = document.getElementById('faForm');
+    var errEl   = document.getElementById('faFormError');
+    var successEl = document.getElementById('faFormSuccess');
+
+    function showError(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+
+    function hideError() {
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+    }
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        hideError();
+
+        var name       = document.getElementById('faName').value.trim();
+        var email      = document.getElementById('faEmail').value.trim();
+        var phone      = document.getElementById('faPhone').value.trim();
+        var occupation = document.getElementById('faOccupation').value.trim();
+        var whyApply   = document.getElementById('faWhyApply').value.trim();
+        var skillLevel = document.getElementById('faSkillLevel').value;
+        var referral   = document.getElementById('faReferral').value.trim();
+
+        /* basic validation */
+        if (!name)       { showError('Please enter your full name.'); return; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('Please enter a valid email address.'); return;
+        }
+        if (!occupation) { showError('Please tell us what you do.'); return; }
+        if (!whyApply)   { showError('Please tell us why you want to join Forge.'); return; }
+        if (!skillLevel) { showError('Please select your skill level.'); return; }
+
+        /* disable submit while sending */
+        var submitBtn = form.querySelector('[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting…';
+
+        if (!window.supabase) {
+          showError('Could not connect. Please try again later.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Application →';
+          return;
+        }
+
+        var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        sb.from('forge_applications').insert([{
+          full_name:        name,
+          email:            email,
+          phone:            phone || null,
+          occupation:       occupation,
+          why_apply:        whyApply,
+          skill_level:      skillLevel,
+          referral_source:  referral || null,
+          edition_name:     currentEditionName,
+          status:           'pending'
+        }]).then(function (r) {
+          if (r.error) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application →';
+            showError('Something went wrong. Please try again.');
+            console.error(r.error);
+            return;
+          }
+          /* success */
+          form.style.display = 'none';
+          successEl.style.display = 'block';
+        });
+      });
+    }
+
+    /* ── fetch open edition ── */
+    if (!window.supabase) return;
+
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    sb.from('forge_editions')
+      .select('edition_name, skill_focus, cohort_size, price, start_date, session_count, session_day, format, what_you_make')
+      .eq('status', 'open')
+      .limit(1)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return; /* keep defaults */
+        applyEdition(r.data[0]);
+      });
+
+  }());
+  </script>
+
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+
+</body>
+</html>

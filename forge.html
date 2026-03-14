@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forge — Squared</title>
+  <meta name="description" content="Forge is Squared's intensive program for young Nigerians who want to build a real brand identity. 4 weeks. Free. 5 spots." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Shared site styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ============================================================
+       FORGE PAGE — fg- prefix
+       All dark throughout. No cream section backgrounds.
+    ============================================================ */
+
+    .fg-page {
+      background: #0a0a0a;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Shared grid overlay mixin ── */
+    .fg-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,241,224,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,241,224,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Shared section spacing ── */
+    .fg-section {
+      padding: 64px 0;
+      position: relative;
+    }
+
+    .fg-section + .fg-section {
+      border-top: 1px solid rgba(255,241,224,0.05);
+    }
+
+    .fg-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Shared text elements ── */
+    .fg-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.3);
+      margin-bottom: 18px;
+    }
+
+    .fg-section-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+      color: #FFF1E0;
+      margin: 0 0 16px;
+    }
+
+    .fg-section-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .fg-section-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,241,224,0.45);
+      line-height: 1.65;
+      max-width: 520px;
+    }
+
+    /* ── Dark card base ── */
+    .fg-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.05);
+      border-radius: 16px;
+    }
+
+    /* ── Scroll reveal ── */
+    .fg-reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 600ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .fg-reveal.fg-in { opacity: 1; transform: translateY(0); }
+    .fg-d1 { transition-delay: 0.08s; }
+    .fg-d2 { transition-delay: 0.16s; }
+    .fg-d3 { transition-delay: 0.24s; }
+    .fg-d4 { transition-delay: 0.32s; }
+    .fg-d5 { transition-delay: 0.40s; }
+
+    /* ============================================================
+       SECTION 1 — HERO
+    ============================================================ */
+    .fg-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: #0a0a0a;
+      overflow: hidden;
+      padding-top: 100px;
+    }
+
+    .fg-hero-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 30%, rgba(246,122,62,0.16) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 85% 75%, rgba(252,202,89,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .fg-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 180px;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Label */
+    .fg-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      background: rgba(246,122,62,0.1);
+      border: 1px solid rgba(246,122,62,0.25);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 28px;
+    }
+
+    .fg-hero-label-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #F67A3E;
+      animation: fg-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes fg-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* Heading */
+    .fg-hero-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 6rem;
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      color: #FFF1E0;
+      margin: 0 0 28px;
+    }
+
+    .fg-hero-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .fg-hero-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.65;
+      margin: 0 0 36px;
+      max-width: 460px;
+    }
+
+    /* Editions teaser */
+    .fg-editions-teaser { margin-top: 32px; }
+    .fg-editions-eyebrow { font-family: 'Poppins', sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,241,224,0.3); margin-bottom: 8px; }
+    .fg-editions-tags { font-family: 'Poppins', sans-serif; font-size: 11px; color: rgba(255,241,224,0.4); line-height: 1.6; }
+    .fg-editions-tag-item { color: rgba(255,241,224,0.45); transition: color 0.4s ease; }
+    .fg-editions-tag-item.active { color: #F67A3E; }
+
+    /* Pills */
+    .fg-hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+    }
+
+    .fg-pill {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgba(255,241,224,0.6);
+      background: rgba(255,241,224,0.04);
+      border: 1px solid rgba(255,241,224,0.08);
+      padding: 6px 14px;
+      border-radius: 9999px;
+    }
+
+    /* CTA */
+    .fg-hero-cta {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #F67A3E;
+      color: #0a0a0a;
+      border: 2px solid #F67A3E;
+      border-radius: 9999px;
+      padding: 13px 34px;
+      text-decoration: none;
+      transition: transform 300ms cubic-bezier(0.16,1,0.3,1), background 200ms;
+    }
+
+    .fg-hero-cta:hover {
+      transform: rotate(-2deg);
+      background: #ff9060;
+      border-color: #ff9060;
+    }
+
+    /* Stat card */
+    .fg-hero-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 24px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .fg-hero-card-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.25);
+    }
+
+    .fg-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .fg-stat-box {
+      background: rgba(255,241,224,0.03);
+      border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+
+    .fg-stat-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #F67A3E;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .fg-stat-lbl {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(255,241,224,0.35);
+      line-height: 1.4;
+    }
+
+    .fg-hero-card-rule {
+      height: 1px;
+      background: rgba(255,241,224,0.06);
+    }
+
+    .fg-hero-card-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,241,224,0.4);
+      line-height: 1.55;
+    }
+
+    .fg-hero-card-note strong {
+      color: #FFF1E0;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       SECTION 2 — WHAT IS FORGE
+    ============================================================ */
+    .fg-what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: start;
+      margin-bottom: 56px;
+    }
+
+    .fg-what-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      margin: 0 0 20px;
+    }
+
+    .fg-what-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .fg-what-body {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,241,224,0.5);
+      line-height: 1.75;
+    }
+
+    .fg-what-body p + p { margin-top: 14px; }
+
+    .fg-what-cards {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+    }
+
+    .fg-what-card {
+      padding: 26px 22px;
+      transition: border-color 300ms;
+    }
+
+    .fg-what-card:hover {
+      border-color: rgba(246,122,62,0.2);
+    }
+
+    .fg-what-card-icon {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .fg-what-card-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .fg-what-card-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,241,224,0.4);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SECTION 3 — FORGE 1.0 (Edition)
+    ============================================================ */
+    .fg-edition-top {
+      margin-bottom: 48px;
+    }
+
+    .fg-edition-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* Learn card */
+    .fg-learn-card {
+      padding: 32px;
+    }
+
+    .fg-card-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 20px;
+    }
+
+    .fg-card-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF1E0;
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+
+    .fg-learn-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .fg-learn-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: rgba(255,241,224,0.6);
+      line-height: 1.5;
+    }
+
+    .fg-learn-list li::before {
+      content: '→';
+      color: #F67A3E;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 0.82rem;
+    }
+
+    /* Make card */
+    .fg-make-card {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fg-make-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fg-make-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: rgba(255,241,224,0.6);
+      line-height: 1.5;
+    }
+
+    .fg-make-list li::before {
+      content: '✦';
+      color: #F67A3E;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 0.65rem;
+      margin-top: 3px;
+    }
+
+    .fg-make-bottom {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,241,224,0.06);
+    }
+
+    .fg-make-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,241,224,0.3);
+      line-height: 1.5;
+    }
+
+    /* ============================================================
+       SECTION 4 — SESSION BREAKDOWN
+    ============================================================ */
+    .fg-sessions-header {
+      margin-bottom: 48px;
+    }
+
+    /* 4 cards in a row */
+    .fg-sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 16px;
+    }
+
+    .fg-session-card {
+      padding: 28px 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 300ms;
+    }
+
+    .fg-session-card:hover {
+      border-color: rgba(246,122,62,0.2);
+    }
+
+    .fg-session-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: rgba(246,122,62,0.35);
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+
+    .fg-session-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      flex: 1;
+    }
+
+    .fg-session-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,241,224,0.38);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .fg-session-week-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      opacity: 0.7;
+    }
+
+    /* ============================================================
+       SECTION 5 — TESTIMONIALS
+       Floating quote style — no card bg, no borders
+    ============================================================ */
+    .fg-tst-heading-wrap {
+      margin-bottom: 56px;
+    }
+
+    .fg-tst-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 48px;
+    }
+
+    .fg-quote-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .fg-quote-mark {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #F67A3E;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .fg-quote-text {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      font-style: italic;
+      color: rgba(255,241,224,0.75);
+      line-height: 1.55;
+      margin: 0 0 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .fg-quote-rule {
+      height: 1px;
+      background: rgba(255,241,224,0.08);
+      margin-bottom: 16px;
+    }
+
+    .fg-quote-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.01em;
+    }
+
+    .fg-quote-detail {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,241,224,0.28);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       SECTION 6 — PAST EDITIONS
+    ============================================================ */
+    .fg-past-empty {
+      background: rgba(255,241,224,0.02);
+      border: 1px dashed rgba(255,241,224,0.08);
+      border-radius: 16px;
+      padding: 60px 48px;
+      text-align: center;
+      max-width: 580px;
+    }
+
+    .fg-past-empty-icon {
+      font-size: 2.2rem;
+      display: block;
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    .fg-past-empty-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: rgba(255,241,224,0.35);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .fg-past-empty-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.83rem;
+      color: rgba(255,241,224,0.18);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       SECTION 7 — APPLICATION
+    ============================================================ */
+    .fg-apply-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.45fr;
+      gap: 56px;
+      align-items: start;
+    }
+
+    .fg-apply-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      margin: 16px 0 14px;
+      line-height: 1.02;
+    }
+
+    .fg-apply-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .fg-apply-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.92rem;
+      color: rgba(255,241,224,0.45);
+      line-height: 1.65;
+      margin-bottom: 8px;
+    }
+
+    .fg-apply-cta-wrap { margin-top: 48px; }
+
+    .fg-apply-urgency {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #F67A3E;
+      margin-bottom: 32px;
+    }
+
+    .fg-apply-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .fg-apply-info-card {
+      padding: 18px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .fg-apply-info-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .fg-apply-info-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #FFF1E0;
+      margin-bottom: 3px;
+    }
+
+    .fg-apply-info-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.77rem;
+      color: rgba(255,241,224,0.35);
+      line-height: 1.5;
+    }
+
+    /* Form panel */
+    .fg-form-panel {
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .fg-form-panel-header {
+      padding: 22px 26px 16px;
+      border-bottom: 1px solid rgba(255,241,224,0.06);
+    }
+
+    .fg-form-panel-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.02em;
+    }
+
+    .fg-form-panel-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,241,224,0.28);
+      margin-top: 3px;
+    }
+
+    .fg-form-iframe-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 660px;
+      border: none;
+      background: transparent;
+    }
+
+    /* ============================================================
+       SECTION 8 — FINAL CTA
+    ============================================================ */
+    .fg-cta-outer {
+      padding: 48px 0 80px;
+    }
+
+    .fg-cta-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .fg-cta-panel {
+      background: #FFF1E0;
+      border-radius: 28px;
+      padding: 80px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fg-cta-panel-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .fg-cta-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(10,10,10,0.35);
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fg-cta-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 4rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #0a0a0a;
+      line-height: 0.95;
+      margin: 0 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fg-cta-sub {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 500;
+      font-style: italic;
+      color: #F67A3E;
+      letter-spacing: -0.02em;
+      margin: 0 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fg-cta-btn {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #0a0a0a;
+      color: #FFF1E0;
+      border: 2px solid #0a0a0a;
+      border-radius: 9999px;
+      padding: 13px 38px;
+      text-decoration: none;
+      transition: transform 300ms cubic-bezier(0.16,1,0.3,1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .fg-cta-btn:hover {
+      transform: rotate(-2deg);
+    }
+
+    /* ============================================================
+       SKELETON loader
+    ============================================================ */
+    @keyframes fg-skel {
+      0%,100% { opacity: 0.3; }
+      50%      { opacity: 0.6; }
+    }
+
+    .fg-skel-line {
+      height: 13px;
+      border-radius: 4px;
+      background: rgba(255,241,224,0.08);
+      animation: fg-skel 1.4s ease-in-out infinite;
+    }
+
+    /* ============================================================
+       DESKTOP — min-width: 769px
+    ============================================================ */
+    @media (min-width: 769px) {
+      /* Hero — remove full-height stretch */
+      .fg-hero { min-height: auto; padding-bottom: 0; }
+      .fg-hero-inner { padding-bottom: 20px; }
+      /* Standardized section spacing on desktop */
+      .fg-section { padding: 64px 0; }
+      /* Forge 1.0 — cards + sessions spacing */
+      .fg-edition-grid { margin-top: 32px; }
+      .fg-sessions-header { margin-top: 80px; }
+      /* Editions teaser — hidden on desktop (right column replaces it) */
+      .fg-editions-teaser { display: none; }
+      /* Decorative motif column */
+      .fg-editions-motif {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        pointer-events: none;
+        user-select: none;
+      }
+      .fg-editions-motif-item {
+        font-family: 'Bricolage Grotesque', sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
+        color: rgba(255,241,224,0.12);
+        line-height: 1.2;
+        transition: color 0.4s ease;
+      }
+      .fg-editions-motif-item.active { color: #F67A3E; }
+    }
+
+    /* ============================================================
+       MOBILE — max-width: 768px
+    ============================================================ */
+    @media (max-width: 768px) {
+      /* Hide decorative motif on mobile */
+      .fg-editions-motif { display: none; }
+      /* Show inline teaser on mobile */
+      .fg-editions-teaser { display: block; }
+
+      /* General — no overflow, consistent padding */
+      .fg-page { overflow-x: hidden; }
+      .fg-inner { padding: 0 24px; }
+      .fg-section { padding: 48px 0; margin-bottom: 0; }
+      .fg-section-heading { font-size: 2.2rem; }
+
+      /* ── Editions teaser ── */
+      .fg-editions-teaser { margin-top: 32px; margin-bottom: 0; }
+
+      /* ── Hero ── */
+      .fg-hero { padding-top: 48px; min-height: auto; }
+      .fg-hero-inner {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 32px 24px 48px;
+      }
+      .fg-hero-heading { font-size: 2.8rem; line-height: 0.9; }
+      .fg-hero-sub { font-size: 0.9rem; }
+      .fg-hero-pills { flex-wrap: wrap; }
+      .fg-hero-card {
+        width: 100%;
+        margin-top: 24px;
+        padding: 24px;
+      }
+      .fg-stat-grid { gap: 10px; }
+      .fg-stat-num { font-size: 1.4rem; }
+      .fg-stat-lbl { font-size: 0.68rem; }
+
+      /* ── What is Forge ── */
+      .fg-what-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-bottom: 28px;
+      }
+      .fg-what-heading { font-size: 2.2rem; }
+      .fg-what-cards { grid-template-columns: 1fr; gap: 12px; }
+
+      /* ── Forge 1.0 (Edition) ── */
+      .fg-edition-top { margin-bottom: 28px; }
+      .fg-edition-grid { grid-template-columns: 1fr; gap: 14px; }
+      .fg-learn-card { padding: 24px; margin-bottom: 24px; }
+      .fg-make-card { padding: 24px; }
+      .fg-hero-card { margin-bottom: 32px; }
+
+      /* ── Session Breakdown ── */
+      .fg-sessions-header { margin-top: 48px; margin-bottom: 28px; }
+      .fg-sessions-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .fg-session-card { padding: 22px 20px; }
+      .fg-session-num { font-size: 1.6rem; margin-bottom: 12px; }
+      .fg-session-title { font-size: 0.92rem; }
+      .fg-session-desc { font-size: 0.78rem; }
+
+      /* ── Testimonials ── */
+      .fg-tst-heading-wrap { margin-bottom: 32px; }
+      .fg-tst-grid { grid-template-columns: 1fr; gap: 36px; }
+      .fg-quote-text { font-size: 0.95rem; }
+
+      /* ── Past Editions ── */
+      .fg-past-empty { width: 100%; max-width: 100%; padding: 40px 24px; }
+
+      /* ── Apply CTA wrap ── */
+      .fg-apply-cta-wrap { margin-top: 32px; padding: 0; }
+      .fg-apply-cta-wrap .btn-primary { display: block; width: 100%; text-align: center; box-sizing: border-box; }
+
+      /* ── Application ── */
+      .fg-apply-grid { grid-template-columns: 1fr; gap: 32px; }
+      .fg-apply-heading { font-size: 2.2rem; }
+      .fg-apply-cards { gap: 10px; }
+      .fg-form-iframe-wrap iframe { height: 900px; }
+
+      /* ── Final CTA ── */
+      .fg-cta-outer { padding: 32px 0 60px; }
+      .fg-cta-wrap { padding: 0 24px; }
+      .fg-cta-panel { padding: 60px 24px; border-radius: 20px; }
+      .fg-cta-heading { font-size: 2.2rem; }
+      .fg-cta-sub { font-size: 1.05rem; }
+      .fg-cta-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+    }
+
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+  </style>
+</head>
+<body class="fg-page">
+<div id="sq-cursor"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav-pill">
+    <div class="nav-left">
+      <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+    </div>
+    <div class="nav-center">
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="programs.html" class="nav-link">Programs</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="bookshop.html" class="nav-link">Bookshop</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <a href="join.html" class="nav-link">Join</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="join.html" class="btn-primary">Join Now</a>
+    </div>
+  </nav>
+
+  <!-- ===================== SECTION 1: HERO ===================== -->
+  <section class="fg-hero">
+    <div class="fg-grid-overlay"></div>
+    <div class="fg-hero-glow"></div>
+
+    <div class="fg-hero-inner">
+
+      <!-- Left -->
+      <div>
+        <div class="fg-hero-label fg-reveal">
+          <span class="fg-hero-label-dot"></span>
+          Squared Programs · <span id="fg-hero-edition-name">Forge 1.0</span>
+        </div>
+
+        <h1 class="fg-hero-heading fg-reveal fg-d1">
+          Build<br />
+          something<br />
+          <em>real.</em>
+        </h1>
+
+        <p class="fg-hero-sub fg-reveal fg-d2">
+          Forge is Squared's hands-on learning program. Each edition, we pick one skill and go deep — with a small cohort of people who are serious about making things. Digital skills, physical crafts, and everything in between.
+        </p>
+
+        <div class="fg-editions-teaser fg-reveal fg-d3">
+          <div class="fg-editions-eyebrow">Editions Cover</div>
+          <div class="fg-editions-tags">
+            <span class="fg-editions-tag-item">Brand Identity</span> · <span class="fg-editions-tag-item">Photography</span> · <span class="fg-editions-tag-item">Tailoring</span> · <span class="fg-editions-tag-item">Web Development</span> · <span class="fg-editions-tag-item">Ghostwriting</span> · <span class="fg-editions-tag-item">Agriculture</span> · and more
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right — decorative edition motif (desktop only) -->
+      <div class="fg-editions-motif" aria-hidden="true">
+        <div class="fg-editions-motif-item">Brand Identity</div>
+        <div class="fg-editions-motif-item">Photography</div>
+        <div class="fg-editions-motif-item">Tailoring</div>
+        <div class="fg-editions-motif-item">Web Development</div>
+        <div class="fg-editions-motif-item">Ghostwriting</div>
+        <div class="fg-editions-motif-item">Agriculture</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2: WHAT IS FORGE ===================== -->
+  <section class="fg-section">
+    <div class="fg-inner">
+
+      <div class="fg-eyebrow fg-reveal">What is Forge</div>
+
+      <div class="fg-what-grid">
+        <div>
+          <h2 class="fg-what-heading fg-reveal">
+            Not a course.<br />
+            A <em>proving ground.</em>
+          </h2>
+        </div>
+        <div class="fg-what-body fg-reveal">
+          <p>Most programs teach you things. Forge makes you do things. Every session has a theme, a task, and an expectation. You show up, you learn, and you leave with something made.</p>
+          <p>It's intense because making things is intense. But you're not doing it alone — your cohort is right there with you, struggling and shipping and figuring it out together.</p>
+          <p>By the end of each edition, you'll have a body of work. Real things you made. Not just knowledge in your head — proof you can do the thing.</p>
+        </div>
+      </div>
+
+      <div class="fg-what-cards">
+        <div class="fg-card fg-what-card fg-reveal">
+          <div class="fg-what-card-title">You Ship Things</div>
+          <div class="fg-what-card-desc">Every session ends with something made. A project, a piece, a product — something you can point at and say "I made this." Knowledge without output doesn't count.</div>
+        </div>
+        <div class="fg-card fg-what-card fg-reveal fg-d1">
+          <div class="fg-what-card-title">Small Cohort</div>
+          <div class="fg-what-card-desc">No massive classes. Each edition runs with a small group — everyone knows each other, everyone holds each other accountable. The size is intentional.</div>
+        </div>
+        <div class="fg-card fg-what-card fg-reveal fg-d2">
+          <div class="fg-what-card-title">One Skill at a Time</div>
+          <div class="fg-what-card-desc">Each edition focuses on exactly one skill and goes deep on it. Not a taster course. Not an overview. You leave knowing how to actually do the thing.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: FORGE 1.0 ===================== -->
+  <section class="fg-section">
+    <div class="fg-inner">
+
+      <div class="fg-edition-top">
+        <div class="fg-eyebrow fg-reveal"><span id="fg-edition-eyebrow">Forge 1.0</span> · Brand Identity</div>
+        <h2 class="fg-section-heading fg-reveal">The theme is <em id="fg-skill-focus-heading">Brand Identity.</em></h2>
+        <p class="fg-section-sub fg-reveal">
+          Forge 1.0 is built around one question: can you build a brand? Not just think about one — but actually construct it. Every session in this cohort goes from insight to deliverable.
+        </p>
+      </div>
+
+      <div class="fg-hero-card fg-reveal">
+        <div class="fg-stat-grid">
+          <div class="fg-stat-box">
+            <div class="fg-stat-num" id="fg-stat-cohort">5</div>
+            <div class="fg-stat-lbl">Participants</div>
+          </div>
+          <div class="fg-stat-box">
+            <div class="fg-stat-num" id="fg-stat-sessions">4</div>
+            <div class="fg-stat-lbl">Sessions</div>
+          </div>
+          <div class="fg-stat-box">
+            <div class="fg-stat-num" id="fg-stat-duration">4</div>
+            <div class="fg-stat-lbl">Weeks</div>
+          </div>
+          <div class="fg-stat-box">
+            <div class="fg-stat-num" id="fg-stat-day">Tue</div>
+            <div class="fg-stat-lbl">Every Tuesday</div>
+          </div>
+        </div>
+        <div class="fg-hero-card-rule"></div>
+        <div class="fg-hero-card-note">
+          <strong>Limited to 5 spots.</strong> Applications are rolling — if you're thinking about it, apply now and decide later.
+        </div>
+      </div>
+
+      <div class="fg-edition-grid">
+
+        <!-- Learn card -->
+        <div class="fg-card fg-learn-card fg-reveal">
+          <div class="fg-card-label">What you'll build skills in</div>
+          <ul class="fg-learn-list" id="fg-learn-list">
+            <li>Brand audit, competitive landscape, positioning</li>
+            <li>Brand pillars and target audience definition</li>
+            <li>Colour theory, typography, visual language</li>
+            <li>Logo design principles and building a logo suite</li>
+            <li>Brand voice and messaging frameworks</li>
+            <li>Presenting your brand identity with confidence</li>
+          </ul>
+        </div>
+
+        <!-- Make card -->
+        <div class="fg-card fg-make-card fg-reveal fg-d1">
+          <div class="fg-card-label">What you'll make</div>
+          <div class="fg-card-heading">A complete brand identity. Yours.</div>
+          <ul class="fg-make-list" id="fg-make-list">
+            <li>A brand audit and positioning statement</li>
+            <li>A defined visual language (colours, fonts, feel)</li>
+            <li>A logo suite — primary, secondary, mark</li>
+            <li>A brand voice guide</li>
+            <li>A live brand presentation to the cohort</li>
+          </ul>
+          <div class="fg-make-bottom">
+            <div class="fg-make-note">Starting <strong id="fg-start-date-note" style="color:rgba(255,241,224,0.6)">April 1st</strong> · <span id="fg-session-day-note">Every Tuesday</span> · <span id="fg-duration-note">4 weeks</span> · <span id="fg-format-note">Online via Google Meet</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="fg-sessions-header">
+        <div class="fg-eyebrow fg-reveal">Forge 1.0 Sessions</div>
+        <h2 class="fg-section-heading fg-reveal">Four weeks.<br />Four builds.</h2>
+        <p class="fg-section-sub fg-reveal">Here's exactly what happens each session. No vague "you'll learn lots of stuff." This is the plan.</p>
+      </div>
+
+      <div class="fg-sessions-grid" id="fg-sessions-grid">
+
+        <div class="fg-card fg-session-card fg-reveal">
+          <div class="fg-session-num">01</div>
+          <div class="fg-session-title">Who Are You?</div>
+          <div class="fg-session-desc">Brand audit, competitive landscape, and defining your positioning.</div>
+          <div class="fg-session-week-label">Week 1 · Tuesday</div>
+        </div>
+
+        <div class="fg-card fg-session-card fg-reveal fg-d1">
+          <div class="fg-session-num">02</div>
+          <div class="fg-session-title">Strategy & Visual Language</div>
+          <div class="fg-session-desc">Brand pillars, target audience, colour theory, typography, and the visual decisions that make a brand feel like itself.</div>
+          <div class="fg-session-week-label">Week 2 · Tuesday</div>
+        </div>
+
+        <div class="fg-card fg-session-card fg-reveal fg-d2">
+          <div class="fg-session-num">03</div>
+          <div class="fg-session-title">The Mark & Voice</div>
+          <div class="fg-session-desc">Logo design principles, building your logo suite, brand voice, and messaging frameworks.</div>
+          <div class="fg-session-week-label">Week 3 · Tuesday</div>
+        </div>
+
+        <div class="fg-card fg-session-card fg-reveal fg-d3">
+          <div class="fg-session-num">04</div>
+          <div class="fg-session-title">The Reveal</div>
+          <div class="fg-session-desc">Final presentations. Every participant presents their complete brand identity to the cohort.</div>
+          <div class="fg-session-week-label">Week 4 · Tuesday</div>
+        </div>
+
+      </div>
+
+      <div class="fg-apply-cta-wrap">
+        <a href="forge-apply.html" class="btn-primary fg-reveal">Apply for Forge 1.0 →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 5: TESTIMONIALS ===================== -->
+  <section class="fg-section">
+    <div class="fg-inner">
+
+      <div class="fg-tst-heading-wrap">
+        <div class="fg-eyebrow fg-reveal">What people say</div>
+        <h2 class="fg-section-heading fg-reveal">Real words from<br /><em>real people.</em></h2>
+      </div>
+
+      <div class="fg-tst-grid" id="fg-tst-grid">
+
+        <div class="fg-quote-item fg-reveal">
+          <div class="fg-quote-mark">"</div>
+          <p class="fg-quote-text">I've been wanting to build things for two years. Forge actually made me do it. Week two I shipped my first designed thing and the cohort went crazy in the group chat. That feeling kept me going for the rest of the program.</p>
+          <div class="fg-quote-rule"></div>
+          <div class="fg-quote-name">Adaeze O.</div>
+          <div class="fg-quote-detail">Forge 1.0 participant</div>
+        </div>
+
+        <div class="fg-quote-item fg-reveal fg-d1">
+          <div class="fg-quote-mark">"</div>
+          <p class="fg-quote-text">Everyone who joined Forge came in saying "I've been meaning to start." Nobody left saying that. You can't leave without having built something. The structure forces your hand in the best way.</p>
+          <div class="fg-quote-rule"></div>
+          <div class="fg-quote-name">Emeka T.</div>
+          <div class="fg-quote-detail">Forge 1.0 participant</div>
+        </div>
+
+        <div class="fg-quote-item fg-reveal fg-d2">
+          <div class="fg-quote-mark">"</div>
+          <p class="fg-quote-text">I thought I needed to be "ready" before I could show my work. Forge week 3 destroyed that belief. I posted something half-finished and got more response than anything I'd ever published.</p>
+          <div class="fg-quote-rule"></div>
+          <div class="fg-quote-name">Simi A.</div>
+          <div class="fg-quote-detail">Forge 1.0 participant</div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 6: PAST EDITIONS ===================== -->
+  <section class="fg-section">
+    <div class="fg-inner">
+
+      <div class="fg-eyebrow fg-reveal">Past Editions</div>
+      <h2 class="fg-section-heading fg-reveal" style="margin-bottom:40px;">Where Forge has been.</h2>
+
+      <div class="fg-past-empty fg-reveal">
+        <span class="fg-past-empty-icon">🗂️</span>
+        <div class="fg-past-empty-title">No past editions yet</div>
+        <div class="fg-past-empty-sub">Forge 1.0 is the first. You could be part of the founding cohort. Apply below and help write the first chapter.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 7: APPLICATION ===================== -->
+  <section class="fg-section" id="apply">
+    <div class="fg-inner">
+      <div class="fg-apply-grid">
+
+        <!-- Left info -->
+        <div>
+          <div class="fg-eyebrow fg-reveal">Applications</div>
+          <h2 class="fg-apply-heading fg-reveal">Ready to <em>apply?</em></h2>
+          <p class="fg-apply-sub fg-reveal">Fill out the short form. We review on a rolling basis and get back to you within a few days.</p>
+          <p class="fg-apply-urgency fg-reveal">Only 5 spots. First come, first considered.</p>
+
+          <div class="fg-apply-cards">
+            <div class="fg-card fg-apply-info-card fg-reveal">
+              <div class="fg-apply-info-icon">📅</div>
+              <div>
+                <div class="fg-apply-info-title">Dates</div>
+                <div class="fg-apply-info-desc" id="fg-apply-dates">April 1st, 2025 · Every Tuesday for 4 weeks</div>
+              </div>
+            </div>
+            <div class="fg-card fg-apply-info-card fg-reveal fg-d1">
+              <div class="fg-apply-info-icon">💸</div>
+              <div>
+                <div class="fg-apply-info-title">Investment</div>
+                <div class="fg-apply-info-desc" id="fg-apply-price">Free for Forge 1.0</div>
+              </div>
+            </div>
+            <div class="fg-card fg-apply-info-card fg-reveal fg-d2">
+              <div class="fg-apply-info-icon">💻</div>
+              <div>
+                <div class="fg-apply-info-title">Format</div>
+                <div class="fg-apply-info-desc" id="fg-apply-format">Online · Sessions via Google Meet · Materials shared digitally</div>
+              </div>
+            </div>
+            <div class="fg-card fg-apply-info-card fg-reveal fg-d3">
+              <div class="fg-apply-info-icon">💬</div>
+              <div>
+                <div class="fg-apply-info-title">Questions first?</div>
+                <div class="fg-apply-info-desc">DM Covenant on X or WhatsApp before you apply. Happy to answer anything.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right — Apply CTA -->
+        <div class="fg-card fg-form-panel fg-reveal fg-d1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 48px;gap:16px;">
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:700;color:#FFF1E0;letter-spacing:-0.02em;line-height:1.1;">Ready when you are.</div>
+          <div style="font-family:'Poppins',sans-serif;font-size:0.88rem;color:rgba(255,241,224,0.4);line-height:1.6;max-width:320px;">Takes about 5 minutes. Rolling admissions — we get back to you within a few days.</div>
+          <a href="forge-apply.html" style="display:inline-block;margin-top:8px;font-family:'Poppins',sans-serif;font-size:0.95rem;font-weight:600;background:#F67A3E;color:#0a0a0a;border:2px solid #F67A3E;border-radius:9999px;padding:13px 36px;text-decoration:none;transition:transform 300ms cubic-bezier(0.16,1,0.3,1);" onmouseover="this.style.transform='rotate(-2deg)'" onmouseout="this.style.transform=''">Apply for Forge 1.0 →</a>
+          <div style="font-family:'Poppins',sans-serif;font-size:0.75rem;color:rgba(255,241,224,0.25);margin-top:4px;">Only 5 spots. First come, first considered.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <!-- Shared scripts -->
+  <script src="script.js"></script>
+
+  <!-- ===================== FORGE DYNAMIC CONTENT ===================== -->
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    /* ── Hardcoded fallbacks ── */
+    var FALLBACK_SESSIONS = [
+      { session_number: 1, title: 'Who Are You?',              description: 'Brand audit, competitive landscape, and defining your positioning.' },
+      { session_number: 2, title: 'Strategy & Visual Language', description: 'Brand pillars, target audience, colour theory, typography, and the visual decisions that make a brand feel like itself.' },
+      { session_number: 3, title: 'The Mark & Voice',           description: 'Logo design principles, building your logo suite, brand voice, and messaging frameworks.' },
+      { session_number: 4, title: 'The Reveal',                 description: 'Final presentations. Every participant presents their complete brand identity to the cohort.' }
+    ];
+
+    var FALLBACK_TESTIMONIALS = [
+      { quote: "I've been wanting to build things for two years. Forge actually made me do it. Week two I shipped my first designed thing and the cohort went crazy in the group chat. That feeling kept me going for the rest of the program.", member_name: 'Adaeze O.', member_detail: 'Forge 1.0 participant' },
+      { quote: 'Everyone who joined Forge came in saying "I\'ve been meaning to start." Nobody left saying that. You can\'t leave without having built something. The structure forces your hand in the best way.', member_name: 'Emeka T.', member_detail: 'Forge 1.0 participant' },
+      { quote: 'I thought I needed to be "ready" before I could show my work. Forge week 3 destroyed that belief. I posted something half-finished and got more response than anything I\'d ever published.', member_name: 'Simi A.', member_detail: 'Forge 1.0 participant' }
+    ];
+
+    /* ── Helpers ── */
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function padNum(n) {
+      return n < 10 ? '0' + n : '' + n;
+    }
+
+    function setText(id, val) {
+      var el = document.getElementById(id);
+      if (el && val != null) el.textContent = val;
+    }
+
+    /* ── Render sessions ── */
+    function renderSessions(sessions) {
+      var grid = document.getElementById('fg-sessions-grid');
+      if (!grid || !sessions || !sessions.length) return;
+
+      var delays = ['', 'fg-d1', 'fg-d2', 'fg-d3'];
+      grid.innerHTML = sessions.map(function (s, i) {
+        return '<div class="fg-card fg-session-card fg-reveal ' + (delays[i] || '') + '">' +
+          '<div class="fg-session-num">' + padNum(s.session_number) + '</div>' +
+          '<div class="fg-session-title">' + esc(s.title) + '</div>' +
+          '<div class="fg-session-desc">' + esc(s.description || '') + '</div>' +
+          '<div class="fg-session-week-label">Week ' + s.session_number + ' · Tuesday</div>' +
+        '</div>';
+      }).join('');
+
+      /* Re-observe new cards */
+      grid.querySelectorAll('.fg-reveal').forEach(function (el) {
+        el.classList.remove('fg-in');
+        observer.observe(el);
+      });
+    }
+
+    /* ── Render testimonials ── */
+    function renderTestimonials(items) {
+      var grid = document.getElementById('fg-tst-grid');
+      if (!grid || !items || !items.length) return;
+
+      var delays = ['', 'fg-d1', 'fg-d2'];
+      grid.innerHTML = items.map(function (t, i) {
+        return '<div class="fg-quote-item fg-reveal ' + (delays[i] || '') + '">' +
+          '<div class="fg-quote-mark">\u201c</div>' +
+          '<p class="fg-quote-text">' + esc(t.quote) + '</p>' +
+          '<div class="fg-quote-rule"></div>' +
+          '<div class="fg-quote-name">' + esc(t.member_name) + '</div>' +
+          (t.member_detail ? '<div class="fg-quote-detail">' + esc(t.member_detail) + '</div>' : '') +
+        '</div>';
+      }).join('');
+
+      grid.querySelectorAll('.fg-reveal').forEach(function (el) {
+        el.classList.remove('fg-in');
+        observer.observe(el);
+      });
+    }
+
+    /* ── Update edition elements ── */
+    function applyEdition(ed) {
+      /* Edition name */
+      setText('fg-hero-edition-name', ed.edition_name);
+      setText('fg-edition-eyebrow', ed.edition_name);
+
+      /* Skill focus */
+      if (ed.skill_focus) {
+        setText('fg-skill-focus-heading', ed.skill_focus + '.');
+      }
+
+      /* Hero stats */
+      if (ed.cohort_size) setText('fg-stat-cohort', ed.cohort_size);
+      if (ed.session_count) {
+        setText('fg-stat-sessions', ed.session_count);
+        setText('fg-pill-sessions', ed.session_count + ' Sessions');
+      }
+      if (ed.duration_weeks) {
+        setText('fg-stat-duration', ed.duration_weeks);
+        setText('fg-pill-duration', ed.duration_weeks + ' Weeks');
+      }
+      if (ed.session_day) {
+        /* Abbreviate for stat box */
+        var abbr = ed.session_day.replace('Every ', '').slice(0,3);
+        setText('fg-stat-day', abbr);
+        setText('fg-pill-day', ed.session_day);
+        setText('fg-session-day-note', ed.session_day);
+      }
+
+      /* Price pill */
+      if (ed.price === 0) {
+        setText('fg-pill-price', 'Free');
+        setText('fg-apply-price', 'Free for ' + ed.edition_name);
+      } else if (ed.price) {
+        var naira = '₦' + (ed.price / 100).toLocaleString();
+        setText('fg-pill-price', naira);
+        setText('fg-apply-price', naira + ' · ' + ed.edition_name);
+      }
+
+      /* Start date */
+      if (ed.start_date) {
+        var d = new Date(ed.start_date);
+        var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var day = d.getUTCDate();
+        var suffix = day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th';
+        var pretty = months[d.getUTCMonth()] + ' ' + day + suffix;
+        setText('fg-start-date-note', pretty);
+        /* Update apply dates */
+        var datesEl = document.getElementById('fg-apply-dates');
+        if (datesEl) {
+          var weeks = ed.duration_weeks || 4;
+          var dayLabel = ed.session_day || 'Every Tuesday';
+          datesEl.textContent = pretty + ', ' + (d.getUTCFullYear()) + ' · ' + dayLabel + ' for ' + weeks + ' weeks';
+        }
+      }
+
+      /* Format */
+      if (ed.format) {
+        setText('fg-format-note', ed.format);
+        setText('fg-apply-format', ed.format);
+      }
+
+      /* Duration note */
+      if (ed.duration_weeks) {
+        setText('fg-duration-note', ed.duration_weeks + ' weeks');
+      }
+
+
+      /* What you learn */
+      if (ed.what_you_learn && Array.isArray(ed.what_you_learn) && ed.what_you_learn.length) {
+        var learnList = document.getElementById('fg-learn-list');
+        if (learnList) {
+          learnList.innerHTML = ed.what_you_learn.map(function (item) {
+            return '<li>' + esc(item) + '</li>';
+          }).join('');
+        }
+      }
+
+      /* What you make */
+      if (ed.what_you_make && Array.isArray(ed.what_you_make) && ed.what_you_make.length) {
+        var makeList = document.getElementById('fg-make-list');
+        if (makeList) {
+          makeList.innerHTML = ed.what_you_make.map(function (item) {
+            return '<li>' + esc(item) + '</li>';
+          }).join('');
+        }
+      }
+    }
+
+    /* ── Skeleton for sessions ── */
+    function showSessionSkeletons() {
+      var grid = document.getElementById('fg-sessions-grid');
+      if (!grid) return;
+      var cards = '';
+      for (var i = 0; i < 4; i++) {
+        cards += '<div class="fg-card fg-session-card" style="opacity:0.4;">' +
+          '<div class="fg-skel-line" style="width:32px;height:32px;border-radius:6px;margin-bottom:18px;"></div>' +
+          '<div class="fg-skel-line" style="width:70%;margin-bottom:8px;"></div>' +
+          '<div class="fg-skel-line" style="width:90%;margin-bottom:6px;"></div>' +
+          '<div class="fg-skel-line" style="width:60%;"></div>' +
+        '</div>';
+      }
+      grid.innerHTML = cards;
+    }
+
+    /* ── Skeleton for testimonials ── */
+    function showTstSkeletons() {
+      var grid = document.getElementById('fg-tst-grid');
+      if (!grid) return;
+      var items = '';
+      for (var i = 0; i < 3; i++) {
+        items += '<div class="fg-quote-item" style="opacity:0.35;">' +
+          '<div class="fg-skel-line" style="width:40px;height:40px;border-radius:6px;margin-bottom:14px;"></div>' +
+          '<div class="fg-skel-line" style="width:100%;margin-bottom:6px;"></div>' +
+          '<div class="fg-skel-line" style="width:85%;margin-bottom:6px;"></div>' +
+          '<div class="fg-skel-line" style="width:70%;margin-bottom:20px;"></div>' +
+          '<div class="fg-quote-rule"></div>' +
+          '<div class="fg-skel-line" style="width:38%;margin-top:16px;height:11px;"></div>' +
+        '</div>';
+      }
+      grid.innerHTML = items;
+    }
+
+    /* ── Scroll reveal observer ── */
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fg-in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fg-reveal').forEach(function (el) {
+      observer.observe(el);
+    });
+
+    /* ── Supabase init ── */
+    if (!window.supabase) {
+      /* Supabase not loaded — use fallbacks silently */
+      return;
+    }
+
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* Show skeletons while loading */
+    showSessionSkeletons();
+    showTstSkeletons();
+
+    /* ── 1. Fetch current open edition ── */
+    sb.from('forge_editions')
+      .select('*')
+      .eq('status', 'open')
+      .limit(1)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) {
+          /* No open edition — use hardcoded fallback */
+          renderSessions(FALLBACK_SESSIONS);
+          return;
+        }
+
+        var ed = r.data[0];
+        applyEdition(ed);
+
+        /* ── 2. Fetch sessions for this edition ── */
+        sb.from('forge_sessions')
+          .select('*')
+          .eq('edition_id', ed.id)
+          .order('session_number', { ascending: true })
+          .then(function (sr) {
+            var sessions = (sr.error || !sr.data || !sr.data.length)
+              ? FALLBACK_SESSIONS
+              : sr.data;
+            renderSessions(sessions);
+          });
+      });
+
+    /* ── 3. Fetch testimonials (independent of edition) ── */
+    sb.from('forge_testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+      .limit(3)
+      .then(function (r) {
+        var items = (r.error || !r.data || !r.data.length)
+          ? FALLBACK_TESTIMONIALS
+          : r.data;
+        renderTestimonials(items);
+      });
+
+  }());
+  </script>
+
+  <script>
+  (function () {
+    var desktop = document.querySelectorAll('.fg-editions-motif-item');
+    var mobile  = document.querySelectorAll('.fg-editions-tag-item');
+    var count = desktop.length; /* both lists have same 6 items */
+    if (!count) return;
+    var current = 0;
+    function setActive(idx) {
+      desktop.forEach(function (el, i) { el.classList.toggle('active', i === idx); });
+      mobile.forEach(function (el, i)  { el.classList.toggle('active', i === idx); });
+    }
+    setActive(current);
+    setInterval(function () {
+      current = (current + 1) % count;
+      setActive(current);
+    }, 1800);
+  }());
+  </script>
+
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+
+</body>
+</html>

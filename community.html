@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squared — Community</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=25" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ── CORE TEAM ── */
+    .cm-ct-outer { background: #0a0a0a; padding: 80px 48px; }
+    .cm-ct-inner { max-width: 1200px; margin: 0 auto; }
+    .cm-ct-label { font-size: 0.72rem; color: #F67A3E; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
+    .cm-ct-heading { font-family: 'Bricolage Grotesque', sans-serif; font-size: 3rem; font-weight: 800; color: #FFF1E0; letter-spacing: -0.03em; margin: 0 0 12px; line-height: 1.05; }
+    .cm-ct-sub { font-size: 1rem; color: rgba(255,241,224,0.4); max-width: 480px; margin: 0 0 48px; line-height: 1.6; }
+
+    /* Role group blocks — full-width stacked */
+    .cm-rg-block { background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.10); border-radius: 20px; padding: 36px 40px; margin-bottom: 16px; }
+    .cm-rg-block:last-child { margin-bottom: 0; }
+    .cm-rg-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .cm-rg-header-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .cm-rg-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.5rem; font-weight: 800; color: #FFF1E0; letter-spacing: -0.02em; margin: 0; }
+    .cm-rg-count-pill { background: rgba(255,241,224,0.08); border: 1px solid rgba(255,241,224,0.15); color: rgba(255,241,224,0.55); font-size: 0.72rem; font-weight: 500; padding: 4px 12px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.04em; }
+    .cm-rg-header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .cm-rg-toggle { background: none; border: 1px solid rgba(255,241,224,0.18); color: rgba(255,241,224,0.5); font-size: 0.82rem; padding: 7px 16px; border-radius: 999px; cursor: pointer; transition: color 0.2s ease, border-color 0.2s ease; white-space: nowrap; font-family: inherit; }
+    .cm-rg-toggle:hover { color: #FFF1E0; border-color: rgba(255,241,224,0.4); }
+    .cm-rg-toggle.open { color: #FFF1E0; border-color: rgba(255,241,224,0.35); }
+    .cm-rg-arrow { display: inline-block; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); margin-left: 5px; }
+    .cm-rg-toggle.open .cm-rg-arrow { transform: rotate(180deg); }
+    .cm-rg-apply-btn { font-size: 0.82rem; font-weight: 600; color: #F67A3E; text-decoration: none; white-space: nowrap; transition: opacity 0.2s; }
+    .cm-rg-apply-btn:hover { opacity: 0.7; }
+
+    /* Expandable details panel */
+    .cm-rg-expand { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1); }
+    .cm-rg-expand.open { max-height: 700px; }
+    .cm-rg-expand-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; padding: 28px 0 8px; }
+    .cm-rg-expand-label { font-size: 0.72rem; color: #F67A3E; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    .cm-rg-list { list-style: none; padding: 0; margin: 0; }
+    .cm-rg-list li { font-size: 0.9rem; color: rgba(255,241,224,0.72); padding: 5px 0 5px 22px; position: relative; line-height: 1.55; }
+    .cm-rg-list li::before { content: '—'; position: absolute; left: 0; color: rgba(255,241,224,0.28); }
+    .cm-rg-expand-text { font-size: 0.9rem; color: rgba(255,241,224,0.72); line-height: 1.65; margin: 0; }
+    .cm-rg-divider { border: none; border-top: 1px solid rgba(255,241,224,0.08); margin: 20px 0 0; }
+
+    /* Member cards */
+    .cm-ct-cards { display: flex; flex-direction: row; flex-wrap: wrap; gap: 24px; margin-top: 28px; }
+    .cm-ct-card { display: flex; flex-direction: column; align-items: center; width: 200px; flex-shrink: 0; }
+    .cm-ct-avatar { width: 100px; height: 100px; border-radius: 12px; border: 2px solid rgba(255,241,224,0.06); background: #1c1c1c; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; margin-bottom: 12px; }
+    .cm-ct-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cm-ct-initials { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.4rem; }
+    .cm-ct-member-name { font-size: 0.88rem; font-weight: 600; color: #FFF1E0; text-align: center; line-height: 1.3; }
+    .cm-ct-member-detail { font-size: 0.75rem; color: rgba(255,241,224,0.4); text-align: center; margin-top: 4px; }
+
+    /* ── SQUAD LEADERS ── */
+    .cm-sl-outer { background: #0a0a0a; padding: 80px 48px; }
+    .cm-sl-inner { max-width: 1200px; margin: 0 auto; }
+    .cm-sl-label { font-size: 0.72rem; color: #F67A3E; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
+    .cm-sl-heading { font-family: 'Bricolage Grotesque', sans-serif; font-size: 3rem; font-weight: 800; color: #FFF1E0; letter-spacing: -0.03em; margin: 0 0 12px; line-height: 1.05; }
+    .cm-sl-sub { font-size: 1rem; color: rgba(255,241,224,0.55); max-width: 480px; margin: 0 0 48px; line-height: 1.6; }
+    .cm-sl-cards { display: flex; gap: 20px; flex-wrap: wrap; }
+    .cm-sl-card { background: #111; border-radius: 16px; padding: 28px; border: 1px solid rgba(255,241,224,0.06); box-shadow: none; flex: 1; min-width: 200px; display: flex; flex-direction: column; }
+    .cm-sl-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .cm-sl-card-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 700; color: #FFF1E0; }
+    .cm-sl-count-pill { background: rgba(246,122,62,0.15); color: #F67A3E; font-size: 0.68rem; font-weight: 500; padding: 3px 8px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+    .cm-sl-avatars { display: flex; margin-bottom: 10px; }
+    .cm-sl-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,241,224,0.1); background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; margin-left: -12px; }
+    .cm-sl-avatars .cm-sl-avatar:first-child { margin-left: 0; }
+    .cm-sl-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cm-sl-avatar-more { font-size: 0.7rem; font-weight: 600; color: #F67A3E; }
+    .cm-sl-avatar-initials { font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.8rem; font-weight: 700; color: #FFF1E0; }
+    .cm-sl-names { font-size: 0.82rem; color: rgba(255,241,224,0.55); margin-bottom: 8px; line-height: 1.4; }
+    .cm-sl-meta { font-size: 0.72rem; color: rgba(255,241,224,0.35); margin-bottom: 14px; }
+    .cm-sl-cta { font-size: 0.78rem; color: #F67A3E; text-decoration: none; margin-top: auto; }
+    .cm-sl-cta:hover { text-decoration: underline; }
+
+    /* ── APPLY ── */
+    .cm-apply-outer { background: #0a0a0a; padding: 80px 48px; }
+    .cm-apply-inner { max-width: 560px; margin: 0 auto; }
+    .cm-apply-card { background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.10); border-radius: 24px; padding: 56px 48px; position: relative; overflow: hidden; text-align: center; }
+    .cm-apply-heading { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2rem; font-weight: 700; color: #FFF1E0; letter-spacing: -0.03em; margin: 0 0 12px; line-height: 1.1; }
+    .cm-apply-sub { font-size: 0.95rem; color: rgba(255,241,224,0.4); margin: 0 0 28px; line-height: 1.6; }
+    .cm-apply-btn { display: inline-block; background: #F67A3E; color: #0E0E0E; font-weight: 600; font-size: 0.95rem; padding: 12px 28px; border-radius: 999px; text-decoration: none; transition: transform 0.25s ease; }
+    .cm-apply-btn:hover { transform: rotate(-2deg); }
+    .cm-apply-sticker { position: absolute; bottom: -10px; right: -10px; width: 90px; opacity: 0.85; pointer-events: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .cm-ct-outer, .cm-sl-outer, .cm-apply-outer { padding: 48px 24px; }
+      .cm-ct-heading, .cm-sl-heading { font-size: 2.2rem; }
+      .cm-rg-block { padding: 28px 24px; }
+      .cm-rg-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .cm-rg-header-right { width: 100%; justify-content: space-between; }
+      .cm-rg-expand-inner { grid-template-columns: 1fr; gap: 20px; }
+      .cm-ct-cards { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 16px; padding-bottom: 12px; }
+      .cm-ct-cards::-webkit-scrollbar { display: none; }
+      .cm-ct-card { width: 120px; flex-shrink: 0; }
+      .cm-sl-cards { flex-direction: column; }
+      .cm-sl-avatar { margin-left: -8px; }
+      .cm-sl-card { min-width: unset; }
+      .cm-apply-card { padding: 40px 28px; }
+      .cm-apply-sticker { display: none; }
+    }
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== HERO ===================== -->
+  <main>
+    <section class="cm-hero-outer">
+      <div class="cm-hero-panel">
+
+        <!-- NAV inside hero card -->
+        <nav class="nav-pill">
+          <div class="nav-left">
+            <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+          </div>
+          <div class="nav-center">
+            <a href="community.html" class="nav-link">Community</a>
+            <a href="programs.html" class="nav-link">Programs</a>
+            <a href="blog.html" class="nav-link">Blog</a>
+            <a href="bookshop.html" class="nav-link">Bookshop</a>
+            <a href="events.html" class="nav-link">Events</a>
+            <a href="join.html" class="nav-link">Join</a>
+          </div>
+          <div class="nav-right">
+            <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+              <span></span><span></span><span></span>
+            </button>
+            <a href="join.html" class="btn-primary">Join Now</a>
+          </div>
+        </nav>
+
+        <!-- HERO BODY — two columns -->
+        <div class="cm-hero-body">
+
+          <!-- LEFT COLUMN -->
+          <div class="cm-hero-left">
+            <h1 class="cm-hero-heading">
+              <span class="cm-hero-line">Built by</span>
+              <span class="cm-hero-line">the <span class="cm-hero-accent">squad.</span></span>
+            </h1>
+
+            <p class="cm-hero-sub">Squared is run by young people who show up. Meet the team behind the community.</p>
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="cm-hero-right">
+            <img src="Visual Assets/3 friends illustration.png" class="cm-hero-illustration" alt="" aria-hidden="true" />
+            <img src="Visual Assets/Stickers/Stay squared sticker.png" class="cm-sticker-stay" alt="" aria-hidden="true" />
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CORE TEAM ===================== -->
+    <section class="cm-ct-outer">
+      <div class="cm-ct-inner">
+
+        <div class="cm-ct-label">THE CORE TEAM</div>
+        <h2 class="cm-ct-heading">The people behind the scenes.</h2>
+        <p class="cm-ct-sub">A small, focused team keeping Squared running.</p>
+
+        <!-- ── Support Board ── -->
+        <div class="cm-rg-block">
+          <div class="cm-rg-header">
+            <div class="cm-rg-header-left">
+              <h3 class="cm-rg-title">Support Board</h3>
+              <span class="cm-rg-count-pill" id="ctPill-Support-Board">Recruiting</span>
+            </div>
+            <div class="cm-rg-header-right">
+              <button class="cm-rg-toggle" data-target="ctExpand-Support-Board">What's this role? <span class="cm-rg-arrow">↓</span></button>
+              <a href="join.html" class="btn-secondary">Apply →</a>
+            </div>
+          </div>
+
+          <div class="cm-rg-expand" id="ctExpand-Support-Board">
+            <div class="cm-rg-expand-inner">
+              <div>
+                <div class="cm-rg-expand-label">What they do</div>
+                <ul class="cm-rg-list">
+                  <li>Review member CVs and give real, useful feedback</li>
+                  <li>Share job opportunities and relevant resources in the group</li>
+                  <li>Provide mentorship or connect members to the right people</li>
+                </ul>
+              </div>
+              <div>
+                <div class="cm-rg-expand-label">Who should apply</div>
+                <p class="cm-rg-expand-text">Professionals or active members with networks who want to give back. Mentors, career guides, or anyone good at opening doors. About 2–4 hrs/week.</p>
+              </div>
+            </div>
+            <hr class="cm-rg-divider" />
+          </div>
+
+          <div class="cm-ct-cards" id="ctCards-Support-Board">
+            <div class="cm-ct-card">
+              <div class="cm-ct-avatar"><span class="cm-ct-initials" style="color:#EF97BF">SB</span></div>
+              <div class="cm-ct-member-name">TBA</div>
+            </div>
+            <div class="cm-ct-card">
+              <div class="cm-ct-avatar"><span class="cm-ct-initials" style="color:#EF97BF">SB</span></div>
+              <div class="cm-ct-member-name">TBA</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Brand & Media ── -->
+        <div class="cm-rg-block">
+          <div class="cm-rg-header">
+            <div class="cm-rg-header-left">
+              <h3 class="cm-rg-title">Brand &amp; Media</h3>
+              <span class="cm-rg-count-pill" id="ctPill-Brand-Media">Recruiting</span>
+            </div>
+            <div class="cm-rg-header-right">
+              <button class="cm-rg-toggle" data-target="ctExpand-Brand-Media">What's this role? <span class="cm-rg-arrow">↓</span></button>
+              <a href="join.html" class="btn-secondary">Apply →</a>
+            </div>
+          </div>
+
+          <div class="cm-rg-expand" id="ctExpand-Brand-Media">
+            <div class="cm-rg-expand-inner">
+              <div>
+                <div class="cm-rg-expand-label">What they do</div>
+                <ul class="cm-rg-list">
+                  <li>Create content spotlighting member wins and community moments</li>
+                  <li>Run Squared's social media and keep the tone consistent</li>
+                  <li>Design assets for events, programs, and community updates</li>
+                </ul>
+              </div>
+              <div>
+                <div class="cm-rg-expand-label">Who should apply</div>
+                <p class="cm-rg-expand-text">Creative people — designers, writers, or video editors who are consistent. You care about telling real stories, not just posting content. About 3–5 hrs/week.</p>
+              </div>
+            </div>
+            <hr class="cm-rg-divider" />
+          </div>
+
+          <div class="cm-ct-cards" id="ctCards-Brand-Media">
+            <div class="cm-ct-card">
+              <div class="cm-ct-avatar"><span class="cm-ct-initials" style="color:#FCCA59">BM</span></div>
+              <div class="cm-ct-member-name">TBA</div>
+            </div>
+            <div class="cm-ct-card">
+              <div class="cm-ct-avatar"><span class="cm-ct-initials" style="color:#FCCA59">BM</span></div>
+              <div class="cm-ct-member-name">TBA</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Operations Lead ── -->
+        <div class="cm-rg-block">
+          <div class="cm-rg-header">
+            <div class="cm-rg-header-left">
+              <h3 class="cm-rg-title">Operations Lead</h3>
+              <span class="cm-rg-count-pill" id="ctPill-Operations-Lead">Recruiting</span>
+            </div>
+            <div class="cm-rg-header-right">
+              <button class="cm-rg-toggle" data-target="ctExpand-Operations-Lead">What's this role? <span class="cm-rg-arrow">↓</span></button>
+              <a href="join.html" class="btn-secondary">Apply →</a>
+            </div>
+          </div>
+
+          <div class="cm-rg-expand" id="ctExpand-Operations-Lead">
+            <div class="cm-rg-expand-inner">
+              <div>
+                <div class="cm-rg-expand-label">What they do</div>
+                <ul class="cm-rg-list">
+                  <li>Track monthly payments and flag late dues</li>
+                  <li>Coordinate focus session schedules across Squares</li>
+                  <li>Handle admin and logistics behind the scenes</li>
+                </ul>
+              </div>
+              <div>
+                <div class="cm-rg-expand-label">Who should apply</div>
+                <p class="cm-rg-expand-text">Detail-oriented people with strong follow-through. You like systems, spreadsheets, and making sure nothing slips through. About 2–3 hrs/week.</p>
+              </div>
+            </div>
+            <hr class="cm-rg-divider" />
+          </div>
+
+          <div class="cm-ct-cards" id="ctCards-Operations-Lead">
+            <div class="cm-ct-card">
+              <div class="cm-ct-avatar"><span class="cm-ct-initials" style="color:#99B8F1">OL</span></div>
+              <div class="cm-ct-member-name">TBA</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== SQUAD LEADERS ===================== -->
+    <section class="cm-sl-outer">
+      <div class="cm-sl-inner">
+
+        <div class="cm-sl-label">SQUAD LEADERS</div>
+        <h2 class="cm-sl-heading">Every Square has a leader.</h2>
+        <p class="cm-sl-sub">Squad leaders run the day-to-day. Check-ins, accountability, community.</p>
+
+        <div class="cm-sl-cards" id="slCardsContainer">
+          <!-- Placeholder: shown when Supabase is empty -->
+          <div class="cm-sl-card">
+            <div class="cm-sl-card-top">
+              <div class="cm-sl-card-title">Square 1</div>
+              <span class="cm-sl-count-pill">Opening soon</span>
+            </div>
+            <div class="cm-sl-avatars">
+              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
+              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
+            </div>
+            <div class="cm-sl-names">Leaders TBA</div>
+            <div class="cm-sl-meta">Tue &amp; Thu check-ins · 2–3 hrs/week</div>
+            <a href="join.html" class="btn-primary">Become a Squad Leader →</a>
+          </div>
+          <div class="cm-sl-card">
+            <div class="cm-sl-card-top">
+              <div class="cm-sl-card-title">Square 2</div>
+              <span class="cm-sl-count-pill">Opening soon</span>
+            </div>
+            <div class="cm-sl-avatars">
+              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
+              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
+            </div>
+            <div class="cm-sl-names">Leaders TBA</div>
+            <div class="cm-sl-meta">Tue &amp; Thu check-ins · 2–3 hrs/week</div>
+            <a href="join.html" class="btn-primary">Become a Squad Leader →</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== APPLY ===================== -->
+    <section class="cm-apply-outer">
+      <div class="cm-apply-inner">
+        <div class="cm-apply-card">
+          <h2 class="cm-apply-heading">Want to be part of the team?</h2>
+          <p class="cm-apply-sub">You need to be an active Squared member first.</p>
+          <a href="join.html" class="btn-primary">Apply Now →</a>
+          <img src="Visual Assets/Stickers/Stay squared sticker.png" class="cm-apply-sticker" alt="" aria-hidden="true" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JOIN THE TEAM CTA ===================== -->
+    <section class="cm-join-outer">
+      <div class="cm-join-inner">
+        <h2 class="cm-join-title">Want to be part of the team?</h2>
+        <p class="cm-join-sub">We're always looking for passionate young Nigerians to help run Squared.</p>
+        <a href="mailto:squad@squared.com" class="btn-primary">Apply Now →</a>
+        <p class="cm-join-email">or email us at squad@squared.com</p>
+      </div>
+    </section>
+
+    <!-- ===================== JOIN THE TEAM CTA ===================== -->
+    <section class="cm-cta-outer">
+      <div class="cm-cta-card">
+
+        <div class="cm-cta-label">WANT IN?</div>
+
+        <h2 class="cm-cta-title">
+          <span class="cm-cta-line">Help us build</span>
+          <span class="cm-cta-line">something <span class="cm-cta-accent">real.</span></span>
+        </h2>
+
+        <p class="cm-cta-sub">Squared roles are open to active members. Show up, prove yourself, and step up when the time comes.</p>
+
+        <a href="mailto:squad@squared.com" class="btn-primary">Apply for a Role →</a>
+
+        <p class="cm-cta-note">Must be an active Squared member to apply.</p>
+
+        <img src="Visual Assets/Stickers/Stay squared sticker.png" class="cm-cta-sticker" alt="" aria-hidden="true" loading="lazy" />
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html" class="mobile-menu-link">Home</a>
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  /* ── COMMUNITY: Core Team + Squad Leaders from Supabase ── */
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    var CT_COLORS = { 'Support Board': '#EF97BF', 'Brand & Media': '#FCCA59', 'Operations Lead': '#99B8F1' };
+    var CT_INITS  = { 'Support Board': 'SB',      'Brand & Media': 'BM',      'Operations Lead': 'OL'      };
+    var CT_IDS    = { 'Support Board': 'ctCards-Support-Board',  'Brand & Media': 'ctCards-Brand-Media',  'Operations Lead': 'ctCards-Operations-Lead'  };
+    var CT_PILLS  = { 'Support Board': 'ctPill-Support-Board',   'Brand & Media': 'ctPill-Brand-Media',   'Operations Lead': 'ctPill-Operations-Lead'   };
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function sbImg(url, params) {
+      if (!url || url.indexOf('supabase.co/storage') === -1) return url;
+      return url + params;
+    }
+
+    /* ── CORE TEAM ── */
+    function ctCardHtml(m) {
+      var color    = CT_COLORS[m.role] || '#FFF1E0';
+      var initials = CT_INITS[m.role]  || (m.name ? m.name.trim().charAt(0).toUpperCase() : '?');
+      var inner = m.photo_url
+        ? '<img class="cm-ct-img" src="' + esc(sbImg(m.photo_url, '?width=200&height=200&resize=cover&format=webp&quality=75')) + '" data-fc="' + esc(color) + '" data-fi="' + esc(initials) + '" alt="" />'
+        : '<span class="cm-ct-initials" style="color:' + esc(color) + '">' + esc(initials) + '</span>';
+      return '<div class="cm-ct-card">' +
+        '<div class="cm-ct-avatar">' + inner + '</div>' +
+        '<div class="cm-ct-member-name">' + esc(m.name) + '</div>' +
+        (m.squad ? '<div class="cm-ct-member-detail">' + esc(m.squad) + '</div>' : '') +
+      '</div>';
+    }
+
+    function renderCoreTeam(members) {
+      var grouped = { 'Support Board': [], 'Brand & Media': [], 'Operations Lead': [] };
+      members.forEach(function (m) { if (grouped.hasOwnProperty(m.role)) grouped[m.role].push(m); });
+      Object.keys(CT_IDS).forEach(function (role) {
+        var el = document.getElementById(CT_IDS[role]);
+        if (!el) return;
+        var group = grouped[role];
+        if (!group.length) return; /* keep placeholder */
+        el.innerHTML = group.map(ctCardHtml).join('');
+        /* update count pill */
+        var pill = document.getElementById(CT_PILLS[role]);
+        if (pill) pill.textContent = group.length + ' member' + (group.length !== 1 ? 's' : '');
+      });
+      document.querySelectorAll('.cm-ct-img').forEach(function (img) {
+        img.onerror = function () {
+          this.parentNode.innerHTML = '<span class="cm-ct-initials" style="color:' + this.dataset.fc + '">' + esc(this.dataset.fi) + '</span>';
+        };
+      });
+    }
+
+    /* ── SQUAD LEADERS ── */
+    function slAvatarHtml(m) {
+      if (m.photo_url) {
+        return '<div class="cm-sl-avatar" style="overflow:hidden;"><img src="' + esc(sbImg(m.photo_url, '?width=200&height=200&resize=cover&format=webp&quality=75')) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" /></div>';
+      }
+      return '<div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">' + esc(m.name ? m.name.trim().charAt(0).toUpperCase() : 'L') + '</span></div>';
+    }
+
+    function slCardHtml(squareName, leaders) {
+      var shown    = leaders.slice(0, 4);
+      var extra    = leaders.length - 4;
+      var avHtml   = shown.map(slAvatarHtml).join('');
+      if (extra > 0) avHtml += '<div class="cm-sl-avatar"><span class="cm-sl-avatar-more">+' + extra + '</span></div>';
+      var names    = leaders.map(function (m) { return m.name; });
+      var namesStr = names.length <= 3
+        ? names.join(', ')
+        : names.slice(0, 3).join(', ') + ' and ' + (names.length - 3) + ' more';
+      var countLabel = leaders.length + ' Leader' + (leaders.length !== 1 ? 's' : '');
+      return '<div class="cm-sl-card">' +
+        '<div class="cm-sl-card-top">' +
+          '<div class="cm-sl-card-title">' + esc(squareName) + '</div>' +
+          '<span class="cm-sl-count-pill">' + esc(countLabel) + '</span>' +
+        '</div>' +
+        '<div class="cm-sl-avatars">' + avHtml + '</div>' +
+        '<div class="cm-sl-names">' + esc(namesStr) + '</div>' +
+        '<div class="cm-sl-meta">Tue &amp; Thu check-ins &middot; 2&ndash;3 hrs/week</div>' +
+        '<a href="join.html" class="btn-primary">Become a Squad Leader &rarr;</a>' +
+      '</div>';
+    }
+
+    function renderSquadLeaders(leaders) {
+      var container = document.getElementById('slCardsContainer');
+      if (!container || !leaders.length) return; /* keep placeholder */
+      var grouped = {}, order = [];
+      leaders.forEach(function (m) {
+        var sq = (m.squad || 'Unassigned').trim();
+        if (!grouped[sq]) { grouped[sq] = []; order.push(sq); }
+        grouped[sq].push(m);
+      });
+      order.sort(function (a, b) {
+        var na = parseInt(a.replace(/\D/g, ''), 10) || 0;
+        var nb = parseInt(b.replace(/\D/g, ''), 10) || 0;
+        return na - nb || a.localeCompare(b);
+      });
+      container.innerHTML = order.map(function (sq) { return slCardHtml(sq, grouped[sq]); }).join('');
+    }
+
+    if (!window.supabase) return;
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* Core Team: Support Board, Brand & Media, Operations Lead */
+    sb.from('members').select('*')
+      .in('role', ['Support Board', 'Brand & Media', 'Operations Lead'])
+      .eq('is_active', true).order('created_at', { ascending: true })
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        renderCoreTeam(r.data);
+      });
+
+    /* Squad Leaders: grouped by squad field */
+    sb.from('members').select('*').eq('role', 'Squad Leader')
+      .eq('is_active', true).order('squad', { ascending: true }).order('created_at', { ascending: true })
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) return;
+        renderSquadLeaders(r.data);
+      });
+
+  }());
+  </script>
+  <script>
+  /* ── CORE TEAM ROLE TOGGLES ── */
+  document.querySelectorAll('.cm-rg-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var targetId = btn.getAttribute('data-target');
+      var panel    = document.getElementById(targetId);
+      if (!panel) return;
+      var isOpen = panel.classList.contains('open');
+      /* collapse all panels + reset all toggle buttons */
+      document.querySelectorAll('.cm-rg-expand').forEach(function (p) { p.classList.remove('open'); });
+      document.querySelectorAll('.cm-rg-toggle').forEach(function (b) { b.classList.remove('open'); });
+      /* if it was closed, open this one */
+      if (!isOpen) {
+        panel.classList.add('open');
+        btn.classList.add('open');
+      }
+    });
+  });
+  </script>
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+</body>
+</html>

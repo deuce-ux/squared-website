@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Squared — Start Showing Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=25" />
+  <style>
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="jn-hero-outer">
+    <div class="jn-hero-panel">
+
+      <!-- NAV inside hero card -->
+      <nav class="nav-pill">
+        <div class="nav-left">
+          <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+        </div>
+        <div class="nav-center">
+          <a href="community.html" class="nav-link">Community</a>
+          <a href="programs.html" class="nav-link">Programs</a>
+          <a href="blog.html" class="nav-link">Blog</a>
+          <a href="bookshop.html" class="nav-link">Bookshop</a>
+          <a href="events.html" class="nav-link">Events</a>
+          <a href="join.html" class="nav-link">Join</a>
+        </div>
+        <div class="nav-right">
+          <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+          </button>
+          <a href="join.html" class="btn-primary">Join Now</a>
+        </div>
+      </nav>
+
+      <!-- HERO BODY — two columns -->
+      <div class="jn-hero-body">
+
+        <!-- LEFT COLUMN -->
+        <div class="jn-hero-left">
+          <span class="jn-hero-label">JOIN SQUARED</span>
+
+          <h1 class="jn-hero-heading">
+            <span class="jn-hero-line">Your next</span>
+            <span class="jn-hero-line">chapter <span class="jn-hero-accent">starts</span></span>
+            <span class="jn-hero-line">here.</span>
+          </h1>
+
+          <p class="jn-hero-sub">Squared is a paid productivity community for ambitious young Nigerians. Apply, get assigned to a squad, and start showing up.</p>
+
+          <div class="jn-hero-pills">
+            <span class="jn-pill jn-pill--dark">25+ Active Members</span>
+            <span class="jn-pill jn-pill--orange">₦4,000/month</span>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="jn-hero-right">
+          <img src="Visual Assets/Stickers/Soft life on hold Sticker.png"  class="jn-sticker jn-sticker--soft"  alt="" aria-hidden="true" />
+          <img src="Visual Assets/Stickers/Stay squared sticker.png"        class="jn-sticker jn-sticker--stay"  alt="" aria-hidden="true" />
+          <img src="Visual Assets/Stickers/Focus mode Sticker.png"          class="jn-sticker jn-sticker--focus" alt="" aria-hidden="true" />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="hiw-outer">
+    <div class="hiw-inner">
+
+      <!-- Header -->
+      <div class="hiw-header">
+        <span class="hiw-label">THE PROCESS</span>
+        <h2 class="hiw-title">Four steps to get in.</h2>
+      </div>
+
+      <!-- Steps row -->
+      <div class="hiw-steps-wrap">
+
+        <!-- Step 1 -->
+        <div class="hiw-step">
+          <span class="hiw-step-num" aria-hidden="true">01</span>
+          <h3 class="hiw-step-title">Apply</h3>
+          <p class="hiw-step-desc">Fill out a short application form. Tell us who you are and why you want to join Squared.</p>
+        </div>
+
+        <span class="hiw-connector" aria-hidden="true">→</span>
+
+        <!-- Step 2 -->
+        <div class="hiw-step">
+          <span class="hiw-step-num" aria-hidden="true">02</span>
+          <h3 class="hiw-step-title">Get Reviewed</h3>
+          <p class="hiw-step-desc">We review every application personally. We're looking for people who are serious about showing up.</p>
+        </div>
+
+        <span class="hiw-connector" aria-hidden="true">→</span>
+
+        <!-- Step 3 -->
+        <div class="hiw-step">
+          <span class="hiw-step-num" aria-hidden="true">03</span>
+          <h3 class="hiw-step-title">Pay & Join</h3>
+          <p class="hiw-step-desc">Once accepted, pay ₦4,000 for your first month. You'll get access to the app and your squad assignment.</p>
+        </div>
+
+        <span class="hiw-connector" aria-hidden="true">→</span>
+
+        <!-- Step 4 -->
+        <div class="hiw-step">
+          <span class="hiw-step-num" aria-hidden="true">04</span>
+          <h3 class="hiw-step-title">Show Up</h3>
+          <p class="hiw-step-desc">Get assigned to a squad of 5, set your first goals, and attend your first focus session. You're in.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRICING ===================== -->
+  <section class="jnpr-outer">
+    <div class="jnpr-inner">
+
+      <!-- Header -->
+      <div class="jnpr-header">
+        <span class="jnpr-label">PRICING</span>
+        <h2 class="jnpr-title">Simple, honest pricing.</h2>
+      </div>
+
+      <!-- Cards row -->
+      <div class="jnpr-cards">
+
+        <!-- Card 1: Squared Core (featured) -->
+        <div class="jnpr-card jnpr-card--orange">
+          <span class="jnpr-plan-label">SQUARED CORE</span>
+          <div class="jnpr-price-row">
+            <span class="jnpr-price">₦4,000</span>
+            <span class="jnpr-per">/month</span>
+          </div>
+          <p class="jnpr-tagline">Paid monthly. Cancel anytime.</p>
+          <div class="jnpr-divider"></div>
+          <ul class="jnpr-features">
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Weekly Goals</li>
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Squad Accountability</li>
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Focus Sessions</li>
+          </ul>
+          <a href="join.html" class="btn-primary">Join Squared →</a>
+        </div>
+
+        <!-- Card 2: Free Events -->
+        <div class="jnpr-card jnpr-card--dark">
+          <span class="jnpr-plan-label">FREE EVENTS</span>
+          <div class="jnpr-price-row">
+            <span class="jnpr-price">Free</span>
+          </div>
+          <p class="jnpr-tagline">No sign-up needed. Just show up.</p>
+          <div class="jnpr-divider"></div>
+          <ul class="jnpr-features">
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Public Events</li>
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Pages Reading Sessions</li>
+            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Market Square</li>
+          </ul>
+          <a href="events.html" class="btn-secondary">View Events →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section class="jnfaq-outer">
+    <div class="jnfaq-inner">
+
+      <!-- Header -->
+      <div class="jnfaq-header">
+        <span class="jnfaq-label">FAQ</span>
+        <h2 class="jnfaq-title">Good questions.</h2>
+      </div>
+
+      <!-- Accordion -->
+      <div class="jnfaq-list">
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>Do I need to apply to join?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>Yes. Every member goes through a short application process. We review applications personally to make sure Squared is the right fit for you and you're the right fit for Squared.</p>
+          </div>
+        </div>
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>What happens if I miss a week?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>Life happens. Your squad leader will check in if you go quiet. We're not here to shame you — we're here to help you get back on track.</p>
+          </div>
+        </div>
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>Can I cancel anytime?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>Yes. Squared is month-to-month. You can cancel before your next billing cycle and you won't be charged again.</p>
+          </div>
+        </div>
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>What is the Squared app?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>The Squared app is where you set your weekly goals, check in with your squad, and track your progress. It's available on web and mobile.</p>
+          </div>
+        </div>
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>How are squads formed?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>Squads are assigned by us based on your application, timezone, and interests. Each squad has 5 members and one Squad Leader.</p>
+          </div>
+        </div>
+
+        <div class="jnfaq-item">
+          <button class="jnfaq-q" aria-expanded="false">
+            <span>Is there a free trial?</span>
+            <span class="jnfaq-toggle">+</span>
+          </button>
+          <div class="jnfaq-a" hidden>
+            <p>We don't offer a free trial for Squared Core, but you can attend a free Pages reading session or Market Square X Space to get a feel for the community before applying.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+
+      <!-- Top row -->
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+
+      <!-- Divider -->
+      <div class="footer-divider"></div>
+
+      <!-- Bottom row -->
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html"    class="mobile-menu-link">Home</a>
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html"  class="mobile-menu-link">Programs</a>
+      <a href="blog.html"      class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html"  class="mobile-menu-link">Bookshop</a>
+      <a href="events.html"    class="mobile-menu-link">Events</a>
+      <a href="join.html"      class="mobile-menu-link">Join</a>
+      <a href="join.html"      class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+</body>
+</html>

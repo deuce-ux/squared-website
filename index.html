@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squared — Show Up. Get Stuff Done. Together.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=25" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Hero headline */
+    .hero-heading { line-height: 0.95; }
+    .hero-line { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 900; letter-spacing: normal; }
+    .hero-line--orange { font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; color: #F67A3E; font-weight: 900; letter-spacing: normal; }
+
+    /* Display / heading text — Bricolage Grotesque */
+    .prob-stat,
+    .prob-banner-statement,
+    .wsi-card-title,
+    .prog-name,
+    .prog-num { font-family: 'Bricolage Grotesque', sans-serif; }
+
+    /* Body / paragraph text — Poppins */
+    .hero-sub,
+    .prob-desc,
+    .prob-banner-sub,
+    .wsi-body,
+    .wsi-card-desc,
+    .prog-panel-desc,
+    .cta-sub,
+    .cta-proof,
+    .footer-copy { font-family: 'Poppins', sans-serif; font-weight: 400; letter-spacing: -0.04em; }
+
+    /* Small labels and tags — Poppins */
+    .hero-label,
+    .prob-eyebrow,
+    .wsi-eyebrow,
+    .prog-eyebrow,
+    .cta-eyebrow,
+    .prog-tag,
+    .prog-pill { font-family: 'Poppins', sans-serif; font-weight: 500; letter-spacing: -0.04em; }
+
+    /* Nav links — Poppins */
+    .nav-link,
+    .btn-nav-cta,
+    .footer-nav-link,
+    .footer-social-link,
+    .mobile-menu-link { font-family: 'Poppins', sans-serif; font-weight: 500; letter-spacing: -0.04em; }
+
+    /* Button text — Poppins */
+    .btn-hero-cta,
+    .cta-btn,
+    .prog-panel-cta,
+    .mobile-menu-cta { font-family: 'Poppins', sans-serif; font-weight: 600; letter-spacing: -0.04em; }
+
+    /* Mobile menu overlay nav links — Bricolage Grotesque */
+    .mobile-menu-nav .mobile-menu-link,
+    .mobile-menu-nav .mobile-menu-cta { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 900; }
+
+    /* Mobile hero headline — Bricolage Grotesque */
+    @media (max-width: 768px) {
+      .hero-heading { font-size: 4rem; }
+      .hero-line { letter-spacing: -0.03em; }
+      .hero-line--orange { font-style: italic; letter-spacing: -0.03em; }
+    }
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== HERO ===================== -->
+  <main>
+    <section class="hero-outer">
+      <div class="hero-panel">
+
+        <!-- NAV inside hero card -->
+        <nav class="nav-pill">
+          <div class="nav-left">
+            <a href="/"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+          </div>
+          <div class="nav-center">
+            <a href="community.html" class="nav-link">Community</a>
+            <a href="programs.html" class="nav-link">Programs</a>
+            <a href="blog.html" class="nav-link">Blog</a>
+            <a href="bookshop.html" class="nav-link">Bookshop</a>
+            <a href="events.html" class="nav-link">Events</a>
+            <a href="join.html" class="nav-link">Join</a>
+          </div>
+          <div class="nav-right">
+            <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+              <span></span><span></span><span></span>
+            </button>
+            <a href="join.html" class="btn-primary">Join Now</a>
+          </div>
+        </nav>
+
+        <!-- HERO BODY — two columns -->
+        <div class="hero-body">
+
+          <!-- LEFT COLUMN -->
+          <div class="hero-left">
+            <div class="hero-label">By young people, for young people</div>
+
+            <h1 class="hero-heading">
+              <span class="hero-line">Structure,</span>
+              <span class="hero-line">but <span class="hero-line--orange">fun.</span></span>
+            </h1>
+
+            <p class="hero-sub">A productivity community for ambitious young Nigerians.</p>
+
+            <div class="hero-cta-row">
+              <a href="join.html" class="btn-hero-cta btn-hero-cta--primary">Join Squared →</a>
+              <a href="#how-it-works" class="btn-hero-cta btn-hero-cta--secondary">How it works</a>
+            </div>
+
+            <!-- Sticker bottom-left -->
+            <img src="Visual Assets/Stickers/Soft life on hold Sticker.png" class="sticker sticker--soft" alt="" aria-hidden="true" />
+          </div>
+
+          <!-- RIGHT COLUMN -->
+          <div class="hero-right">
+            <img src="Visual Assets/3 friends illustration.png" class="hero-illustration" alt="" aria-hidden="true" />
+            <img src="Visual Assets/Stickers/Focus mode Sticker.png" class="sticker sticker--focus" alt="" aria-hidden="true" />
+            <img src="Visual Assets/Stickers/Stay squared sticker.png" class="sticker sticker--stay" alt="" aria-hidden="true" />
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== MARQUEE ===================== -->
+  <section class="marquee-section" aria-hidden="true">
+    <div class="marquee-row">
+      <div class="marquee-track">
+        <span class="marquee-text">WEEKLY GOALS ✦ FOCUS SESSIONS ✦ SQUAD LIFE ✦ SHOW UP ✦ DO THE WORK ✦ REPEAT ✦&nbsp;</span>
+        <span class="marquee-text">WEEKLY GOALS ✦ FOCUS SESSIONS ✦ SQUAD LIFE ✦ SHOW UP ✦ DO THE WORK ✦ REPEAT ✦&nbsp;</span>
+      </div>
+    </div>
+    <div class="marquee-row">
+      <div class="marquee-track marquee-track--reverse">
+        <span class="marquee-text">SHOW UP ✦ DO THE WORK ✦ REPEAT ✦ WEEKLY GOALS ✦ FOCUS SESSIONS ✦ SQUAD LIFE ✦&nbsp;</span>
+        <span class="marquee-text">SHOW UP ✦ DO THE WORK ✦ REPEAT ✦ WEEKLY GOALS ✦ FOCUS SESSIONS ✦ SQUAD LIFE ✦&nbsp;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== THE PROBLEM ===================== -->
+  <section class="prob-outer">
+    <div class="prob-inner">
+
+      <div class="prob-eyebrow">The Problem</div>
+      <h2 class="prob-headline">People are not lazy. They are just doing hard things completely alone.</h2>
+
+      <div class="prob-grid">
+        <div class="prob-card">
+          <div class="prob-stat" data-count="97" data-suffix="%">97%</div>
+          <div class="prob-desc">of people who enroll in online courses never finish them. Information is not the gap.</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-stat" data-count="92" data-suffix="%">92%</div>
+          <div class="prob-desc">of people who set goals never achieve them. Most quit before February ends.</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-stat" data-count="95" data-suffix="%">95%</div>
+          <div class="prob-desc">more likely to achieve a goal when you have a specific accountability appointment with someone.</div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-stat" data-count="40" data-suffix="%+">40%+</div>
+          <div class="prob-desc">youth unemployment in Nigeria. Young people building skills with zero structure around them.</div>
+        </div>
+      </div>
+
+      <div class="prob-banner">
+        <p class="prob-banner-statement">The problem was never discipline or information. It was isolation.</p>
+        <p class="prob-banner-sub">Squared exists to solve exactly that — by making consistency a shared, social, and supported experience.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== WHAT SQUARED IS ===================== -->
+  <section class="wsi-outer">
+    <div class="wsi-inner">
+      <div class="wsi-grid">
+
+        <!-- Left column -->
+        <div class="wsi-left">
+          <div class="wsi-eyebrow">What Squared Is</div>
+          <h2 class="wsi-heading">An <span class="wsi-em">OS</span> for the ambitious young Nigerian.</h2>
+          <p class="wsi-body">
+            Think of Squared as the operating system running in the background of a young person's life. It gives them structure without rigidity, accountability without pressure, and community without noise. Members don't just consume content — they show up, set goals, and build something real alongside people who genuinely care.<br><br>
+            We have built squads, focus sessions, role-based leadership, support systems, and a culture that keeps people coming back month after month. Squared is where ambition becomes action.
+          </p>
+        </div>
+
+        <!-- Right column — feature cards -->
+        <div class="wsi-right">
+          <div class="wsi-card">
+            <div class="wsi-card-icon">🎯</div>
+            <div class="wsi-card-body">
+              <div class="wsi-card-title">Weekly Goal System</div>
+              <div class="wsi-card-desc">Members set 1–2 focused weekly goals on the Squared app. Tracked, visible, and followed up on by squad leaders.</div>
+            </div>
+          </div>
+          <div class="wsi-card">
+            <div class="wsi-card-icon">👥</div>
+            <div class="wsi-card-body">
+              <div class="wsi-card-title">Squad Accountability</div>
+              <div class="wsi-card-desc">Every member belongs to a squad of 5 with a dedicated leader who checks in twice weekly and notices when you go quiet.</div>
+            </div>
+          </div>
+          <div class="wsi-card">
+            <div class="wsi-card-icon">🧘</div>
+            <div class="wsi-card-body">
+              <div class="wsi-card-title">Focus Sessions</div>
+              <div class="wsi-card-desc">3x weekly silent co-working sessions. Mon, Thu, Fri at 8PM. 90 minutes of collective, focused work.</div>
+            </div>
+          </div>
+          <div class="wsi-card">
+            <div class="wsi-card-icon">🤝</div>
+            <div class="wsi-card-body">
+              <div class="wsi-card-title">Support Board</div>
+              <div class="wsi-card-desc">A dedicated team that reviews CVs, shares opportunities, and holds members' hands through real challenges.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROGRAMS ===================== -->
+  <section class="prog-outer">
+    <div class="prog-inner">
+
+      <div class="prog-header">
+        <div class="prog-eyebrow">WHAT WE RUN</div>
+        <h2 class="prog-title">More than a community.</h2>
+      </div>
+
+      <div class="prog-accordion">
+
+        <!-- Row 1 — Squared Core -->
+        <div class="prog-item prog-item--expanded">
+          <div class="prog-row">
+            <span class="prog-num">01</span>
+            <span class="prog-name">Squared Core</span>
+            <div class="prog-row-right">
+              <span class="prog-tag prog-tag--orange">FLAGSHIP</span>
+              <span class="prog-toggle">+</span>
+            </div>
+          </div>
+          <div class="prog-panel">
+            <div class="prog-panel-grid">
+              <div class="prog-panel-left">
+                <p class="prog-panel-desc">The main community. Weekly goals, squad accountability, and focus sessions. This is where everything happens. You set goals, your squad checks in, and you show up to focus sessions three times a week.</p>
+                <a href="join.html" class="btn-ghost">Join Squared Core →</a>
+              </div>
+              <div class="prog-panel-right">
+                <img src="Visual Assets/Stickers/Stay squared sticker.png" class="prog-panel-sticker prog-panel-sticker--1" alt="" aria-hidden="true" loading="lazy" />
+              </div>
+            </div>
+            <div class="prog-panel-pills">
+              <span class="prog-pill">25+ Members</span>
+              <span class="prog-pill">3x Weekly Sessions</span>
+              <span class="prog-pill">₦4,000/month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 — Pages by Squared -->
+        <div class="prog-item">
+          <div class="prog-row">
+            <span class="prog-num">02</span>
+            <span class="prog-name">Pages by Squared</span>
+            <div class="prog-row-right">
+              <span class="prog-tag prog-tag--blue">NEW</span>
+              <span class="prog-toggle">+</span>
+            </div>
+          </div>
+          <div class="prog-panel">
+            <div class="prog-panel-grid">
+              <div class="prog-panel-left">
+                <p class="prog-panel-desc">A public silent reading event on Jitsi. Show up, pick your book, read in community. No pressure, just intentional time with people who value growth.</p>
+                <a href="join.html" class="btn-ghost">Learn About Pages →</a>
+              </div>
+              <div class="prog-panel-right">
+                <img src="Visual Assets/Stickers/Im squared sticker.png" class="prog-panel-sticker prog-panel-sticker--2" alt="" aria-hidden="true" loading="lazy" />
+              </div>
+            </div>
+            <div class="prog-panel-pills">
+              <span class="prog-pill">Monthly Event</span>
+              <span class="prog-pill">Open to Public</span>
+              <span class="prog-pill">Free to Attend</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3 — Market Square -->
+        <div class="prog-item">
+          <div class="prog-row">
+            <span class="prog-num">03</span>
+            <span class="prog-name">Market Square</span>
+            <div class="prog-row-right">
+              <span class="prog-tag prog-tag--pink">MONTHLY</span>
+              <span class="prog-toggle">+</span>
+            </div>
+          </div>
+          <div class="prog-panel">
+            <div class="prog-panel-grid">
+              <div class="prog-panel-left">
+                <p class="prog-panel-desc">A live X Space on the last Sunday of every month. We bring in guests, celebrate wins, and connect as a full community. Think of it as the community town hall.</p>
+                <a href="join.html" class="btn-ghost">Join Next Session →</a>
+              </div>
+              <div class="prog-panel-right">
+                <img src="Visual Assets/Stickers/Focus mode Sticker.png" class="prog-panel-sticker prog-panel-sticker--3" alt="" aria-hidden="true" loading="lazy" />
+              </div>
+            </div>
+            <div class="prog-panel-pills">
+              <span class="prog-pill">Last Sunday Monthly</span>
+              <span class="prog-pill">Live X Space</span>
+              <span class="prog-pill">Open to All</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== TESTIMONIALS ===================== -->
+  <section class="tst-outer">
+    <div class="tst-inner">
+
+      <div class="tst-label">FROM THE SQUAD</div>
+      <h2 class="tst-title">Don't take our word for it.</h2>
+
+      <div class="tst-quotes">
+
+        <div class="tst-quote-item">
+          <span class="tst-open-quote">"</span>
+          <p class="tst-text">Squared didn't just give me accountability. It gave me people who actually care if I show up.</p>
+          <div class="tst-line"></div>
+          <p class="tst-name">Tolu A.</p>
+          <p class="tst-detail">Squared Core, Square 1</p>
+        </div>
+
+        <div class="tst-quote-item">
+          <span class="tst-open-quote">"</span>
+          <p class="tst-text">I set more goals in one month of Squared than I did in all of last year.</p>
+          <div class="tst-line"></div>
+          <p class="tst-name">Kemi O.</p>
+          <p class="tst-detail">Squared Core, Square 2</p>
+        </div>
+
+        <div class="tst-quote-item">
+          <span class="tst-open-quote">"</span>
+          <p class="tst-text">I came for accountability. I stayed for the people.</p>
+          <div class="tst-line"></div>
+          <p class="tst-name">Amara S.</p>
+          <p class="tst-detail">Squared Core, Square 2</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="cta-outer" id="join">
+    <div class="cta-inner">
+      <div class="cta-grid">
+
+        <!-- Left column -->
+        <div class="cta-left">
+          <div class="cta-eyebrow">READY?</div>
+          <h2 class="cta-headline">Stop doing it <span class="cta-headline-accent">alone.</span></h2>
+          <p class="cta-sub">Join a squad of people who show up, set goals, and actually follow through. Squared is where ambition becomes action.</p>
+          <div class="cta-buttons">
+            <a href="join.html" class="btn-primary">Join Squared →</a>
+          </div>
+          <p class="cta-proof">25+ members already inside ✦</p>
+        </div>
+
+        <!-- Right column — illustration -->
+        <div class="cta-right">
+          <img src="Visual Assets/3 friends illustration.png" class="cta-illustration" alt="" aria-hidden="true" loading="lazy" />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+
+      <!-- Top row -->
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+
+      <!-- Divider -->
+      <div class="footer-divider"></div>
+
+      <!-- Bottom row -->
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  /* ── TESTIMONIALS: dynamic load from Supabase ── */
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    var container = document.querySelector('.tst-quotes');
+    var fallback  = container ? container.innerHTML : '';
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function quoteHtml(t) {
+      return '<div class="tst-quote-item">' +
+        '<span class="tst-open-quote">\u201c</span>' +
+        '<p class="tst-text">' + esc(t.quote) + '</p>' +
+        '<div class="tst-line"></div>' +
+        '<p class="tst-name">' + esc(t.member_name) + '</p>' +
+        (t.member_detail ? '<p class="tst-detail">' + esc(t.member_detail) + '</p>' : '') +
+      '</div>';
+    }
+
+    function skelQuote() {
+      return '<div class="tst-quote-item" style="animation:tstskel 1.4s ease-in-out infinite;">' +
+        '<span class="tst-open-quote" style="opacity:0.15">\u201c</span>' +
+        '<div style="height:15px;width:90%;background:rgba(255,241,224,0.07);border-radius:4px;margin-bottom:8px;"></div>' +
+        '<div style="height:15px;width:70%;background:rgba(255,241,224,0.05);border-radius:4px;margin-bottom:8px;"></div>' +
+        '<div class="tst-line"></div>' +
+        '<div style="height:12px;width:38%;background:rgba(255,241,224,0.07);border-radius:3px;margin-bottom:6px;"></div>' +
+        '<div style="height:10px;width:52%;background:rgba(255,241,224,0.04);border-radius:3px;"></div>' +
+      '</div>';
+    }
+
+    var sty = document.createElement('style');
+    sty.textContent = '@keyframes tstskel{0%,100%{opacity:0.35}50%{opacity:0.65}}';
+    document.head.appendChild(sty);
+
+    if (!window.supabase) return;
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    if (container) container.innerHTML = skelQuote() + skelQuote() + skelQuote();
+
+    sb.from('testimonials').select('*').eq('is_active', true)
+      .order('created_at', { ascending: true }).limit(3)
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) {
+          if (container) container.innerHTML = fallback;
+          return;
+        }
+        if (container) container.innerHTML = r.data.map(quoteHtml).join('');
+      });
+
+  }());
+  </script>
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+</body>
+</html>

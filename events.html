@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Squared</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=25" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* === CURSOR === */
+    body { cursor: none; }
+    #sq-cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #F67A3E;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
+      mix-blend-mode: normal;
+    }
+    #sq-cursor.hover {
+      width: 40px;
+      height: 40px;
+      opacity: 0.75;
+      background: #F67A3E;
+    }
+    #sq-cursor.clicking {
+      width: 24px;
+      height: 24px;
+      opacity: 1;
+      background: #F67A3E;
+    }
+    #sq-cursor.hidden {
+      opacity: 0;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* === FORGE PROMO SECTION === */
+    .ev-forge-outer {
+      max-width: 1200px;
+      margin: 48px auto;
+      padding: 0 48px;
+    }
+    .ev-forge-inner {
+      background: #111111;
+      border-radius: 16px;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ev-forge-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,241,224,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,241,224,0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      border-radius: inherit;
+    }
+    .ev-forge-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      position: relative;
+    }
+    .ev-forge-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: rgba(255,241,224,0.4);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .ev-forge-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .ev-forge-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .ev-forge-pill {
+      background: rgba(255,241,224,0.06);
+      color: rgba(255,241,224,0.6);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .ev-forge-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .ev-forge-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .ev-forge-spots {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: #FFF1E0;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .ev-forge-spots-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: rgba(255,241,224,0.4);
+      margin-top: -4px;
+    }
+    @media (max-width: 768px) {
+      .ev-forge-outer { margin: 32px auto; padding: 0 20px; }
+      .ev-forge-inner { padding: 28px; }
+      .ev-forge-grid  { grid-template-columns: 1fr; gap: 28px; }
+      .ev-forge-name  { font-size: 1.625rem; }
+      .ev-forge-spots { font-size: 2.25rem; }
+      .ev-forge-cta   { width: 100%; text-align: center; display: block; }
+    }
+
+    /* === TIER SPACING === */
+    .ev-tier-outer {
+      max-width: 1200px;
+      margin: 80px auto 0;
+      padding: 0 48px;
+    }
+    @media (max-width: 768px) {
+      .ev-tier-outer { margin-top: 48px; padding: 0 20px; }
+    }
+
+    /* === FEATURED EVENTS (TIER 1) === */
+    .ev-featured-section-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.4);
+      margin-bottom: 10px;
+    }
+    .ev-featured-section-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      margin-bottom: 28px;
+    }
+    .ev-featured-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.08);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .ev-featured-card-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 10px;
+    }
+    .ev-featured-card-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .ev-featured-card-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      color: rgba(255,241,224,0.6);
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .ev-featured-stat-value {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: #F67A3E;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .ev-featured-stat-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      color: rgba(255,241,224,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+    .ev-featured-date {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: rgba(255,241,224,0.7);
+      margin-bottom: 12px;
+    }
+    .ev-featured-format-pill {
+      display: inline-block;
+      background: rgba(255,241,224,0.06);
+      color: rgba(255,241,224,0.6);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 20px;
+    }
+    .ev-featured-spots {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: rgba(255,241,224,0.4);
+      margin-top: 8px;
+    }
+    .ev-empty-msg {
+      text-align: center;
+      color: rgba(255,241,224,0.4);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      padding: 40px 0;
+    }
+    @media (max-width: 768px) {
+      .ev-featured-card { grid-template-columns: 1fr; gap: 28px; padding: 24px; }
+      .ev-featured-card-name { font-size: 28px; }
+      .ev-featured-stat-value { font-size: 2.25rem; }
+      .ev-featured-section-title { font-size: 2rem; }
+    }
+
+    /* === CATEGORY PILLS — unified semi-transparent orange === */
+    .ev-card-tag {
+      background: rgba(246,122,62,0.15) !important;
+      color: #F67A3E !important;
+      border: none !important;
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      display: inline-block;
+    }
+
+    /* === UPCOMING CARD — consistent left border === */
+    .ev-card {
+      border-left: 3px solid #F67A3E !important;
+    }
+
+    /* === MOBILE CARD SPACING === */
+    @media (max-width: 768px) {
+      .ev-card { padding: 24px !important; }
+      .ev-card-date { margin-right: 12px; }
+      .ev-card-name { margin-bottom: 8px; }
+      .ev-card-tag  { margin-bottom: 12px; }
+      .ev-card-desc { margin-top: 0; margin-bottom: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="ev-hero-outer">
+    <div class="ev-hero-panel">
+
+      <!-- NAV -->
+      <nav class="nav-pill">
+        <div class="nav-left">
+          <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+        </div>
+        <div class="nav-center">
+          <a href="community.html" class="nav-link">Community</a>
+          <a href="programs.html" class="nav-link">Programs</a>
+          <a href="blog.html" class="nav-link">Blog</a>
+          <a href="bookshop.html" class="nav-link">Bookshop</a>
+            <a href="events.html" class="nav-link">Events</a>
+          <a href="join.html" class="nav-link">Join</a>
+        </div>
+        <div class="nav-right">
+          <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+          </button>
+          <a href="join.html" class="btn-primary">Join Now</a>
+        </div>
+      </nav>
+
+      <!-- HERO BODY -->
+      <div class="ev-hero-body">
+
+        <!-- Left column -->
+        <div class="ev-hero-left">
+          <div class="ev-hero-label">WHAT'S HAPPENING</div>
+          <h1 class="ev-hero-heading">
+            <span>Don't miss</span>
+            <span>a <span class="ev-hero-heading--orange">thing.</span></span>
+          </h1>
+          <p class="ev-hero-sub">Events, contests, sessions and more. This is where the community comes alive.</p>
+        </div>
+
+        <!-- Right column — countdown card -->
+        <div class="ev-hero-right">
+          <div class="ev-countdown-card">
+            <div class="ev-countdown-label">NEXT EVENT</div>
+            <div class="ev-countdown-row">
+              <div class="ev-countdown-unit">
+                <span class="ev-countdown-num" id="cdDays">00</span>
+                <span class="ev-countdown-unit-label">DAYS</span>
+              </div>
+              <span class="ev-countdown-sep">:</span>
+              <div class="ev-countdown-unit">
+                <span class="ev-countdown-num" id="cdHours">00</span>
+                <span class="ev-countdown-unit-label">HRS</span>
+              </div>
+              <span class="ev-countdown-sep">:</span>
+              <div class="ev-countdown-unit">
+                <span class="ev-countdown-num" id="cdMins">00</span>
+                <span class="ev-countdown-unit-label">MINS</span>
+              </div>
+            </div>
+            <div class="ev-countdown-event">Next Event</div>
+            <div class="ev-countdown-date"></div>
+            <a href="#" class="btn-primary ev-countdown-cta" style="display:none;">Register →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FORGE PROMO ===================== -->
+  <section class="ev-forge-outer" id="evForgeSection" style="display:none;">
+    <div class="ev-forge-inner">
+      <div class="ev-forge-grid">
+
+        <div class="ev-forge-left">
+          <div class="ev-forge-eyebrow">Forge · Squared Programs</div>
+          <h2 class="ev-forge-name" id="evForgeName"></h2>
+          <div class="ev-forge-pills" id="evForgePills"></div>
+          <p class="ev-forge-desc" id="evForgeDesc"></p>
+        </div>
+
+        <div class="ev-forge-right">
+          <div class="ev-forge-spots" id="evForgeSpots"></div>
+          <div class="ev-forge-spots-sub">First come, first considered.</div>
+          <a href="forge.html" class="btn-primary ev-forge-cta">Apply for Forge →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURED EVENTS (TIER 1) ===================== -->
+  <section id="evFeaturedSection" style="display:none;">
+    <div class="ev-tier-outer">
+      <div class="ev-featured-section-eyebrow">FEATURED</div>
+      <h2 class="ev-featured-section-title">Not to be missed.</h2>
+      <div id="evFeaturedCards"></div>
+    </div>
+  </section>
+
+  <!-- ===================== COMING UP (TIER 2) ===================== -->
+  <section class="ev-upcoming-outer">
+    <div class="ev-upcoming-inner">
+
+      <div class="ev-section-eyebrow">COMING UP</div>
+      <h2 class="ev-section-title">On the calendar.</h2>
+
+      <div class="ev-cards-stack" id="evUpcomingCards">
+
+        <!-- Fallback card — shown only if Supabase is unreachable -->
+        <div class="ev-card ev-card--yellow">
+          <div class="ev-card-date">
+            <div class="ev-card-month">TBA</div>
+          </div>
+          <div class="ev-card-center">
+            <div class="ev-card-name">Pages Prize</div>
+            <span class="ev-card-tag ev-card-tag--yellow">COMPETITION</span>
+            <p class="ev-card-desc">A creative writing competition open to all young Nigerians. Write, compete, and stand a chance to win ₦500,000+.</p>
+          </div>
+          <div class="ev-card-right">
+            <a href="pages-prize.html" class="btn-secondary">Learn More →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PAST EVENTS (TIER 3) ===================== -->
+  <section class="ev-past-outer">
+    <div class="ev-past-inner">
+
+      <div class="ev-past-eyebrow">WHAT WE'VE DONE</div>
+      <h2 class="ev-past-title">We show up.</h2>
+
+      <div class="ev-past-grid" id="evPastCards">
+
+        <div class="ev-past-card">
+          <div class="ev-past-card-name">Focus Week Sprint</div>
+          <div class="ev-past-card-date">January 2025</div>
+          <p class="ev-past-card-recap">A 5-day accountability sprint. Members set daily targets, showed up, and smashed their goals.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="32" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+
+      <div class="footer-divider"></div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html" class="mobile-menu-link">Home</a>
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  /* ── EVENTS: dynamic load from Supabase — tiered hierarchy ── */
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    var _origInitCountdown = typeof window.initCountdown === 'function' ? window.initCountdown : null;
+    window.initCountdown = function () {};
+
+    /* Save fallback HTML before touching anything */
+    var upcomingEl = document.getElementById('evUpcomingCards');
+    var pastEl     = document.getElementById('evPastCards');
+    var fallbackUp   = upcomingEl ? upcomingEl.innerHTML : '';
+    var fallbackPast = pastEl     ? pastEl.innerHTML     : '';
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function getSuffix(color, category) {
+      if (color) {
+        var lc = color.toLowerCase();
+        if (lc === '#fcca59') return 'yellow';
+        if (lc === '#ef97bf') return 'pink';
+        if (lc === '#99b8f1') return 'blue';
+      }
+      var catMap = { Workshop: 'yellow', Market: 'pink', Reading: 'blue' };
+      return catMap[category] || 'blue';
+    }
+    function isKnownColor(color) {
+      if (!color) return false;
+      var lc = color.toLowerCase();
+      return lc === '#fcca59' || lc === '#ef97bf' || lc === '#99b8f1';
+    }
+
+    function fmtMon(iso)       { return new Date(iso).toLocaleDateString('en-US', { month: 'short' }); }
+    function fmtDay(iso)       { return new Date(iso).getDate(); }
+    function fmtYear(iso)      { return new Date(iso).getFullYear(); }
+    function fmtMonthYear(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+    function fmtFull(iso)      { return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+
+    /* ── FEATURED CARD (TIER 1) ── */
+    function featuredCardHtml(ev) {
+      var meta = {};
+      try { meta = JSON.parse(ev.meta || '{}'); } catch (e) {}
+
+      var dateStr  = ev.event_date ? 'Starting ' + fmtFull(ev.event_date) : '';
+      var ctaUrl   = meta.cta_url  || ev.cta_url  || '#';
+      var ctaText  = meta.cta_text || ev.cta_text  || 'Learn More →';
+      var ctaClass = meta.coming_soon ? 'btn-secondary' : 'btn-primary';
+
+      var rightHtml = '';
+      if (meta.stat_value) {
+        rightHtml += '<div class="ev-featured-stat-value">' + esc(meta.stat_value) + '</div>';
+        if (meta.stat_label) rightHtml += '<div class="ev-featured-stat-label">' + esc(meta.stat_label) + '</div>';
+      }
+      if (dateStr) rightHtml += '<div class="ev-featured-date">' + esc(dateStr) + '</div>';
+      if (ev.location) rightHtml += '<span class="ev-featured-format-pill">' + esc(ev.location) + '</span>';
+      if (ev.spots_remaining != null) rightHtml += '<div class="ev-featured-spots">' + esc(ev.spots_remaining) + ' spots remaining</div>';
+
+      return '<div class="ev-featured-card">' +
+        '<div class="ev-featured-left">' +
+          '<div class="ev-featured-card-eyebrow">' + esc((ev.category || 'Event').toUpperCase()) + '</div>' +
+          '<div class="ev-featured-card-name">' + esc(ev.title) + '</div>' +
+          (ev.description ? '<p class="ev-featured-card-desc">' + esc(ev.description) + '</p>' : '') +
+          '<a href="' + esc(ctaUrl) + '" class="' + ctaClass + '">' + esc(ctaText) + '</a>' +
+        '</div>' +
+        '<div class="ev-featured-right">' + (rightHtml || '') + '</div>' +
+      '</div>';
+    }
+
+    /* ── UPCOMING CARD (TIER 2) ── */
+    function upcomingCardHtml(ev) {
+      var suffix      = getSuffix(ev.color, ev.category);
+      var borderStyle = (!isKnownColor(ev.color) && ev.color) ? ' style="border-left-color:' + esc(ev.color) + '"' : '';
+      var dateHtml = ev.event_date
+        ? '<div class="ev-card-month">' + esc(fmtMon(ev.event_date)) + '</div>' +
+          '<div class="ev-card-day">'   + esc(fmtDay(ev.event_date)) + '</div>' +
+          '<div class="ev-card-year">'  + esc(fmtYear(ev.event_date)) + '</div>'
+        : '<div class="ev-card-month">TBA</div>';
+      var ctaBtn = ev.cta_url
+        ? '<a href="' + esc(ev.cta_url) + '" class="btn-secondary">' + esc(ev.cta_text || 'Learn More →') + '</a>'
+        : '';
+      return '<div class="ev-card ev-card--' + suffix + '"' + borderStyle + '>' +
+        '<div class="ev-card-date">' + dateHtml + '</div>' +
+        '<div class="ev-card-center">' +
+          '<div class="ev-card-name">' + esc(ev.title) + '</div>' +
+          '<span class="ev-card-tag ev-card-tag--' + suffix + '">' + esc((ev.category || 'EVENT').toUpperCase()) + '</span>' +
+          (ev.description ? '<p class="ev-card-desc">' + esc(ev.description) + '</p>' : '') +
+        '</div>' +
+        '<div class="ev-card-right">' + ctaBtn + '</div>' +
+      '</div>';
+    }
+
+    /* ── PAST CARD (TIER 3) ── */
+    function pastCardHtml(ev) {
+      return '<div class="ev-past-card">' +
+        '<div class="ev-past-card-name">' + esc(ev.title) + '</div>' +
+        '<div class="ev-past-card-date">' + esc(ev.event_date ? fmtMonthYear(ev.event_date) : 'Past') + '</div>' +
+        (ev.description ? '<p class="ev-past-card-recap">' + esc(ev.description) + '</p>' : '') +
+        (ev.recap_url ? '<a href="' + esc(ev.recap_url) + '" class="ev-past-card-link">Recap →</a>' : '') +
+      '</div>';
+    }
+
+    /* ── SKELETONS ── */
+    function skelUpcoming() {
+      return '<div class="ev-card ev-card--blue" style="animation:evskel 1.4s ease-in-out infinite;">' +
+        '<div class="ev-card-date">' +
+          '<div style="width:38px;height:13px;background:rgba(255,241,224,0.12);border-radius:3px;margin-bottom:6px;"></div>' +
+          '<div style="width:28px;height:28px;background:rgba(255,241,224,0.12);border-radius:3px;"></div>' +
+        '</div>' +
+        '<div class="ev-card-center">' +
+          '<div style="height:18px;width:55%;background:rgba(255,241,224,0.12);border-radius:4px;margin-bottom:10px;"></div>' +
+          '<div style="height:11px;width:80%;background:rgba(255,241,224,0.08);border-radius:3px;"></div>' +
+        '</div>' +
+        '<div class="ev-card-right"><div style="height:36px;width:120px;background:rgba(255,241,224,0.08);border-radius:999px;"></div></div>' +
+      '</div>';
+    }
+    function skelPast() {
+      return '<div class="ev-past-card" style="animation:evskel 1.4s ease-in-out infinite;">' +
+        '<div style="height:16px;width:65%;background:rgba(255,241,224,0.1);border-radius:3px;margin-bottom:8px;"></div>' +
+        '<div style="height:11px;width:38%;background:rgba(255,241,224,0.07);border-radius:3px;margin-bottom:10px;"></div>' +
+        '<div style="height:38px;background:rgba(255,241,224,0.05);border-radius:3px;"></div>' +
+      '</div>';
+    }
+
+    /* ── COUNTDOWN ── */
+    var _cdInterval;
+    function startCountdown(targetMs) {
+      clearInterval(_cdInterval);
+      var dEl = document.getElementById('cdDays');
+      var hEl = document.getElementById('cdHours');
+      var mEl = document.getElementById('cdMins');
+      if (!dEl || !hEl || !mEl) return;
+      function tick() {
+        var diff = targetMs - Date.now();
+        if (diff <= 0) { dEl.textContent = hEl.textContent = mEl.textContent = '00'; clearInterval(_cdInterval); return; }
+        dEl.textContent = pad(Math.floor(diff / 86400000));
+        hEl.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+        mEl.textContent = pad(Math.floor((diff % 3600000)  / 60000));
+      }
+      tick();
+      _cdInterval = setInterval(tick, 1000);
+    }
+    function updateCountdownCard(ev) {
+      var nameEl = document.querySelector('.ev-countdown-event');
+      var dateEl = document.querySelector('.ev-countdown-date');
+      var ctaEl  = document.querySelector('.ev-countdown-cta');
+      if (nameEl) nameEl.textContent = ev.title || '';
+      if (dateEl) dateEl.textContent = ev.event_date ? fmtMonthYear(ev.event_date) : '';
+      if (ctaEl) {
+        if (ev.cta_url) {
+          ctaEl.href = ev.cta_url;
+          ctaEl.textContent = ev.cta_text || 'Register →';
+          ctaEl.style.display = '';
+        } else {
+          ctaEl.style.display = 'none';
+        }
+      }
+      if (ev.event_date) startCountdown(new Date(ev.event_date).getTime());
+    }
+
+    /* ── INJECT SKELETON KEYFRAME ── */
+    var sty = document.createElement('style');
+    sty.textContent = '@keyframes evskel{0%,100%{opacity:0.35}50%{opacity:0.65}}';
+    document.head.appendChild(sty);
+
+    if (!window.supabase) {
+      if (_origInitCountdown) window.initCountdown = _origInitCountdown;
+      return;
+    }
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* Show skeletons immediately */
+    if (upcomingEl) upcomingEl.innerHTML = skelUpcoming() + skelUpcoming() + skelUpcoming();
+    if (pastEl)     pastEl.innerHTML     = skelPast()     + skelPast()     + skelPast();
+
+    /* ── FETCH ALL UPCOMING (rank desc, then date asc) ── */
+    /* Only show real events: forge, pages_prize, other — not recurring programs */
+    sb.from('events').select('*').eq('status', 'upcoming')
+      .or('category.is.null,category.not.in.(reading_session,market_square)')
+      .order('rank', { ascending: false })
+      .order('event_date', { ascending: true })
+      .then(function (r) {
+        var data = (!r.error && r.data) ? r.data : null;
+
+        if (!data) {
+          /* DB error — show fallback */
+          if (upcomingEl) upcomingEl.innerHTML = fallbackUp;
+          if (_origInitCountdown) _origInitCountdown();
+          return;
+        }
+
+        var featured    = data.filter(function (e) { return e.featured; });
+        var nonFeatured = data.filter(function (e) { return !e.featured; });
+
+        /* Tier 1 — Featured */
+        var featuredSection = document.getElementById('evFeaturedSection');
+        var featuredCards   = document.getElementById('evFeaturedCards');
+        if (featuredSection) {
+          if (featured.length && featuredCards) {
+            featuredCards.innerHTML = featured.map(featuredCardHtml).join('');
+            featuredSection.style.display = 'block';
+          } else {
+            featuredSection.style.display = 'none';
+          }
+        }
+
+        /* Tier 2 — Coming Up */
+        if (upcomingEl) {
+          if (!nonFeatured.length) {
+            upcomingEl.innerHTML = '<p class="ev-empty-msg">Nothing on the calendar right now. Check back soon.</p>';
+          } else {
+            upcomingEl.innerHTML = nonFeatured.map(upcomingCardHtml).join('');
+          }
+        }
+
+        /* Update countdown — prefer featured, fallback to first upcoming with date */
+        var countdownEv = featured[0] || nonFeatured.find(function (e) { return e.event_date; });
+        if (countdownEv) updateCountdownCard(countdownEv);
+        else if (_origInitCountdown) _origInitCountdown();
+      });
+
+    /* ── FETCH PAST ── */
+    /* Same category filter — programs live on programs.html, not here */
+    sb.from('events').select('*').eq('status', 'past')
+      .or('category.is.null,category.not.in.(reading_session,market_square)')
+      .order('event_date', { ascending: false })
+      .then(function (r) {
+        if (r.error || !r.data || !r.data.length) {
+          if (pastEl) pastEl.innerHTML = fallbackPast;
+          return;
+        }
+        if (pastEl) pastEl.innerHTML = r.data.map(pastCardHtml).join('');
+      });
+
+    /* ── FETCH FORGE EDITION ── */
+    var FORGE_FALLBACK = {
+      edition_name:    'Forge 1.0: Brand Identity',
+      session_count:   4,
+      price:           0,
+      format:          'Online · Google Meet',
+      start_date:      null,
+      description:     'A 4-week intensive on building a real brand identity — strategy, visuals, voice, and a final reveal. Free. Only 5 spots.',
+      cohort_size:     5,
+      remaining_spots: 5
+    };
+    var forgeSection = document.getElementById('evForgeSection');
+    sb.from('forge_editions').select('*').eq('status', 'open').limit(1)
+      .then(function (r) {
+        if (!forgeSection) return;
+        var ed = (r.error || !r.data || !r.data.length) ? FORGE_FALLBACK : r.data[0];
+        var nameEl = document.getElementById('evForgeName');
+        if (nameEl) nameEl.textContent = ed.edition_name || 'Forge';
+        var pillsEl = document.getElementById('evForgePills');
+        if (pillsEl) {
+          var pills = [];
+          if (ed.start_date) {
+            var d = new Date(ed.start_date);
+            pills.push(d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+          }
+          if (ed.session_count) pills.push(ed.session_count + ' sessions');
+          if (ed.price === 0 || ed.price === null) { pills.push('Free'); }
+          else if (ed.price) { pills.push('₦' + Math.round(ed.price / 100).toLocaleString()); }
+          if (ed.format) pills.push(ed.format);
+          pillsEl.innerHTML = pills.map(function (p) {
+            return '<span class="ev-forge-pill">' + esc(p) + '</span>';
+          }).join('');
+        }
+        var descEl = document.getElementById('evForgeDesc');
+        if (descEl) descEl.textContent = ed.description || ed.skill_focus || '';
+        var spotsEl = document.getElementById('evForgeSpots');
+        if (spotsEl) {
+          var spots = (ed.remaining_spots != null) ? ed.remaining_spots : (ed.cohort_size || 5);
+          spotsEl.textContent = spots + ' spots left.';
+        }
+        forgeSection.style.display = 'block';
+      });
+
+  }());
+  </script>
+  <script>
+  const cursor = document.getElementById('sq-cursor');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+  function animateCursor() {
+    cursorX = lerp(cursorX, mouseX, 0.15);
+    cursorY = lerp(cursorY, mouseY, 0.15);
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.remove('hidden');
+  });
+  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.querySelectorAll(hoverTargets).forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+  document.addEventListener('mousedown', () => {
+    cursor.classList.add('clicking');
+    cursor.classList.remove('hover');
+  });
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  animateCursor();
+  </script>
+</body>
+</html>

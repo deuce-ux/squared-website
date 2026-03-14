@@ -1,0 +1,3203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Squared Bookshop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800;12..96,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* === RESET === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #0a0a0a; color: #FFF1E0; font-family: 'Poppins', sans-serif; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    input, select, textarea, button { font-family: inherit; }
+
+    /* === NAV === */
+    #adDashboard { display: none; }
+    .ad-nav {
+      background: #111; border-bottom: 1px solid rgba(255,241,224,0.06);
+      padding: 0 40px; display: flex; align-items: center;
+      justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100;
+    }
+    .ad-nav-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.2rem; font-weight: 900; color: #F67A3E; letter-spacing: -0.03em;
+    }
+    .ad-nav-back { font-size: 0.82rem; color: rgba(255,241,224,0.5); transition: color 200ms ease; }
+    .ad-nav-back:hover { color: #FFF1E0; }
+    .ad-nav-right { display: flex; align-items: center; gap: 20px; }
+    .ad-signout-btn {
+      font-size: 0.8rem; font-weight: 600; color: rgba(255,241,224,0.55);
+      background: transparent; border: 1px solid rgba(255,241,224,0.12);
+      border-radius: 999px; padding: 6px 16px; cursor: pointer;
+      transition: color 200ms ease, border-color 200ms ease;
+    }
+    .ad-signout-btn:hover { color: #FFF1E0; border-color: rgba(255,241,224,0.35); }
+
+    /* === MAIN === */
+    .ad-main { max-width: 1200px; margin: 0 auto; padding: 40px; }
+
+    /* === STATS === */
+    .ad-stats { display: grid; grid-template-columns: repeat(8, 1fr); gap: 16px; margin-bottom: 32px; }
+    .ad-stat-card {
+      background: #111; border-radius: 12px; padding: 20px 24px;
+      border: 1px solid rgba(255,241,224,0.04);
+    }
+    .ad-stat-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem; font-weight: 900; color: #F67A3E; letter-spacing: -0.03em; line-height: 1.1;
+    }
+    .ad-stat-label { font-size: 0.75rem; color: rgba(255,241,224,0.4); margin-top: 4px; }
+
+    /* === TABS === */
+    .ad-tabs {
+      display: flex; border-bottom: 1px solid rgba(255,241,224,0.06); margin-bottom: 28px;
+    }
+    .ad-tab {
+      background: none; border: none; padding: 12px 24px;
+      font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 600;
+      color: rgba(255,241,224,0.45); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 200ms ease, border-color 200ms ease;
+    }
+    .ad-tab:hover { color: rgba(255,241,224,0.8); }
+    .ad-tab.ad-active { color: #FFF1E0; border-bottom-color: #F67A3E; }
+    .ad-tab-panel { display: none; }
+    .ad-tab-panel.ad-active { display: block; }
+
+    /* === PANEL HEADER === */
+    .ad-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
+    }
+    .ad-panel-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem; font-weight: 900; color: #FFF1E0; letter-spacing: -0.03em;
+    }
+    .ad-panel-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .ad-btn-primary {
+      background: #F67A3E; color: #0E0E0E; border: none; border-radius: 999px;
+      padding: 8px 18px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
+      white-space: nowrap; transition: opacity 200ms ease;
+    }
+    .ad-btn-primary:hover { opacity: 0.88; }
+    .ad-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ad-btn-ghost {
+      background: rgba(255,241,224,0.06); color: rgba(255,241,224,0.6);
+      border: 1px solid rgba(255,241,224,0.08); border-radius: 999px;
+      padding: 8px 16px; font-size: 0.78rem; font-weight: 500; cursor: pointer;
+      transition: background 200ms ease;
+    }
+    .ad-btn-ghost:hover { background: rgba(255,241,224,0.1); }
+    .ad-revenue {
+      font-family: 'Bricolage Grotesque', sans-serif; font-size: 1rem; font-weight: 700; color: #F67A3E;
+    }
+
+    /* === TABLE === */
+    .ad-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,241,224,0.05); }
+    .ad-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 600px; }
+    .ad-table thead tr { background: #0f0f0f; }
+    .ad-table th {
+      padding: 12px 16px; text-align: left;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,241,224,0.35); white-space: nowrap;
+    }
+    .ad-table tbody tr { background: #111; border-bottom: 1px solid rgba(255,241,224,0.04); }
+    .ad-table tbody tr:nth-child(even) { background: #0f0f0f; }
+    .ad-table tbody tr:last-child { border-bottom: none; }
+    .ad-table td { padding: 12px 16px; vertical-align: middle; }
+    .ad-book-title { font-weight: 600; color: #FFF1E0; margin-bottom: 2px; }
+    .ad-book-author { color: rgba(255,241,224,0.4); font-size: 0.72rem; }
+
+    /* === PILLS === */
+    .ad-pill {
+      display: inline-block; border-radius: 999px; padding: 3px 10px;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .ad-pill-pending   { background: rgba(252,202,89,0.15);  color: #FCCA59; }
+    .ad-pill-confirmed { background: rgba(116,166,139,0.15); color: #74A68B; }
+    .ad-pill-delivered { background: rgba(153,184,241,0.15); color: #99B8F1; }
+    .ad-pill-cancelled { background: rgba(224,82,82,0.15);   color: #e05252; }
+    .ad-pill-instock   { background: rgba(116,166,139,0.12); color: #74A68B; }
+    .ad-pill-oos       { background: rgba(224,82,82,0.12);   color: #e05252; }
+
+    /* === ACTION BUTTONS === */
+    .ad-act-btn {
+      background: none; border: 1px solid rgba(255,241,224,0.1); border-radius: 6px;
+      padding: 5px 11px; font-size: 0.7rem; font-weight: 500; cursor: pointer;
+      color: rgba(255,241,224,0.6); transition: border-color 200ms ease, color 200ms ease;
+      white-space: nowrap; margin-right: 6px;
+    }
+    .ad-act-btn:last-child { margin-right: 0; }
+    .ad-act-btn:hover { border-color: rgba(255,241,224,0.3); color: #FFF1E0; }
+    .ad-act-btn--danger:hover { border-color: rgba(224,82,82,0.5); color: #e05252; }
+    .ad-act-btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    /* === SKELETON === */
+    .ad-skel-row {
+      height: 54px; background: #111; border-bottom: 1px solid rgba(255,241,224,0.04);
+      animation: ad-pulse 1.4s ease-in-out infinite;
+    }
+    .ad-skel-row:nth-child(even) { background: #0f0f0f; }
+    @keyframes ad-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.7; } }
+
+    /* === MODAL === */
+    .ad-modal-overlay {
+      position: fixed; inset: 0; z-index: 800;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    }
+    .ad-modal-overlay.ad-open { opacity: 1; pointer-events: all; }
+    .ad-modal {
+      background: #111; border-radius: 16px; padding: 40px;
+      max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;
+      border: 1px solid rgba(255,241,224,0.06);
+      transform: translateY(16px); opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .ad-modal::-webkit-scrollbar { width: 4px; }
+    .ad-modal::-webkit-scrollbar-track { background: transparent; }
+    .ad-modal::-webkit-scrollbar-thumb { background: rgba(255,241,224,0.1); border-radius: 2px; }
+    .ad-modal-overlay.ad-open .ad-modal { transform: translateY(0); opacity: 1; }
+    .ad-modal-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.4rem; font-weight: 700; color: #FFF1E0; margin-bottom: 24px;
+    }
+
+    /* === FORM === */
+    .ad-form-row { margin-bottom: 14px; }
+    .ad-form-label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: rgba(255,241,224,0.5); letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .ad-form-field {
+      width: 100%; background: #1a1a1a;
+      border: 1px solid rgba(255,241,224,0.08); border-radius: 8px;
+      padding: 11px 14px; color: #FFF1E0; font-size: 0.85rem;
+      outline: none; resize: vertical; display: block;
+      transition: border-color 200ms ease;
+    }
+    .ad-form-field:focus { border-color: rgba(255,241,224,0.22); }
+    .ad-form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .ad-cover-preview {
+      width: 60px; height: 80px; object-fit: cover;
+      border-radius: 3px; margin-top: 8px; display: none;
+    }
+    .ad-checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .ad-checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #F67A3E; }
+    .ad-checkbox-row label { font-size: 0.85rem; color: rgba(255,241,224,0.7); }
+    .ad-modal-footer { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+    .ad-cancel-link {
+      background: none; border: none; cursor: pointer;
+      font-size: 0.82rem; color: rgba(255,241,224,0.35); transition: color 200ms ease;
+    }
+    .ad-cancel-link:hover { color: rgba(255,241,224,0.7); }
+
+    /* === ORDER DETAIL === */
+    .ad-order-detail-section { margin-bottom: 20px; }
+    .ad-order-detail-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(255,241,224,0.35); margin-bottom: 6px;
+    }
+    .ad-order-detail-val { font-size: 0.85rem; color: rgba(255,241,224,0.8); line-height: 1.6; }
+    .ad-order-item-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem; color: rgba(255,241,224,0.7);
+      padding: 8px 0; border-bottom: 1px solid rgba(255,241,224,0.04);
+    }
+    .ad-order-item-row:last-child { border-bottom: none; }
+
+    /* === EMPTY === */
+    .ad-empty { padding: 48px 20px; text-align: center; color: rgba(255,241,224,0.25); font-size: 0.85rem; }
+
+    /* === TOAST === */
+    .ad-toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #1e1e1e; border: 1px solid rgba(255,241,224,0.15);
+      color: #FFF1E0; padding: 12px 20px; border-radius: 10px;
+      font-size: 0.875rem; font-weight: 500; z-index: 9999;
+      transform: translateY(80px); opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      max-width: 320px; pointer-events: none;
+    }
+    .ad-toast.ad-toast-show { transform: translateY(0); opacity: 1; }
+    .ad-toast.ad-toast-success { border-left: 3px solid #74A68B; }
+    .ad-toast.ad-toast-error   { border-left: 3px solid #EF97BF; }
+
+    /* === MEMBER GRID === */
+    .ad-member-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px; margin-top: 8px;
+    }
+    .ad-member-card {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .ad-member-photo {
+      width: 72px; height: 72px; border-radius: 50%; object-fit: cover;
+      background: rgba(255,241,224,0.08); display: flex;
+      align-items: center; justify-content: center; font-size: 1.8rem; color: #FFF1E0;
+    }
+    .ad-member-photo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+    .ad-member-name  { font-weight: 700; color: #FFF1E0; font-size: 1rem; }
+    .ad-member-role  { font-size: 0.72rem; color: rgba(255,241,224,0.5); letter-spacing: 0.04em; text-transform: uppercase; }
+    .ad-member-squad { font-size: 0.8rem; color: rgba(255,241,224,0.6); }
+    .ad-member-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    /* === PHOTO UPLOAD === */
+    .ad-photo-upload-area {
+      border: 2px dashed rgba(255,241,224,0.2); border-radius: 10px;
+      padding: 20px; text-align: center; cursor: pointer;
+      transition: border-color 0.2s; position: relative;
+    }
+    .ad-photo-upload-area:hover { border-color: rgba(246,122,62,0.5); }
+    .ad-photo-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .ad-photo-upload-label { font-size: 0.82rem; color: rgba(255,241,224,0.4); }
+    .ad-photo-preview-wrap { margin-top: 10px; }
+    .ad-photo-preview-wrap img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; }
+    .ad-upload-progress { height: 4px; background: rgba(255,241,224,0.1); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+    .ad-upload-progress-bar { height: 100%; background: #F67A3E; width: 0%; transition: width 0.3s ease; border-radius: 4px; }
+
+    /* === FEATURES LIST === */
+    .ad-features-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .ad-feature-row { display: flex; gap: 8px; align-items: center; }
+    .ad-feature-row input { flex: 1; }
+    .ad-feature-remove {
+      background: none; border: 1px solid rgba(239,151,191,0.4); color: #EF97BF;
+      border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; white-space: nowrap;
+    }
+    .ad-feature-remove:hover { background: rgba(239,151,191,0.1); }
+    .ad-add-feature-btn {
+      background: none; border: 1px dashed rgba(255,241,224,0.2);
+      color: rgba(255,241,224,0.5); border-radius: 6px; padding: 6px 12px;
+      cursor: pointer; font-size: 0.8rem; margin-top: 4px; width: 100%; transition: all 0.2s;
+    }
+    .ad-add-feature-btn:hover { border-color: rgba(246,122,62,0.5); color: #F67A3E; }
+
+    /* === TESTIMONIAL LIST === */
+    .ad-testimonial-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .ad-testimonial-card {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px; padding: 18px 20px; display: flex; gap: 16px; align-items: flex-start;
+    }
+    .ad-testimonial-body { flex: 1; }
+    .ad-testimonial-quote { color: #FFF1E0; font-size: 0.88rem; line-height: 1.55; margin-bottom: 6px; }
+    .ad-testimonial-meta { font-size: 0.72rem; color: rgba(255,241,224,0.4); }
+    .ad-testimonial-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+
+    /* === PROGRAM CARDS === */
+    .ad-program-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-top: 8px;
+    }
+    .ad-program-card {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .ad-program-name    { font-size: 1.1rem; font-weight: 700; color: #FFF1E0; }
+    .ad-program-tagline { font-size: 0.82rem; color: rgba(255,241,224,0.5); }
+    .ad-program-price   { font-size: 1.3rem; font-weight: 700; color: #F67A3E; }
+    .ad-program-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+    .ad-program-features li { font-size: 0.8rem; color: rgba(255,241,224,0.6); }
+    .ad-program-features li::before { content: '✓ '; color: #74A68B; }
+    .ad-program-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    /* === COLOR ROW === */
+    .ad-color-row { display: flex; gap: 10px; align-items: center; }
+    .ad-color-row input[type="color"] { width: 48px; height: 36px; border: 1px solid rgba(255,241,224,0.08); border-radius: 6px; background: none; cursor: pointer; padding: 2px; }
+
+    /* === SKELETON CARD === */
+    .ad-skel-card {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 12px; animation: ad-pulse 1.4s ease-in-out infinite;
+    }
+
+    /* === FORGE EDITION CARDS === */
+    .ad-forge-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .ad-forge-edition-card {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .ad-forge-edition-name { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 700; color: #FFF1E0; letter-spacing: -0.02em; }
+    .ad-forge-skill-focus  { font-size: 0.72rem; color: #F67A3E; font-weight: 600; letter-spacing: 0.04em; }
+    .ad-forge-meta         { font-size: 0.72rem; color: rgba(255,241,224,0.35); display: flex; flex-wrap: wrap; gap: 10px; }
+    .ad-forge-actions      { display: flex; gap: 8px; margin-top: 4px; }
+    .ad-pill-open        { background: rgba(116,166,139,0.15); color: #74A68B; }
+    .ad-pill-closed      { background: rgba(224,82,82,0.15);   color: #e05252; }
+    .ad-pill-past        { background: rgba(255,241,224,0.08); color: rgba(255,241,224,0.35); }
+    .ad-pill-coming-soon { background: rgba(252,202,89,0.15);  color: #FCCA59; }
+
+    /* === FORGE SECTION DIVIDER === */
+    .ad-forge-subsection { margin-bottom: 40px; }
+    .ad-forge-subheader {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; gap: 12px;
+    }
+    .ad-forge-subheader-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.5rem; font-weight: 700; color: #FFF1E0; letter-spacing: -0.03em;
+    }
+    .ad-forge-edition-select-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .ad-forge-edition-select-row label {
+      font-size: 0.75rem; font-weight: 600; color: rgba(255,241,224,0.45);
+      letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+    }
+    .ad-forge-edition-select-row select { max-width: 260px; }
+
+    /* === FORGE SESSION ROWS === */
+    .ad-forge-session-list { display: flex; flex-direction: column; gap: 10px; }
+    .ad-forge-session-row {
+      background: rgba(255,241,224,0.04); border: 1px solid rgba(255,241,224,0.08);
+      border-radius: 10px; padding: 14px 18px;
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .ad-forge-session-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.6rem; font-weight: 800; color: rgba(246,122,62,0.3);
+      line-height: 1; flex-shrink: 0; width: 36px; text-align: right;
+    }
+    .ad-forge-session-body { flex: 1; }
+    .ad-forge-session-title { font-size: 0.9rem; font-weight: 600; color: #FFF1E0; margin-bottom: 3px; }
+    .ad-forge-session-desc  { font-size: 0.78rem; color: rgba(255,241,224,0.4); line-height: 1.5; }
+    .ad-forge-session-date  { font-size: 0.68rem; color: rgba(255,241,224,0.25); margin-top: 4px; }
+    .ad-forge-session-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+
+    /* === SEARCH INPUT === */
+    .ad-search-input {
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 999px;
+      padding: 7px 16px;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      width: 220px;
+      transition: border-color 200ms ease;
+    }
+    .ad-search-input::placeholder { color: rgba(255,241,224,0.3); }
+    .ad-search-input:focus { border-color: rgba(255,241,224,0.3); }
+
+    /* === ORANGE LINK === */
+    .ad-link-orange { color: #F67A3E; text-decoration: none; font-weight: 500; }
+    .ad-link-orange:hover { text-decoration: underline; }
+
+    /* === EXPANDABLE WHY TEXT === */
+    .ad-why-text {
+      cursor: pointer; color: rgba(255,241,224,0.5); font-size: 0.78rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 220px; display: block;
+      transition: color 200ms;
+    }
+    .ad-why-text.expanded { white-space: normal; overflow: visible; color: rgba(255,241,224,0.8); }
+    .ad-why-text:hover { color: rgba(255,241,224,0.7); }
+
+    /* === INLINE STATUS SELECT === */
+    .ad-status-select {
+      background: #1a1a1a;
+      border: 1px solid rgba(255,241,224,0.12);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 200ms;
+    }
+    .ad-status-select:focus { border-color: rgba(255,241,224,0.3); }
+    .ad-status-select.status-pending  { border-color: rgba(252,202,89,0.4);  color: #FCCA59; }
+    .ad-status-select.status-accepted { border-color: rgba(116,166,139,0.4); color: #74A68B; }
+    .ad-status-select.status-rejected { border-color: rgba(224,82,82,0.35);  color: #e05252; }
+
+    /* === MOBILE === */
+    @media (max-width: 1100px) {
+      .ad-stats { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 768px) {
+      body { overflow-x: hidden; }
+
+      /* Nav */
+      .ad-nav { padding: 0 16px; }
+      .ad-nav-back { display: none; }
+
+      /* Main */
+      .ad-main { padding: 16px; }
+
+      /* Stats */
+      .ad-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+      .ad-stat-card { padding: 14px 16px; }
+      .ad-stat-num { font-size: 1.5rem; }
+      .ad-stat-label { font-size: 0.7rem; }
+
+      /* Tabs — horizontal scroll */
+      .ad-tabs { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .ad-tabs::-webkit-scrollbar { display: none; }
+      .ad-tab { white-space: nowrap; flex-shrink: 0; padding: 10px 16px; font-size: 0.82rem; }
+
+      /* Panel header */
+      .ad-panel-title { font-size: 1.5rem; }
+
+      /* Tables — card-row layout */
+      .ad-table-wrap { border-radius: 8px; }
+      .ad-table { min-width: 0; font-size: 0.82rem; }
+      .ad-table thead { display: none; }
+      .ad-table tbody, .ad-table tr, .ad-table td { display: block; width: 100%; box-sizing: border-box; }
+      .ad-table tr {
+        background: #111 !important;
+        border-bottom: 1px solid rgba(255,241,224,0.06) !important;
+        padding: 14px 16px;
+      }
+      .ad-table tr:nth-child(even) { background: #111 !important; }
+      .ad-table td { padding: 2px 0; border: none; vertical-align: top; }
+      .ad-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(255,241,224,0.32);
+        margin-bottom: 2px;
+        margin-top: 10px;
+      }
+      .ad-table td:first-child::before { margin-top: 0; }
+
+      /* Forms */
+      .ad-form-field { font-size: 1rem; }
+      .ad-form-row-2 { grid-template-columns: 1fr; }
+      .ad-modal-footer { flex-direction: column; gap: 10px; }
+      .ad-modal-footer .ad-btn-primary { width: 100%; text-align: center; padding: 12px 18px; }
+
+      /* Action buttons — bigger touch targets */
+      .ad-act-btn { padding: 8px 12px; font-size: 0.72rem; min-height: 36px; }
+
+      /* Modals — bottom sheet */
+      .ad-modal-overlay { padding: 0; align-items: flex-end; }
+      .ad-modal {
+        padding: 28px 20px 36px;
+        border-radius: 20px 20px 0 0;
+        max-width: 100%;
+        max-height: 85vh;
+      }
+      .ad-login-card { padding: 32px 24px; }
+
+      /* Misc */
+      .ad-forge-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script>document.documentElement.style.visibility = 'hidden';</script>
+</head>
+<body>
+
+  <!--
+  SUPABASE RLS CHECKLIST — verify before launch:
+  - books table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - orders table: SELECT/INSERT public, UPDATE authenticated only
+  - members table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - events table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - testimonials table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - programs table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - forge_editions table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - forge_sessions table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - forge_testimonials table: SELECT public, INSERT/UPDATE/DELETE authenticated only
+  - squared-media storage bucket: SELECT public, INSERT authenticated only
+  -->
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="adDashboard">
+
+    <nav class="ad-nav">
+      <div class="ad-nav-logo">squared.</div>
+      <div class="ad-nav-right">
+        <a href="index.html" class="ad-nav-back">← Back to Site</a>
+        <button class="ad-signout-btn" id="adSignOutBtn">Sign Out</button>
+      </div>
+    </nav>
+
+    <div class="ad-main">
+
+      <!-- Stats -->
+      <div class="ad-stats">
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statBooks">—</div>
+          <div class="ad-stat-label">Total Books</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statOrders">—</div>
+          <div class="ad-stat-label">Total Orders</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statRevMonth">—</div>
+          <div class="ad-stat-label">Revenue This Month</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statPending">—</div>
+          <div class="ad-stat-label">Pending Orders</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statMembers">—</div>
+          <div class="ad-stat-label">Members</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statEvents">—</div>
+          <div class="ad-stat-label">Upcoming Events</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statForgeEditions">—</div>
+          <div class="ad-stat-label">Forge Editions</div>
+        </div>
+        <div class="ad-stat-card">
+          <div class="ad-stat-num" id="statForgeOpen">—</div>
+          <div class="ad-stat-label">Open Applications</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="ad-tabs">
+        <button class="ad-tab ad-active" data-tab="books">Books</button>
+        <button class="ad-tab" data-tab="orders">Orders</button>
+        <button class="ad-tab" data-tab="members">Members</button>
+        <button class="ad-tab" data-tab="events">Events</button>
+        <button class="ad-tab" data-tab="testimonials">Testimonials</button>
+        <button class="ad-tab" data-tab="programs">Programs</button>
+        <button class="ad-tab" data-tab="pagesprize">Pages Prize</button>
+        <button class="ad-tab" data-tab="forge">Forge</button>
+      </div>
+
+      <!-- Books Panel -->
+      <div class="ad-tab-panel ad-active" id="panelBooks">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="booksPanelTitle">Books</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="booksRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-primary" id="addBookBtn">Add New Book +</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Cover</th>
+                <th>Title / Author</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="booksTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Orders Panel -->
+      <div class="ad-tab-panel" id="panelOrders">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="ordersPanelTitle">Orders</div>
+          <div class="ad-panel-actions">
+            <span class="ad-revenue" id="ordersRevenue"></span>
+            <button class="ad-btn-ghost" id="ordersRefreshBtn">↺ Refresh</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Members Panel -->
+      <div class="ad-tab-panel" id="panelMembers">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="membersPanelTitle">Members</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="membersRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-primary" id="addMemberBtn">Add Member +</button>
+          </div>
+        </div>
+        <div class="ad-member-grid" id="membersGrid"></div>
+      </div>
+
+      <!-- Events Panel -->
+      <div class="ad-tab-panel" id="panelEvents">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="eventsPanelTitle">Events</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="eventsRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-primary" id="addEventBtn">Add Event +</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th style="text-align:center">★</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="eventsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Testimonials Panel -->
+      <div class="ad-tab-panel" id="panelTestimonials">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="testimonialsPanelTitle">Testimonials</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="testimonialsRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-primary" id="addTestimonialBtn">Add Testimonial +</button>
+          </div>
+        </div>
+        <div class="ad-testimonial-list" id="testimonialsList"></div>
+      </div>
+
+      <!-- Programs Panel -->
+      <div class="ad-tab-panel" id="panelPrograms">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="programsPanelTitle">Programs</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="programsRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-primary" id="addProgramBtn">Add Program +</button>
+          </div>
+        </div>
+        <div class="ad-program-grid" id="programsGrid"></div>
+      </div>
+
+      <!-- Pages Prize Panel -->
+      <div class="ad-tab-panel" id="panelPagesprize">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="ppPanelTitle">Pages Prize</div>
+          <div class="ad-panel-actions">
+            <input type="text" class="ad-search-input" id="ppSearchInput" placeholder="Search name or email…" />
+            <button class="ad-btn-ghost" id="ppRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-ghost" id="ppExportBtn">↓ Export CSV</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Handle</th>
+                <th>Writing Link</th>
+                <th>Why</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ppTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Forge Panel -->
+      <div class="ad-tab-panel" id="panelForge">
+
+        <!-- Editions -->
+        <div class="ad-forge-subsection">
+          <div class="ad-forge-subheader">
+            <div class="ad-forge-subheader-title">Forge Editions</div>
+            <div class="ad-panel-actions">
+              <button class="ad-btn-ghost" id="forgeEditionsRefreshBtn">↺ Refresh</button>
+              <button class="ad-btn-primary" id="addForgeEditionBtn">Add Edition +</button>
+            </div>
+          </div>
+          <div class="ad-forge-grid" id="forgeEditionsGrid"></div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="ad-forge-subsection">
+          <div class="ad-forge-subheader">
+            <div class="ad-forge-subheader-title">Sessions</div>
+            <button class="ad-btn-primary" id="addForgeSessionBtn">Add Session +</button>
+          </div>
+          <div class="ad-forge-edition-select-row">
+            <label>Edition:</label>
+            <select class="ad-form-field" id="forgeSessionsEditionFilter">
+              <option value="">— Select Edition —</option>
+            </select>
+          </div>
+          <div class="ad-forge-session-list" id="forgeSessionsList">
+            <div class="ad-empty">Select an edition above to view sessions.</div>
+          </div>
+        </div>
+
+        <!-- Forge Testimonials -->
+        <div class="ad-forge-subsection">
+          <div class="ad-forge-subheader">
+            <div class="ad-forge-subheader-title">Forge Testimonials</div>
+            <div class="ad-panel-actions">
+              <button class="ad-btn-ghost" id="forgeTstRefreshBtn">↺ Refresh</button>
+              <button class="ad-btn-primary" id="addForgeTstBtn">Add +</button>
+            </div>
+          </div>
+          <div class="ad-testimonial-list" id="forgeTstList"></div>
+        </div>
+
+        <!-- Forge Applications -->
+        <div class="ad-forge-subsection">
+          <div class="ad-forge-subheader">
+            <div class="ad-forge-subheader-title" id="forgeAppsTitle">Applications</div>
+            <div class="ad-panel-actions">
+              <button class="ad-btn-ghost" id="forgeAppsRefreshBtn">↺ Refresh</button>
+              <button class="ad-btn-ghost" id="forgeAppsExportBtn">↓ Export CSV</button>
+            </div>
+          </div>
+          <div class="ad-table-wrap">
+            <table class="ad-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Occupation</th>
+                  <th>Skill Level</th>
+                  <th>Edition</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="forgeAppsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ BOOK MODAL ══ -->
+  <div class="ad-modal-overlay" id="bookModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="bookModalTitle">Add New Book</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Title</label>
+        <input class="ad-form-field" id="fTitle" type="text" placeholder="Book title" />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Author</label>
+        <input class="ad-form-field" id="fAuthor" type="text" placeholder="Author name" />
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Category</label>
+          <select class="ad-form-field" id="fCategory">
+            <option value="Self-Help">Self-Help</option>
+            <option value="Business">Business</option>
+            <option value="Philosophy">Philosophy</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Nigerian Authors">Nigerian Authors</option>
+          </select>
+        </div>
+        <div>
+          <label class="ad-form-label">Price (₦ Naira)</label>
+          <input class="ad-form-field" id="fPrice" type="number" placeholder="e.g. 8500" min="0" />
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">ISBN</label>
+          <input class="ad-form-field" id="fIsbn" type="text" placeholder="e.g. 9780735211292" />
+          <img class="ad-cover-preview" id="fCoverPreview" src="" alt="Cover preview" loading="lazy" />
+        </div>
+        <div>
+          <label class="ad-form-label">Cover URL (optional)</label>
+          <input class="ad-form-field" id="fCoverUrl" type="text" placeholder="https://..." />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Description</label>
+        <textarea class="ad-form-field" id="fDesc" rows="3" placeholder="Short description"></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Stock Count</label>
+          <input class="ad-form-field" id="fStock" type="number" placeholder="10" min="0" value="10" />
+        </div>
+        <div></div>
+      </div>
+      <div class="ad-checkbox-row">
+        <input type="checkbox" id="fInStock" checked />
+        <label for="fInStock">In Stock</label>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveBookBtn">Save Book</button>
+        <button class="ad-cancel-link" id="cancelBookBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ORDER DETAIL MODAL ══ -->
+  <div class="ad-modal-overlay" id="orderModalOverlay">
+    <div class="ad-modal" id="orderModalContent"></div>
+  </div>
+
+  <!-- ══ TOAST ══ -->
+  <div id="adToast" class="ad-toast"></div>
+
+  <!-- ══ MEMBER MODAL ══ -->
+  <div class="ad-modal-overlay" id="memberModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="memberModalTitle">Add Member</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Name</label>
+        <input class="ad-form-field" id="mfName" type="text" placeholder="Full name" />
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Role</label>
+          <select class="ad-form-field" id="mfRole">
+            <option value="">No Role</option>
+            <option value="Squad Leader">Squad Leader</option>
+            <option value="Support Board">Support Board</option>
+            <option value="Brand &amp; Media">Brand &amp; Media</option>
+            <option value="Operations Lead">Operations Lead</option>
+          </select>
+        </div>
+        <div>
+          <label class="ad-form-label">Squad</label>
+          <input class="ad-form-field" id="mfSquad" type="text" placeholder="e.g. Squad Alpha" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Bio</label>
+        <textarea class="ad-form-field" id="mfBio" rows="2" placeholder="Short bio"></textarea>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Photo</label>
+        <div class="ad-photo-upload-area" id="mfPhotoArea">
+          <input type="file" id="mfPhotoFile" accept="image/*" />
+          <div class="ad-photo-upload-label">Click to upload photo (JPG, PNG, WebP)</div>
+          <div class="ad-photo-preview-wrap" id="mfPhotoPreview" style="display:none">
+            <img id="mfPhotoImg" src="" alt="Preview" loading="lazy" />
+          </div>
+          <div class="ad-upload-progress" id="mfUploadProgress" style="display:none">
+            <div class="ad-upload-progress-bar" id="mfProgressBar"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ad-checkbox-row">
+        <input type="checkbox" id="mfActive" checked />
+        <label for="mfActive">Active Member</label>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveMemberBtn">Save Member</button>
+        <button class="ad-cancel-link" id="cancelMemberBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EVENT MODAL ══ -->
+  <div class="ad-modal-overlay" id="eventModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="eventModalTitle">Add Event</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Title</label>
+        <input class="ad-form-field" id="efTitle" type="text" placeholder="e.g. Market Square No. 5" />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Description</label>
+        <textarea class="ad-form-field" id="efDesc" rows="2" placeholder="Short description"></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Date &amp; Time</label>
+          <input class="ad-form-field" id="efDate" type="datetime-local" />
+        </div>
+        <div>
+          <label class="ad-form-label">Category</label>
+          <select class="ad-form-field" id="efCategory">
+            <option value="Workshop">Workshop</option>
+            <option value="Market">Market</option>
+            <option value="Reading">Reading</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Location</label>
+          <input class="ad-form-field" id="efLocation" type="text" placeholder="Venue or Online" />
+        </div>
+        <div>
+          <label class="ad-form-label">Color</label>
+          <div class="ad-color-row">
+            <input type="color" id="efColor" value="#F67A3E" />
+            <input class="ad-form-field" id="efColorHex" type="text" placeholder="#F67A3E" style="flex:1" />
+          </div>
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">CTA Button Text <span style="opacity:0.4;font-weight:400">(leave blank to hide)</span></label>
+          <input class="ad-form-field" id="efCtaText" type="text" placeholder="Register Now →" />
+        </div>
+        <div>
+          <label class="ad-form-label">CTA Button URL <span style="opacity:0.4;font-weight:400">(leave blank to hide)</span></label>
+          <input class="ad-form-field" id="efCtaUrl" type="text" placeholder="https://..." />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Recap URL <span style="opacity:0.4;font-weight:400">(add after the event is done)</span></label>
+        <input class="ad-form-field" id="efRecapUrl" type="text" placeholder="https://..." />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Status</label>
+        <select class="ad-form-field" id="efStatus">
+          <option value="upcoming">Upcoming</option>
+          <option value="past">Past</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Rank <span style="opacity:0.4;font-weight:400">(higher = shown first)</span></label>
+          <input class="ad-form-field" id="efRank" type="number" value="0" min="0" placeholder="0" />
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding-top:22px;">
+          <input type="checkbox" id="efFeatured" style="width:16px;height:16px;accent-color:#F67A3E;flex-shrink:0;" />
+          <label class="ad-form-label" for="efFeatured" style="margin:0;cursor:pointer;">Featured Event (Tier 1)</label>
+        </div>
+      </div>
+      <!-- Featured card meta details -->
+      <div style="border-top:1px solid rgba(255,241,224,0.08);padding-top:14px;margin-top:4px;">
+        <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,241,224,0.35);margin-bottom:12px;">Featured Card Details <span style="font-weight:400;text-transform:none;letter-spacing:0">(only used when event is Featured)</span></div>
+        <div class="ad-form-row-2">
+          <div>
+            <label class="ad-form-label">Stat Label</label>
+            <input class="ad-form-field" id="efMetaStatLabel" type="text" placeholder="Prize Pool" />
+          </div>
+          <div>
+            <label class="ad-form-label">Stat Value</label>
+            <input class="ad-form-field" id="efMetaStatValue" type="text" placeholder="₦500,000+" />
+          </div>
+        </div>
+        <div class="ad-form-row-2">
+          <div>
+            <label class="ad-form-label">CTA Text <span style="opacity:0.4;font-weight:400">(featured card)</span></label>
+            <input class="ad-form-field" id="efMetaCtaText" type="text" placeholder="Indicate Interest" />
+          </div>
+          <div>
+            <label class="ad-form-label">CTA URL <span style="opacity:0.4;font-weight:400">(featured card)</span></label>
+            <input class="ad-form-field" id="efMetaCtaUrl" type="text" placeholder="pages-prize.html" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="efMetaComingSoon" style="width:16px;height:16px;accent-color:#F67A3E;flex-shrink:0;" />
+          <label class="ad-form-label" for="efMetaComingSoon" style="margin:0;cursor:pointer;">Coming Soon (shows secondary button instead of primary)</label>
+        </div>
+      </div>
+      <div class="ad-modal-footer" style="margin-top:20px;">
+        <button class="ad-btn-primary" id="saveEventBtn">Save Event</button>
+        <button class="ad-cancel-link" id="cancelEventBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TESTIMONIAL MODAL ══ -->
+  <div class="ad-modal-overlay" id="testimonialModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="testimonialModalTitle">Add Testimonial</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Quote</label>
+        <textarea class="ad-form-field" id="tfQuote" rows="3" placeholder="Their words..."></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Name</label>
+          <input class="ad-form-field" id="tfName" type="text" placeholder="Member name" />
+        </div>
+        <div>
+          <label class="ad-form-label">Detail (role / context)</label>
+          <input class="ad-form-field" id="tfDetail" type="text" placeholder="e.g. Squad Alpha · 3 months" />
+        </div>
+      </div>
+      <div class="ad-checkbox-row">
+        <input type="checkbox" id="tfActive" checked />
+        <label for="tfActive">Active (show on site)</label>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveTestimonialBtn">Save Testimonial</button>
+        <button class="ad-cancel-link" id="cancelTestimonialBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROGRAM MODAL ══ -->
+  <div class="ad-modal-overlay" id="programModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="programModalTitle">Add Program</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Name</label>
+        <input class="ad-form-field" id="pfName" type="text" placeholder="Program name" />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Tagline</label>
+        <input class="ad-form-field" id="pfTagline" type="text" placeholder="Short tagline" />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Description</label>
+        <textarea class="ad-form-field" id="pfDesc" rows="2" placeholder="Full description"></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Price (₦ Naira)</label>
+          <input class="ad-form-field" id="pfPrice" type="number" placeholder="4000" min="0" />
+        </div>
+        <div>
+          <label class="ad-form-label">Frequency</label>
+          <input class="ad-form-field" id="pfFrequency" type="text" placeholder="e.g. per month" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Features</label>
+        <div class="ad-features-list" id="pfFeaturesList"></div>
+        <button type="button" class="ad-add-feature-btn" id="pfAddFeatureBtn">+ Add Feature</button>
+      </div>
+      <div class="ad-checkbox-row">
+        <input type="checkbox" id="pfActive" checked />
+        <label for="pfActive">Active (show on site)</label>
+      </div>
+
+      <!-- ── Illustration ── -->
+      <div style="border-top:1px solid rgba(255,241,224,0.08);margin:20px 0 16px;padding-top:16px;">
+        <div style="font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,241,224,0.35);margin-bottom:12px;">Illustration</div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Image URL</label>
+        <input class="ad-form-field" id="pfImageUrl" type="url" placeholder="https://... (leave blank for gradient placeholder)" />
+      </div>
+
+      <!-- ── Stats (Squared Core only) ── -->
+      <div style="border-top:1px solid rgba(255,241,224,0.08);margin:20px 0 16px;padding-top:16px;">
+        <div style="font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,241,224,0.35);margin-bottom:4px;">Stats <span style="font-weight:400;text-transform:none;letter-spacing:0;">— Squared Core only</span></div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Stat 1 Value</label>
+          <input class="ad-form-field" id="pfStat1Val" type="text" placeholder="25+" />
+        </div>
+        <div>
+          <label class="ad-form-label">Stat 1 Label</label>
+          <input class="ad-form-field" id="pfStat1Lbl" type="text" placeholder="Members" />
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Stat 2 Value</label>
+          <input class="ad-form-field" id="pfStat2Val" type="text" placeholder="3x" />
+        </div>
+        <div>
+          <label class="ad-form-label">Stat 2 Label</label>
+          <input class="ad-form-field" id="pfStat2Lbl" type="text" placeholder="Weekly Sessions" />
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Stat 3 Value</label>
+          <input class="ad-form-field" id="pfStat3Val" type="text" placeholder="2" />
+        </div>
+        <div>
+          <label class="ad-form-label">Stat 3 Label</label>
+          <input class="ad-form-field" id="pfStat3Lbl" type="text" placeholder="Active Squads" />
+        </div>
+      </div>
+
+      <!-- ── CTA ── -->
+      <div style="border-top:1px solid rgba(255,241,224,0.08);margin:20px 0 16px;padding-top:16px;">
+        <div style="font-family:'Poppins',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,241,224,0.35);margin-bottom:12px;">CTA Button</div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">CTA URL</label>
+          <input class="ad-form-field" id="pfCtaUrl" type="url" placeholder="https://..." />
+        </div>
+        <div>
+          <label class="ad-form-label">CTA Text</label>
+          <input class="ad-form-field" id="pfCtaText" type="text" placeholder="Join Squared Core →" />
+        </div>
+      </div>
+
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveProgramBtn">Save Program</button>
+        <button class="ad-cancel-link" id="cancelProgramBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORGE EDITION MODAL ══ -->
+  <div class="ad-modal-overlay" id="forgeEditionModalOverlay">
+    <div class="ad-modal" style="max-width:600px;">
+      <div class="ad-modal-title" id="forgeEditionModalTitle">Add Edition</div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Edition Name</label>
+          <input class="ad-form-field" id="fgfName" type="text" placeholder="e.g. Forge 1.0" />
+        </div>
+        <div>
+          <label class="ad-form-label">Skill Focus</label>
+          <input class="ad-form-field" id="fgfSkill" type="text" placeholder="e.g. Brand Identity" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Description</label>
+        <textarea class="ad-form-field" id="fgfDesc" rows="2" placeholder="Short description of this edition"></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Cohort Size</label>
+          <input class="ad-form-field" id="fgfCohort" type="number" placeholder="5" min="1" />
+        </div>
+        <div>
+          <label class="ad-form-label">Price in Naira (0 = Free)</label>
+          <input class="ad-form-field" id="fgfPrice" type="number" placeholder="0" min="0" value="0" />
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Start Date</label>
+          <input class="ad-form-field" id="fgfStartDate" type="date" />
+        </div>
+        <div>
+          <label class="ad-form-label">Session Day</label>
+          <input class="ad-form-field" id="fgfSessionDay" type="text" placeholder="e.g. Every Tuesday" />
+        </div>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Session Count</label>
+          <input class="ad-form-field" id="fgfSessionCount" type="number" placeholder="4" min="1" />
+        </div>
+        <div>
+          <label class="ad-form-label">Duration (weeks)</label>
+          <input class="ad-form-field" id="fgfDuration" type="number" placeholder="4" min="1" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Format</label>
+        <input class="ad-form-field" id="fgfFormat" type="text" placeholder="e.g. Online via Google Meet" />
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Status</label>
+          <select class="ad-form-field" id="fgfStatus">
+            <option value="coming_soon">Coming Soon</option>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+            <option value="past">Past</option>
+          </select>
+        </div>
+        <div>
+          <label class="ad-form-label">Google Form URL</label>
+          <input class="ad-form-field" id="fgfFormUrl" type="text" placeholder="https://docs.google.com/forms/..." />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">What You'll Learn</label>
+        <div class="ad-features-list" id="fgfLearnList"></div>
+        <button type="button" class="ad-add-feature-btn" id="fgfAddLearnBtn">+ Add Item</button>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">What You'll Make</label>
+        <div class="ad-features-list" id="fgfMakeList"></div>
+        <button type="button" class="ad-add-feature-btn" id="fgfAddMakeBtn">+ Add Item</button>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveForgeEditionBtn">Save Edition</button>
+        <button class="ad-cancel-link" id="cancelForgeEditionBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORGE SESSION MODAL ══ -->
+  <div class="ad-modal-overlay" id="forgeSessionModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="forgeSessionModalTitle">Add Session</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Edition</label>
+        <select class="ad-form-field" id="fgsEdition">
+          <option value="">— Select Edition —</option>
+        </select>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Session Number</label>
+          <input class="ad-form-field" id="fgsNum" type="number" placeholder="1" min="1" />
+        </div>
+        <div>
+          <label class="ad-form-label">Session Date</label>
+          <input class="ad-form-field" id="fgsDate" type="date" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Title</label>
+        <input class="ad-form-field" id="fgsTitle" type="text" placeholder="Session title" />
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Description</label>
+        <textarea class="ad-form-field" id="fgsDesc" rows="3" placeholder="What happens in this session"></textarea>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveForgeSessionBtn">Save Session</button>
+        <button class="ad-cancel-link" id="cancelForgeSessionBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORGE TESTIMONIAL MODAL ══ -->
+  <div class="ad-modal-overlay" id="forgeTstModalOverlay">
+    <div class="ad-modal">
+      <div class="ad-modal-title" id="forgeTstModalTitle">Add Forge Testimonial</div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Quote</label>
+        <textarea class="ad-form-field" id="fgtQuote" rows="3" placeholder="Their words..."></textarea>
+      </div>
+      <div class="ad-form-row-2">
+        <div>
+          <label class="ad-form-label">Member Name</label>
+          <input class="ad-form-field" id="fgtName" type="text" placeholder="Full name" />
+        </div>
+        <div>
+          <label class="ad-form-label">Member Detail</label>
+          <input class="ad-form-field" id="fgtDetail" type="text" placeholder="e.g. Forge 1.0 participant" />
+        </div>
+      </div>
+      <div class="ad-form-row">
+        <label class="ad-form-label">Edition (optional)</label>
+        <select class="ad-form-field" id="fgtEdition">
+          <option value="">General (no specific edition)</option>
+        </select>
+      </div>
+      <div class="ad-checkbox-row">
+        <input type="checkbox" id="fgtActive" checked />
+        <label for="fgtActive">Active (show on Forge page)</label>
+      </div>
+      <div class="ad-modal-footer">
+        <button class="ad-btn-primary" id="saveForgeTstBtn">Save Testimonial</button>
+        <button class="ad-cancel-link" id="cancelForgeTstBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ─── CONFIG ─── */
+    var sb = window.supabase.createClient(
+      'https://kekljrckgwidrvftaxuu.supabase.co',
+      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
+    );
+
+    /* ─── HELPERS ─── */
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function sbImg(url, params) {
+      if (!url || url.indexOf('supabase.co/storage') === -1) return url;
+      return url + params;
+    }
+    function fmtKobo(k) {
+      var n = Math.round((k || 0) / 100);
+      return '₦' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    /* ─── AUTH ─── */
+    async function checkAuth() {
+      var result = await sb.auth.getSession();
+      if (!result.data.session) {
+        window.location.replace('admin-login.html');
+        return;
+      }
+      showDashboard();
+    }
+
+    function showDashboard() {
+      document.documentElement.style.visibility = 'visible';
+      document.getElementById('adDashboard').style.display = 'block';
+      loadStats();
+      loadBooks();
+    }
+
+    document.getElementById('adSignOutBtn').addEventListener('click', async function () {
+      await sb.auth.signOut();
+      window.location.replace('admin-login.html');
+    });
+
+    /* ─── TABS ─── */
+    var ordersLoaded       = false;
+    var membersLoaded      = false;
+    var eventsLoaded       = false;
+    var testimonialsLoaded = false;
+    var programsLoaded     = false;
+    var forgeLoaded        = false;
+    var ppLoaded           = false;
+    document.querySelectorAll('.ad-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.ad-tab').forEach(function (b) { b.classList.remove('ad-active'); });
+        document.querySelectorAll('.ad-tab-panel').forEach(function (p) { p.classList.remove('ad-active'); });
+        btn.classList.add('ad-active');
+        var key = btn.dataset.tab;
+        var panel = document.getElementById('panel' + key.charAt(0).toUpperCase() + key.slice(1));
+        if (panel) panel.classList.add('ad-active');
+        if (key === 'orders'       && !ordersLoaded)       { ordersLoaded       = true; loadOrders(); }
+        if (key === 'members'      && !membersLoaded)      { membersLoaded      = true; loadMembers(); }
+        if (key === 'events'       && !eventsLoaded)       { eventsLoaded       = true; loadEvents(); }
+        if (key === 'testimonials' && !testimonialsLoaded) { testimonialsLoaded = true; loadTestimonials(); }
+        if (key === 'programs'     && !programsLoaded)     { programsLoaded     = true; loadPrograms(); }
+        if (key === 'pagesprize'   && !ppLoaded)           { ppLoaded           = true; loadPagesPrize(); }
+        if (key === 'forge'        && !forgeLoaded)        { forgeLoaded        = true; loadForgeAll(); }
+      });
+    });
+
+    /* ─── STATS ─── */
+    function loadStats() {
+      sb.from('books').select('id', { count: 'exact', head: true }).then(function (r) {
+        document.getElementById('statBooks').textContent = r.count != null ? r.count : '—';
+      });
+      sb.from('orders').select('id, total_amount, status, created_at').then(function (r) {
+        if (r.error || !r.data) return;
+        var orders = r.data;
+        document.getElementById('statOrders').textContent = orders.length;
+        var now = new Date();
+        var monthRev = orders.reduce(function (s, o) {
+          var d = new Date(o.created_at);
+          return (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear())
+            ? s + (o.total_amount || 0) : s;
+        }, 0);
+        document.getElementById('statRevMonth').textContent = fmtKobo(monthRev);
+        document.getElementById('statPending').textContent =
+          orders.filter(function (o) { return o.status === 'pending'; }).length;
+      });
+      sb.from('members').select('id', { count: 'exact', head: true }).then(function (r) {
+        document.getElementById('statMembers').textContent = r.count != null ? r.count : '—';
+      });
+      sb.from('events').select('id', { count: 'exact', head: true }).eq('is_upcoming', true).then(function (r) {
+        document.getElementById('statEvents').textContent = r.count != null ? r.count : '—';
+      });
+      sb.from('forge_editions').select('id', { count: 'exact', head: true }).then(function (r) {
+        document.getElementById('statForgeEditions').textContent = r.count != null ? r.count : '—';
+      });
+      sb.from('forge_editions').select('id', { count: 'exact', head: true }).eq('status', 'open').then(function (r) {
+        document.getElementById('statForgeOpen').textContent = r.count != null ? r.count : '—';
+      });
+    }
+
+    /* ─── BOOKS ─── */
+    var allBooks = [];
+
+    function showBookSkeletons() {
+      var tb = document.getElementById('booksTableBody');
+      tb.innerHTML = '';
+      for (var i = 0; i < 6; i++) {
+        var tr = document.createElement('tr');
+        tr.className = 'ad-skel-row';
+        tr.innerHTML = '<td colspan="7"></td>';
+        tb.appendChild(tr);
+      }
+    }
+
+    function loadBooks() {
+      showBookSkeletons();
+      sb.from('books').select('*').order('created_at', { ascending: true }).then(function (r) {
+        if (r.error) { return; }
+        allBooks = r.data || [];
+        document.getElementById('booksPanelTitle').textContent = 'Books (' + allBooks.length + ')';
+        renderBooksTable(allBooks);
+      });
+    }
+
+    function renderBooksTable(books) {
+      var tb = document.getElementById('booksTableBody');
+      tb.innerHTML = '';
+      if (!books.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No books found.</div></td></tr>';
+        return;
+      }
+      books.forEach(function (book) {
+        var priceNaira = Math.round((book.price || 0) / 100);
+        var coverSrc = book.cover_url ||
+          ('https://covers.openlibrary.org/b/isbn/' + (book.isbn || '') + '-L.jpg');
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Cover"><img src="' + esc(sbImg(coverSrc, '?width=120&height=180&resize=cover&format=webp&quality=80')) + '" width="50" height="70"' +
+            ' style="object-fit:cover;display:block;" alt=""' +
+            ' onerror="this.style.display=\'none\'"/></td>' +
+          '<td data-label="Book"><div class="ad-book-title">' + esc(book.title) + '</div>' +
+            '<div class="ad-book-author">' + esc(book.author) + '</div></td>' +
+          '<td data-label="Category">' + esc(book.category) + '</td>' +
+          '<td data-label="Price">₦' + priceNaira.toLocaleString() + '</td>' +
+          '<td data-label="Stock">' + (book.stock_count != null ? book.stock_count : '—') + '</td>' +
+          '<td data-label="Status"><span class="ad-pill ' + (book.in_stock ? 'ad-pill-instock' : 'ad-pill-oos') + '">' +
+            (book.in_stock ? 'In Stock' : 'Out of Stock') + '</span></td>' +
+          '<td data-label="Actions">' +
+            '<button class="ad-act-btn ad-act-edit" data-id="' + esc(book.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-toggle" data-id="' + esc(book.id) + '" data-stock="' + (book.in_stock ? '1' : '0') + '">' +
+              (book.in_stock ? 'Mark OOS' : 'Mark In Stock') + '</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger ad-act-delete" data-id="' + esc(book.id) + '">Delete</button>' +
+          '</td>';
+        tb.appendChild(tr);
+      });
+      tb.onclick = function (e) {
+        var edit   = e.target.closest('.ad-act-edit');
+        var toggle = e.target.closest('.ad-act-toggle');
+        var del    = e.target.closest('.ad-act-delete');
+        if (edit)   openBookModal(edit.dataset.id);
+        if (toggle) toggleStock(toggle.dataset.id, toggle.dataset.stock === '1');
+        if (del)    deleteBook(del.dataset.id);
+      };
+    }
+
+    function toggleStock(id, currentlyIn) {
+      sb.from('books').update({ in_stock: !currentlyIn }).eq('id', id).then(function (r) {
+        if (r.error) { alert('Error: ' + r.error.message); return; }
+        loadBooks(); loadStats();
+      });
+    }
+
+    function deleteBook(id) {
+      if (!confirm('Delete this book? This cannot be undone.')) return;
+      sb.from('books').delete().eq('id', id).then(function (r) {
+        if (r.error) { alert('Error: ' + r.error.message); return; }
+        loadBooks(); loadStats();
+      });
+    }
+
+    document.getElementById('booksRefreshBtn').addEventListener('click', loadBooks);
+
+    /* ─── BOOK MODAL ─── */
+    var editingBookId = null;
+
+    function openBookModal(bookId) {
+      editingBookId = bookId || null;
+      document.getElementById('bookModalTitle').textContent = bookId ? 'Edit Book' : 'Add New Book';
+      /* Reset */
+      ['fTitle', 'fAuthor', 'fIsbn', 'fCoverUrl', 'fDesc'].forEach(function (id) {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('fPrice').value = '';
+      document.getElementById('fStock').value = '10';
+      document.getElementById('fInStock').checked = true;
+      document.getElementById('fCategory').value = 'Self-Help';
+      document.getElementById('fCoverPreview').style.display = 'none';
+      /* Fill if editing */
+      if (bookId) {
+        var book = allBooks.find(function (b) { return b.id === bookId; });
+        if (book) {
+          document.getElementById('fTitle').value    = book.title || '';
+          document.getElementById('fAuthor').value   = book.author || '';
+          document.getElementById('fCategory').value = book.category || 'Self-Help';
+          document.getElementById('fPrice').value    = Math.round((book.price || 0) / 100);
+          document.getElementById('fIsbn').value     = book.isbn || '';
+          document.getElementById('fCoverUrl').value = book.cover_url || '';
+          document.getElementById('fDesc').value     = book.description || '';
+          document.getElementById('fStock').value    = book.stock_count != null ? book.stock_count : 10;
+          document.getElementById('fInStock').checked = !!book.in_stock;
+          if (book.isbn) updateCoverPreview(book.isbn);
+        }
+      }
+      document.getElementById('bookModalOverlay').classList.add('ad-open');
+    }
+
+    function closeBookModal() {
+      document.getElementById('bookModalOverlay').classList.remove('ad-open');
+      editingBookId = null;
+    }
+
+    document.getElementById('fIsbn').addEventListener('input', function () {
+      updateCoverPreview(this.value.trim());
+    });
+
+    function updateCoverPreview(isbn) {
+      var img = document.getElementById('fCoverPreview');
+      if (isbn.length >= 10) {
+        img.src = 'https://covers.openlibrary.org/b/isbn/' + isbn + '-M.jpg';
+        img.style.display = 'block';
+        img.onerror = function () { img.style.display = 'none'; };
+      } else {
+        img.style.display = 'none';
+      }
+    }
+
+    document.getElementById('addBookBtn').addEventListener('click', function () { openBookModal(null); });
+    document.getElementById('cancelBookBtn').addEventListener('click', closeBookModal);
+    document.getElementById('bookModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeBookModal();
+    });
+
+    document.getElementById('saveBookBtn').addEventListener('click', function () {
+      var title   = document.getElementById('fTitle').value.trim();
+      var author  = document.getElementById('fAuthor').value.trim();
+      if (!title || !author) { alert('Title and Author are required.'); return; }
+      var payload = {
+        title:       title,
+        author:      author,
+        category:    document.getElementById('fCategory').value,
+        price:       (parseInt(document.getElementById('fPrice').value, 10) || 0) * 100,
+        isbn:        document.getElementById('fIsbn').value.trim() || null,
+        cover_url:   document.getElementById('fCoverUrl').value.trim() || null,
+        description: document.getElementById('fDesc').value.trim() || null,
+        stock_count: parseInt(document.getElementById('fStock').value, 10) || 0,
+        in_stock:    document.getElementById('fInStock').checked
+      };
+      var btn = document.getElementById('saveBookBtn');
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      var op = editingBookId
+        ? sb.from('books').update(payload).eq('id', editingBookId)
+        : sb.from('books').insert([payload]);
+      op.then(function (r) {
+        btn.textContent = 'Save Book';
+        btn.disabled = false;
+        if (r.error) { alert('Error: ' + r.error.message); return; }
+        closeBookModal();
+        loadBooks();
+        loadStats();
+      });
+    });
+
+    /* ─── ORDERS ─── */
+    var allOrders = [];
+
+    function showOrderSkeletons() {
+      var tb = document.getElementById('ordersTableBody');
+      tb.innerHTML = '';
+      for (var i = 0; i < 5; i++) {
+        var tr = document.createElement('tr');
+        tr.className = 'ad-skel-row';
+        tr.innerHTML = '<td colspan="7"></td>';
+        tb.appendChild(tr);
+      }
+    }
+
+    function loadOrders() {
+      showOrderSkeletons();
+      sb.from('orders').select('*').order('created_at', { ascending: false }).then(function (r) {
+        if (r.error) { return; }
+        allOrders = r.data || [];
+        document.getElementById('ordersPanelTitle').textContent = 'Orders (' + allOrders.length + ')';
+        var rev = allOrders.reduce(function (s, o) { return s + (o.total_amount || 0); }, 0);
+        document.getElementById('ordersRevenue').textContent = 'Total Revenue: ' + fmtKobo(rev);
+        renderOrdersTable(allOrders);
+      });
+    }
+
+    function renderOrdersTable(orders) {
+      var tb = document.getElementById('ordersTableBody');
+      tb.innerHTML = '';
+      if (!orders.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No orders yet.</div></td></tr>';
+        return;
+      }
+      orders.forEach(function (order) {
+        var shortId    = (order.id || '').substring(0, 8);
+        var itemCount  = Array.isArray(order.items) ? order.items.length : '?';
+        var statusMap  = { pending: 'ad-pill-pending', confirmed: 'ad-pill-confirmed', delivered: 'ad-pill-delivered', cancelled: 'ad-pill-cancelled' };
+        var pillClass  = statusMap[order.status] || 'ad-pill-pending';
+        var isDone     = order.status === 'delivered' || order.status === 'cancelled';
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Order ID" style="font-family:monospace;font-size:0.75rem;color:rgba(255,241,224,0.5)">' + esc(shortId) + '…</td>' +
+          '<td data-label="Customer"><div style="font-weight:600;color:#FFF1E0">' + esc(order.customer_name || '—') + '</div>' +
+            '<div style="font-size:0.7rem;color:rgba(255,241,224,0.4)">' + esc(order.customer_email || '') + '</div></td>' +
+          '<td data-label="Items">' + itemCount + ' item' + (itemCount !== 1 ? 's' : '') + '</td>' +
+          '<td data-label="Total" style="font-family:\'Bricolage Grotesque\',sans-serif;font-weight:700;color:#F67A3E">' + fmtKobo(order.total_amount) + '</td>' +
+          '<td data-label="Status"><span class="ad-pill ' + pillClass + '">' + esc(order.status || 'pending') + '</span></td>' +
+          '<td data-label="Date" style="color:rgba(255,241,224,0.5);font-size:0.75rem">' + fmtDate(order.created_at) + '</td>' +
+          '<td data-label="Actions">' +
+            '<button class="ad-act-btn ad-act-deliver" data-id="' + esc(order.id) + '"' + (isDone ? ' disabled' : '') + '>Mark Delivered</button>' +
+            '<button class="ad-act-btn ad-act-view" data-id="' + esc(order.id) + '">View Details</button>' +
+          '</td>';
+        tb.appendChild(tr);
+      });
+      tb.onclick = function (e) {
+        var deliver = e.target.closest('.ad-act-deliver');
+        var view    = e.target.closest('.ad-act-view');
+        if (deliver && !deliver.disabled) markDelivered(deliver.dataset.id);
+        if (view) openOrderDetail(view.dataset.id);
+      };
+    }
+
+    function markDelivered(id) {
+      sb.from('orders').update({ status: 'delivered' }).eq('id', id).then(function (r) {
+        if (r.error) { alert('Error: ' + r.error.message); return; }
+        loadOrders(); loadStats();
+      });
+    }
+
+    document.getElementById('ordersRefreshBtn').addEventListener('click', function () {
+      ordersLoaded = true; loadOrders();
+    });
+
+    /* ─── ORDER DETAIL MODAL ─── */
+    function openOrderDetail(id) {
+      var order = allOrders.find(function (o) { return o.id === id; });
+      if (!order) return;
+      var items = Array.isArray(order.items) ? order.items : [];
+      var itemsHtml = items.map(function (item) {
+        return '<div class="ad-order-item-row">' +
+          '<span>' + esc(item.title || '?') + ' &times; ' + (item.quantity || 1) + '</span>' +
+          '<span>' + esc(item.price || '') + '</span></div>';
+      }).join('') || '<div class="ad-order-detail-val">No items</div>';
+
+      document.getElementById('orderModalContent').innerHTML =
+        '<div class="ad-modal-title">Order Details</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Customer</div>' +
+          '<div class="ad-order-detail-val">' + esc(order.customer_name || '—') + '<br>' +
+            esc(order.customer_email || '') + '<br>' + esc(order.customer_phone || '') + '</div>' +
+        '</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Delivery Address</div>' +
+          '<div class="ad-order-detail-val">' + esc(order.delivery_address || '—') + '</div>' +
+        '</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Items</div>' + itemsHtml +
+        '</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Total</div>' +
+          '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:1.3rem;font-weight:700;color:#F67A3E">' + fmtKobo(order.total_amount) + '</div>' +
+        '</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Paystack Reference</div>' +
+          '<div class="ad-order-detail-val" style="font-family:monospace;font-size:0.78rem">' + esc(order.paystack_reference || '—') + '</div>' +
+        '</div>' +
+        '<div class="ad-order-detail-section">' +
+          '<div class="ad-order-detail-label">Date</div>' +
+          '<div class="ad-order-detail-val">' + fmtDate(order.created_at) + '</div>' +
+        '</div>' +
+        '<div style="margin-top:8px">' +
+          '<button class="ad-cancel-link" id="closeOrderModalBtn">← Close</button>' +
+        '</div>';
+
+      document.getElementById('closeOrderModalBtn').addEventListener('click', closeOrderModal);
+      document.getElementById('orderModalOverlay').classList.add('ad-open');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('orderModalOverlay').classList.remove('ad-open');
+    }
+    document.getElementById('orderModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeOrderModal();
+    });
+
+    /* Escape closes all modals */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeBookModal(); closeOrderModal();
+        closeMemberModal(); closeEventModal();
+        closeTestimonialModal(); closeProgramModal();
+      }
+    });
+
+    /* ─── TOAST ─── */
+    function showToast(msg, type) {
+      var t = document.getElementById('adToast');
+      t.textContent = msg;
+      t.className = 'ad-toast ad-toast-' + (type || 'success');
+      void t.offsetWidth;
+      t.classList.add('ad-toast-show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function () { t.classList.remove('ad-toast-show'); }, 3000);
+    }
+
+    /* ─── MEMBERS ─── */
+    var allMembers = [];
+    var editingMemberId = null;
+
+    function showMemberSkeletons() {
+      var g = document.getElementById('membersGrid');
+      g.innerHTML = '';
+      for (var i = 0; i < 6; i++) {
+        var d = document.createElement('div');
+        d.className = 'ad-skel-card';
+        d.style.height = '160px';
+        g.appendChild(d);
+      }
+    }
+
+    function loadMembers() {
+      showMemberSkeletons();
+      sb.from('members').select('*').order('created_at', { ascending: true }).then(function (r) {
+        if (r.error) { return; }
+        allMembers = r.data || [];
+        document.getElementById('membersPanelTitle').textContent = 'Members (' + allMembers.length + ')';
+        renderMembersGrid(allMembers);
+      });
+    }
+
+    function renderMembersGrid(members) {
+      var g = document.getElementById('membersGrid');
+      g.innerHTML = '';
+      if (!members.length) {
+        g.innerHTML = '<div class="ad-empty">No members yet.</div>';
+        return;
+      }
+      members.forEach(function (m) {
+        var photoHtml = m.photo_url
+          ? '<div class="ad-member-photo"><img src="' + esc(sbImg(m.photo_url, '?width=200&height=200&resize=cover&format=webp&quality=75')) + '" alt="" /></div>'
+          : '<div class="ad-member-photo">' + esc((m.name || '?').charAt(0).toUpperCase()) + '</div>';
+        var card = document.createElement('div');
+        card.className = 'ad-member-card';
+        card.innerHTML =
+          photoHtml +
+          '<div class="ad-member-name">' + esc(m.name) + '</div>' +
+          (m.role  ? '<div class="ad-member-role">'  + esc(m.role)  + '</div>' : '') +
+          (m.squad ? '<div class="ad-member-squad">' + esc(m.squad) + '</div>' : '') +
+          '<span class="ad-pill ' + (m.is_active ? 'ad-pill-instock' : 'ad-pill-oos') + '">' +
+            (m.is_active ? 'Active' : 'Inactive') + '</span>' +
+          '<div class="ad-member-actions">' +
+            '<button class="ad-act-btn ad-act-edit" data-id="' + esc(m.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger ad-act-delete" data-id="' + esc(m.id) + '">Delete</button>' +
+          '</div>';
+        g.appendChild(card);
+      });
+      g.onclick = function (e) {
+        var edit = e.target.closest('.ad-act-edit');
+        var del  = e.target.closest('.ad-act-delete');
+        if (edit) openMemberModal(edit.dataset.id);
+        if (del)  deleteMember(del.dataset.id);
+      };
+    }
+
+    function openMemberModal(memberId) {
+      editingMemberId = memberId || null;
+      document.getElementById('memberModalTitle').textContent = memberId ? 'Edit Member' : 'Add Member';
+      document.getElementById('mfName').value  = '';
+      document.getElementById('mfRole').value  = '';
+      document.getElementById('mfSquad').value = '';
+      document.getElementById('mfBio').value   = '';
+      document.getElementById('mfActive').checked = true;
+      document.getElementById('mfPhotoFile').value = '';
+      document.getElementById('mfPhotoPreview').style.display = 'none';
+      document.getElementById('mfUploadProgress').style.display = 'none';
+      document.getElementById('mfProgressBar').style.width = '0%';
+      if (memberId) {
+        var m = allMembers.find(function (x) { return x.id === memberId; });
+        if (m) {
+          document.getElementById('mfName').value  = m.name  || '';
+          document.getElementById('mfRole').value  = m.role  || '';
+          document.getElementById('mfSquad').value = m.squad || '';
+          document.getElementById('mfBio').value   = m.bio   || '';
+          document.getElementById('mfActive').checked = !!m.is_active;
+          if (m.photo_url) {
+            document.getElementById('mfPhotoImg').src = m.photo_url;
+            document.getElementById('mfPhotoPreview').style.display = 'block';
+          }
+        }
+      }
+      document.getElementById('memberModalOverlay').classList.add('ad-open');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModalOverlay').classList.remove('ad-open');
+      editingMemberId = null;
+    }
+
+    document.getElementById('mfPhotoFile').addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('mfPhotoImg').src = e.target.result;
+        document.getElementById('mfPhotoPreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('addMemberBtn').addEventListener('click', function () { openMemberModal(null); });
+    document.getElementById('cancelMemberBtn').addEventListener('click', closeMemberModal);
+    document.getElementById('memberModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeMemberModal();
+    });
+    document.getElementById('membersRefreshBtn').addEventListener('click', loadMembers);
+
+    document.getElementById('saveMemberBtn').addEventListener('click', function () {
+      var name = document.getElementById('mfName').value.trim();
+      if (!name) { alert('Name is required.'); return; }
+      var btn = this;
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      var _editId = editingMemberId;
+
+      function doSave(photoUrl) {
+        var payload = {
+          name:      name,
+          role:      document.getElementById('mfRole').value  || null,
+          squad:     document.getElementById('mfSquad').value.trim() || null,
+          bio:       document.getElementById('mfBio').value.trim()   || null,
+          is_active: document.getElementById('mfActive').checked,
+          photo_url: photoUrl
+        };
+        var op = _editId
+          ? sb.from('members').update(payload).eq('id', _editId)
+          : sb.from('members').insert([payload]);
+        op.then(function (r) {
+          btn.textContent = 'Save Member';
+          btn.disabled = false;
+          if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+          closeMemberModal();
+          loadMembers();
+          loadStats();
+          showToast(_editId ? 'Member updated.' : 'Member added.');
+        });
+      }
+
+      var file = document.getElementById('mfPhotoFile').files[0];
+      if (file) {
+        var ext      = file.name.split('.').pop();
+        var filename = 'members/' + Date.now() + '.' + ext;
+        var progress = document.getElementById('mfUploadProgress');
+        var bar      = document.getElementById('mfProgressBar');
+        progress.style.display = 'block';
+        bar.style.width = '30%';
+        setTimeout(function () { bar.style.width = '70%'; }, 400);
+
+        /* Race upload against a 10-second timeout */
+        var uploadPromise = new Promise(function (resolve) {
+          try {
+            sb.storage.from('squared-media').upload(filename, file, { upsert: true })
+              .then(function (r) { resolve({ result: r, timedOut: false }); })
+              .catch(function (err) { resolve({ result: { error: { message: err.message || String(err) } }, timedOut: false }); });
+          } catch (err) {
+            resolve({ result: { error: { message: err.message || String(err) } }, timedOut: false });
+          }
+        });
+        var timeoutPromise = new Promise(function (resolve) {
+          setTimeout(function () { resolve({ result: null, timedOut: true }); }, 10000);
+        });
+
+        Promise.race([uploadPromise, timeoutPromise]).then(function (outcome) {
+          if (outcome.timedOut) {
+            /* storage upload timed out */
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            showToast('Member saved without photo — check storage settings', 'error');
+            doSave('');
+            return;
+          }
+          var r = outcome.result;
+          /* upload complete */
+          if (r.error) {
+            /* storage upload error */
+            progress.style.display = 'none';
+            bar.style.width = '0%';
+            showToast('Member saved without photo — check storage settings', 'error');
+            doSave('');
+            return;
+          }
+          bar.style.width = '100%';
+          var publicUrl = sb.storage.from('squared-media').getPublicUrl(filename).data.publicUrl;
+          doSave(publicUrl);
+        });
+      } else {
+        var existingPhoto = null;
+        if (_editId) {
+          var mx = allMembers.find(function (x) { return x.id === _editId; });
+          if (mx) existingPhoto = mx.photo_url;
+        }
+        doSave(existingPhoto);
+      }
+    });
+
+    function deleteMember(id) {
+      if (!confirm('Delete this member? This cannot be undone.')) return;
+      sb.from('members').delete().eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadMembers();
+        loadStats();
+        showToast('Member deleted.');
+      });
+    }
+
+    /* ─── EVENTS ─── */
+    var allEvents = [];
+    var editingEventId = null;
+
+    function showEventSkeletons() {
+      var tb = document.getElementById('eventsTableBody');
+      tb.innerHTML = '';
+      for (var i = 0; i < 5; i++) {
+        var tr = document.createElement('tr');
+        tr.className = 'ad-skel-row';
+        tr.innerHTML = '<td colspan="6"></td>';
+        tb.appendChild(tr);
+      }
+    }
+
+    function loadEvents() {
+      showEventSkeletons();
+      sb.from('events').select('*').order('event_date', { ascending: true }).then(function (r) {
+        if (r.error) { return; }
+        allEvents = r.data || [];
+        document.getElementById('eventsPanelTitle').textContent = 'Events (' + allEvents.length + ')';
+        renderEventsTable(allEvents);
+      });
+    }
+
+    function renderEventsTable(events) {
+      var tb = document.getElementById('eventsTableBody');
+      tb.innerHTML = '';
+      if (!events.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No events yet.</div></td></tr>';
+        return;
+      }
+      var statusBadge = { upcoming: 'background:#74A68B;color:#0a0a0a', past: 'background:rgba(255,241,224,0.15);color:rgba(255,241,224,0.6)', draft: 'background:#FCCA59;color:#0a0a0a' };
+      events.forEach(function (ev) {
+        var st = ev.status || 'upcoming';
+        var dot = ev.color
+          ? '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + esc(ev.color) + ';margin-right:6px;vertical-align:middle;flex-shrink:0"></span>'
+          : '';
+        var badgeStyle = statusBadge[st] || statusBadge.upcoming;
+        var isFeatured = !!ev.featured;
+        var starBadge = isFeatured
+          ? '<span style="color:#F67A3E;font-size:0.85rem;margin-right:5px;" title="Featured">★</span>'
+          : '';
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Event"><div style="font-weight:600;color:#FFF1E0;display:flex;align-items:center">' + starBadge + dot + esc(ev.title) + '</div></td>' +
+          '<td data-label="Category">' + esc(ev.category || '—') + '</td>' +
+          '<td data-label="Date" style="font-size:0.78rem;color:rgba(255,241,224,0.6)">' + (ev.event_date ? fmtDate(ev.event_date) : '—') + '</td>' +
+          '<td data-label="Location" style="font-size:0.78rem;color:rgba(255,241,224,0.6)">' + esc(ev.location || '—') + '</td>' +
+          '<td data-label="Status"><span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;' + badgeStyle + '">' + st.charAt(0).toUpperCase() + st.slice(1) + '</span></td>' +
+          '<td data-label="Featured" style="text-align:center">' +
+            '<button class="ad-act-btn ad-act-togglefeatured" data-id="' + esc(ev.id) + '" data-featured="' + (isFeatured ? '1' : '0') + '" title="' + (isFeatured ? 'Remove featured' : 'Mark as featured') + '" style="' + (isFeatured ? 'color:#F67A3E;border-color:rgba(246,122,62,0.4)' : '') + '">' + (isFeatured ? '★ Featured' : '☆ Feature') + '</button>' +
+          '</td>' +
+          '<td data-label="Actions">' +
+            '<button class="ad-act-btn ad-act-edit" data-id="' + esc(ev.id) + '">Edit</button>' +
+            (st !== 'past' ? '<button class="ad-act-btn ad-act-markpast" data-id="' + esc(ev.id) + '">Mark as Past</button>' : '') +
+            '<button class="ad-act-btn ad-act-btn--danger ad-act-delete" data-id="' + esc(ev.id) + '">Delete</button>' +
+          '</td>';
+        tb.appendChild(tr);
+      });
+      tb.onclick = function (e) {
+        var edit           = e.target.closest('.ad-act-edit');
+        var markpast       = e.target.closest('.ad-act-markpast');
+        var del            = e.target.closest('.ad-act-delete');
+        var toggleFeatured = e.target.closest('.ad-act-togglefeatured');
+        if (edit)           openEventModal(edit.dataset.id);
+        if (markpast)       markEventPast(markpast.dataset.id);
+        if (del)            deleteEvent(del.dataset.id);
+        if (toggleFeatured) toggleEventFeatured(toggleFeatured.dataset.id, toggleFeatured.dataset.featured === '1');
+      };
+    }
+
+    function markEventPast(id) {
+      if (!confirm('Mark this event as Past?')) return;
+      sb.from('events').update({ status: 'past' }).eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadEvents();
+        loadStats();
+        showToast('Event marked as past.');
+      });
+    }
+
+    function toggleEventFeatured(id, currentlyFeatured) {
+      sb.from('events').update({ featured: !currentlyFeatured }).eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadEvents();
+        showToast(currentlyFeatured ? 'Event removed from featured.' : 'Event marked as featured! ★');
+      });
+    }
+
+    function openEventModal(evId) {
+      editingEventId = evId || null;
+      document.getElementById('eventModalTitle').textContent = evId ? 'Edit Event' : 'Add Event';
+      document.getElementById('efTitle').value    = '';
+      document.getElementById('efDesc').value     = '';
+      document.getElementById('efDate').value     = '';
+      document.getElementById('efLocation').value = '';
+      document.getElementById('efCategory').value = 'Workshop';
+      document.getElementById('efColor').value    = '#F67A3E';
+      document.getElementById('efColorHex').value = '#F67A3E';
+      document.getElementById('efCtaText').value  = '';
+      document.getElementById('efCtaUrl').value   = '';
+      document.getElementById('efRecapUrl').value = '';
+      document.getElementById('efStatus').value   = 'upcoming';
+      document.getElementById('efFeatured').checked        = false;
+      document.getElementById('efRank').value              = '0';
+      document.getElementById('efMetaStatLabel').value     = '';
+      document.getElementById('efMetaStatValue').value     = '';
+      document.getElementById('efMetaCtaText').value       = '';
+      document.getElementById('efMetaCtaUrl').value        = '';
+      document.getElementById('efMetaComingSoon').checked  = false;
+      if (evId) {
+        var ev = allEvents.find(function (x) { return x.id === evId; });
+        if (ev) {
+          document.getElementById('efTitle').value    = ev.title       || '';
+          document.getElementById('efDesc').value     = ev.description || '';
+          document.getElementById('efDate').value     = ev.event_date  ? ev.event_date.slice(0, 16) : '';
+          document.getElementById('efLocation').value = ev.location    || '';
+          document.getElementById('efCategory').value = ev.category    || 'Workshop';
+          document.getElementById('efFeatured').checked = ev.featured || false;
+          document.getElementById('efRank').value        = ev.rank != null ? ev.rank : 0;
+          var meta = {};
+          try { meta = JSON.parse(ev.meta || '{}'); } catch (e2) {}
+          document.getElementById('efMetaStatLabel').value    = meta.stat_label  || '';
+          document.getElementById('efMetaStatValue').value    = meta.stat_value  || '';
+          document.getElementById('efMetaCtaText').value      = meta.cta_text    || '';
+          document.getElementById('efMetaCtaUrl').value       = meta.cta_url     || '';
+          document.getElementById('efMetaComingSoon').checked = meta.coming_soon || false;
+          var col = ev.color || '#F67A3E';
+          document.getElementById('efColor').value    = col;
+          document.getElementById('efColorHex').value = col;
+          document.getElementById('efCtaText').value  = ev.cta_text   || '';
+          document.getElementById('efCtaUrl').value   = ev.cta_url    || '';
+          document.getElementById('efRecapUrl').value = ev.recap_url  || '';
+          document.getElementById('efStatus').value   = ev.status     || 'upcoming';
+        }
+      }
+      document.getElementById('eventModalOverlay').classList.add('ad-open');
+    }
+
+    function closeEventModal() {
+      document.getElementById('eventModalOverlay').classList.remove('ad-open');
+      editingEventId = null;
+    }
+
+    document.getElementById('efColor').addEventListener('input', function () {
+      document.getElementById('efColorHex').value = this.value;
+    });
+    document.getElementById('efColorHex').addEventListener('input', function () {
+      var v = this.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('efColor').value = v;
+    });
+
+    document.getElementById('addEventBtn').addEventListener('click', function () { openEventModal(null); });
+    document.getElementById('cancelEventBtn').addEventListener('click', closeEventModal);
+    document.getElementById('eventModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeEventModal();
+    });
+    document.getElementById('eventsRefreshBtn').addEventListener('click', loadEvents);
+
+    document.getElementById('saveEventBtn').addEventListener('click', function () {
+      var title = document.getElementById('efTitle').value.trim();
+      if (!title) { alert('Title is required.'); return; }
+      var btn = this;
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      var _editId = editingEventId;
+      var metaObj = {
+        stat_label:  document.getElementById('efMetaStatLabel').value.trim()  || null,
+        stat_value:  document.getElementById('efMetaStatValue').value.trim()  || null,
+        cta_text:    document.getElementById('efMetaCtaText').value.trim()    || null,
+        cta_url:     document.getElementById('efMetaCtaUrl').value.trim()     || null,
+        coming_soon: document.getElementById('efMetaComingSoon').checked
+      };
+      var payload = {
+        title:       title,
+        description: document.getElementById('efDesc').value.trim()     || null,
+        event_date:  document.getElementById('efDate').value            || null,
+        location:    document.getElementById('efLocation').value.trim() || null,
+        category:    document.getElementById('efCategory').value,
+        color:       document.getElementById('efColorHex').value.trim() || document.getElementById('efColor').value,
+        cta_text:    document.getElementById('efCtaText').value.trim()   || null,
+        cta_url:     document.getElementById('efCtaUrl').value.trim()    || null,
+        recap_url:   document.getElementById('efRecapUrl').value.trim()  || null,
+        status:      document.getElementById('efStatus').value,
+        featured:    document.getElementById('efFeatured').checked,
+        rank:        parseInt(document.getElementById('efRank').value) || 0,
+        meta:        JSON.stringify(metaObj)
+      };
+      var op = _editId
+        ? sb.from('events').update(payload).eq('id', _editId)
+        : sb.from('events').insert([payload]);
+      op.then(function (r) {
+        btn.textContent = 'Save Event';
+        btn.disabled = false;
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        closeEventModal();
+        loadEvents();
+        loadStats();
+        showToast(_editId ? 'Event updated.' : 'Event added.');
+      });
+    });
+
+    function deleteEvent(id) {
+      if (!confirm('Delete this event? This cannot be undone.')) return;
+      sb.from('events').delete().eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadEvents();
+        loadStats();
+        showToast('Event deleted.');
+      });
+    }
+
+    /* ─── TESTIMONIALS ─── */
+    var allTestimonials = [];
+    var editingTestimonialId = null;
+
+    function showTestimonialSkeletons() {
+      var l = document.getElementById('testimonialsList');
+      l.innerHTML = '';
+      for (var i = 0; i < 4; i++) {
+        var d = document.createElement('div');
+        d.className = 'ad-skel-card';
+        d.style.height = '80px';
+        l.appendChild(d);
+      }
+    }
+
+    function loadTestimonials() {
+      showTestimonialSkeletons();
+      sb.from('testimonials').select('*').order('created_at', { ascending: false }).then(function (r) {
+        if (r.error) { return; }
+        allTestimonials = r.data || [];
+        document.getElementById('testimonialsPanelTitle').textContent = 'Testimonials (' + allTestimonials.length + ')';
+        renderTestimonialsList(allTestimonials);
+      });
+    }
+
+    function renderTestimonialsList(testimonials) {
+      var l = document.getElementById('testimonialsList');
+      l.innerHTML = '';
+      if (!testimonials.length) {
+        l.innerHTML = '<div class="ad-empty">No testimonials yet.</div>';
+        return;
+      }
+      testimonials.forEach(function (t) {
+        var card = document.createElement('div');
+        card.className = 'ad-testimonial-card';
+        card.innerHTML =
+          '<div class="ad-testimonial-body">' +
+            '<div class="ad-testimonial-quote">\u201c' + esc(t.quote) + '\u201d</div>' +
+            '<div class="ad-testimonial-meta">' + esc(t.member_name) + (t.member_detail ? ' \u00b7 ' + esc(t.member_detail) : '') + '</div>' +
+          '</div>' +
+          '<div class="ad-testimonial-actions">' +
+            '<span class="ad-pill ' + (t.is_active ? 'ad-pill-instock' : 'ad-pill-oos') + '" style="cursor:pointer" data-id="' + esc(t.id) + '" data-active="' + (t.is_active ? '1' : '0') + '">' + (t.is_active ? 'Active' : 'Inactive') + '</span>' +
+            '<button class="ad-act-btn ad-act-edit" data-id="' + esc(t.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger ad-act-delete" data-id="' + esc(t.id) + '">Delete</button>' +
+          '</div>';
+        l.appendChild(card);
+      });
+      l.onclick = function (e) {
+        var pill = e.target.closest('.ad-pill[data-id]');
+        var edit = e.target.closest('.ad-act-edit');
+        var del  = e.target.closest('.ad-act-delete');
+        if (pill) toggleTestimonialActive(pill.dataset.id, pill.dataset.active === '1');
+        if (edit) openTestimonialModal(edit.dataset.id);
+        if (del)  deleteTestimonial(del.dataset.id);
+      };
+    }
+
+    function toggleTestimonialActive(id, currentlyActive) {
+      if (!currentlyActive) {
+        var activeCount = allTestimonials.filter(function (t) { return t.is_active; }).length;
+        if (activeCount >= 3) { showToast('Max 3 active testimonials allowed.', 'error'); return; }
+      }
+      sb.from('testimonials').update({ is_active: !currentlyActive }).eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadTestimonials();
+        showToast(currentlyActive ? 'Testimonial deactivated.' : 'Testimonial activated.');
+      });
+    }
+
+    function openTestimonialModal(tId) {
+      editingTestimonialId = tId || null;
+      document.getElementById('testimonialModalTitle').textContent = tId ? 'Edit Testimonial' : 'Add Testimonial';
+      document.getElementById('tfQuote').value  = '';
+      document.getElementById('tfName').value   = '';
+      document.getElementById('tfDetail').value = '';
+      document.getElementById('tfActive').checked = true;
+      if (tId) {
+        var t = allTestimonials.find(function (x) { return x.id === tId; });
+        if (t) {
+          document.getElementById('tfQuote').value  = t.quote         || '';
+          document.getElementById('tfName').value   = t.member_name   || '';
+          document.getElementById('tfDetail').value = t.member_detail || '';
+          document.getElementById('tfActive').checked = !!t.is_active;
+        }
+      }
+      document.getElementById('testimonialModalOverlay').classList.add('ad-open');
+    }
+
+    function closeTestimonialModal() {
+      document.getElementById('testimonialModalOverlay').classList.remove('ad-open');
+      editingTestimonialId = null;
+    }
+
+    document.getElementById('addTestimonialBtn').addEventListener('click', function () { openTestimonialModal(null); });
+    document.getElementById('cancelTestimonialBtn').addEventListener('click', closeTestimonialModal);
+    document.getElementById('testimonialModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeTestimonialModal();
+    });
+    document.getElementById('testimonialsRefreshBtn').addEventListener('click', loadTestimonials);
+
+    document.getElementById('saveTestimonialBtn').addEventListener('click', function () {
+      var quote = document.getElementById('tfQuote').value.trim();
+      var name  = document.getElementById('tfName').value.trim();
+      if (!quote || !name) { alert('Quote and Name are required.'); return; }
+      var willBeActive = document.getElementById('tfActive').checked;
+      if (willBeActive && !editingTestimonialId) {
+        var activeCount = allTestimonials.filter(function (t) { return t.is_active; }).length;
+        if (activeCount >= 3) { showToast('Max 3 active testimonials. Deactivate one first.', 'error'); return; }
+      }
+      var btn = this;
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      var _editId = editingTestimonialId;
+      var payload = {
+        quote:         quote,
+        member_name:   name,
+        member_detail: document.getElementById('tfDetail').value.trim() || null,
+        is_active:     willBeActive
+      };
+      var op = _editId
+        ? sb.from('testimonials').update(payload).eq('id', _editId)
+        : sb.from('testimonials').insert([payload]);
+      op.then(function (r) {
+        btn.textContent = 'Save Testimonial';
+        btn.disabled = false;
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        closeTestimonialModal();
+        loadTestimonials();
+        showToast(_editId ? 'Testimonial updated.' : 'Testimonial added.');
+      });
+    });
+
+    function deleteTestimonial(id) {
+      if (!confirm('Delete this testimonial?')) return;
+      sb.from('testimonials').delete().eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadTestimonials();
+        showToast('Testimonial deleted.');
+      });
+    }
+
+    /* ─── PROGRAMS ─── */
+    var allPrograms = [];
+    var editingProgramId = null;
+
+    function showProgramSkeletons() {
+      var g = document.getElementById('programsGrid');
+      g.innerHTML = '';
+      for (var i = 0; i < 4; i++) {
+        var d = document.createElement('div');
+        d.className = 'ad-skel-card';
+        d.style.height = '200px';
+        g.appendChild(d);
+      }
+    }
+
+    function loadPrograms() {
+      showProgramSkeletons();
+      sb.from('programs').select('*').order('created_at', { ascending: true }).then(function (r) {
+        if (r.error) { return; }
+        allPrograms = r.data || [];
+        document.getElementById('programsPanelTitle').textContent = 'Programs (' + allPrograms.length + ')';
+        renderProgramsGrid(allPrograms);
+      });
+    }
+
+    function renderProgramsGrid(programs) {
+      var g = document.getElementById('programsGrid');
+      g.innerHTML = '';
+      if (!programs.length) {
+        g.innerHTML = '<div class="ad-empty">No programs yet.</div>';
+        return;
+      }
+      programs.forEach(function (p) {
+        var features = Array.isArray(p.features) ? p.features : [];
+        var featHtml = features.length
+          ? '<ul class="ad-program-features">' + features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>'
+          : '';
+        var card = document.createElement('div');
+        card.className = 'ad-program-card';
+        card.innerHTML =
+          '<div class="ad-program-name">' + esc(p.name) + '</div>' +
+          (p.tagline ? '<div class="ad-program-tagline">' + esc(p.tagline) + '</div>' : '') +
+          '<div class="ad-program-price">&#x20A6;' + Math.round((p.price || 0) / 100).toLocaleString() +
+            (p.frequency ? ' <span style="font-size:0.75rem;font-weight:400;color:rgba(255,241,224,0.5)">/ ' + esc(p.frequency) + '</span>' : '') + '</div>' +
+          featHtml +
+          '<span class="ad-pill ' + (p.is_active ? 'ad-pill-instock' : 'ad-pill-oos') + '">' + (p.is_active ? 'Active' : 'Inactive') + '</span>' +
+          '<div class="ad-program-actions">' +
+            '<button class="ad-act-btn ad-act-edit" data-id="' + esc(p.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger ad-act-delete" data-id="' + esc(p.id) + '">Delete</button>' +
+          '</div>';
+        g.appendChild(card);
+      });
+      g.onclick = function (e) {
+        var edit = e.target.closest('.ad-act-edit');
+        var del  = e.target.closest('.ad-act-delete');
+        if (edit) openProgramModal(edit.dataset.id);
+        if (del)  deleteProgram(del.dataset.id);
+      };
+    }
+
+    function openProgramModal(pId) {
+      editingProgramId = pId || null;
+      document.getElementById('programModalTitle').textContent = pId ? 'Edit Program' : 'Add Program';
+      document.getElementById('pfName').value      = '';
+      document.getElementById('pfTagline').value   = '';
+      document.getElementById('pfDesc').value      = '';
+      document.getElementById('pfPrice').value     = '';
+      document.getElementById('pfFrequency').value = '';
+      document.getElementById('pfActive').checked  = true;
+      document.getElementById('pfImageUrl').value  = '';
+      document.getElementById('pfStat1Val').value  = '';
+      document.getElementById('pfStat1Lbl').value  = '';
+      document.getElementById('pfStat2Val').value  = '';
+      document.getElementById('pfStat2Lbl').value  = '';
+      document.getElementById('pfStat3Val').value  = '';
+      document.getElementById('pfStat3Lbl').value  = '';
+      document.getElementById('pfCtaUrl').value    = '';
+      document.getElementById('pfCtaText').value   = '';
+      renderFeaturesList([]);
+      if (pId) {
+        var p = allPrograms.find(function (x) { return x.id === pId; });
+        if (p) {
+          document.getElementById('pfName').value      = p.name        || '';
+          document.getElementById('pfTagline').value   = p.tagline     || '';
+          document.getElementById('pfDesc').value      = p.description || '';
+          document.getElementById('pfPrice').value     = Math.round((p.price || 0) / 100);
+          document.getElementById('pfFrequency').value = p.frequency   || '';
+          document.getElementById('pfActive').checked  = !!p.is_active;
+          document.getElementById('pfImageUrl').value  = p.image_url   || '';
+          document.getElementById('pfStat1Val').value  = p.stat1_value || '';
+          document.getElementById('pfStat1Lbl').value  = p.stat1_label || '';
+          document.getElementById('pfStat2Val').value  = p.stat2_value || '';
+          document.getElementById('pfStat2Lbl').value  = p.stat2_label || '';
+          document.getElementById('pfStat3Val').value  = p.stat3_value || '';
+          document.getElementById('pfStat3Lbl').value  = p.stat3_label || '';
+          document.getElementById('pfCtaUrl').value    = p.cta_url     || '';
+          document.getElementById('pfCtaText').value   = p.cta_text    || '';
+          renderFeaturesList(Array.isArray(p.features) ? p.features : []);
+        }
+      }
+      document.getElementById('programModalOverlay').classList.add('ad-open');
+    }
+
+    function closeProgramModal() {
+      document.getElementById('programModalOverlay').classList.remove('ad-open');
+      editingProgramId = null;
+    }
+
+    function renderFeaturesList(features) {
+      document.getElementById('pfFeaturesList').innerHTML = '';
+      features.forEach(function (f) { addFeatureRow(f); });
+    }
+
+    function addFeatureRow(value) {
+      var list = document.getElementById('pfFeaturesList');
+      var row  = document.createElement('div');
+      row.className = 'ad-feature-row';
+      row.innerHTML =
+        '<input class="ad-form-field pf-feature-input" type="text" value="' + esc(value || '') + '" placeholder="e.g. 3 focus sessions/week" />' +
+        '<button type="button" class="ad-feature-remove">Remove</button>';
+      row.querySelector('.ad-feature-remove').addEventListener('click', function () { row.remove(); });
+      list.appendChild(row);
+    }
+
+    document.getElementById('pfAddFeatureBtn').addEventListener('click', function () { addFeatureRow(''); });
+    document.getElementById('addProgramBtn').addEventListener('click', function () { openProgramModal(null); });
+    document.getElementById('cancelProgramBtn').addEventListener('click', closeProgramModal);
+    document.getElementById('programModalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeProgramModal();
+    });
+    document.getElementById('programsRefreshBtn').addEventListener('click', loadPrograms);
+
+    document.getElementById('saveProgramBtn').addEventListener('click', function () {
+      var name = document.getElementById('pfName').value.trim();
+      if (!name) { alert('Name is required.'); return; }
+      var features = [];
+      document.querySelectorAll('.pf-feature-input').forEach(function (inp) {
+        var v = inp.value.trim();
+        if (v) features.push(v);
+      });
+      var btn = this;
+      btn.textContent = 'Saving…';
+      btn.disabled = true;
+      var _editId = editingProgramId;
+      var payload = {
+        name:         name,
+        tagline:      document.getElementById('pfTagline').value.trim()   || null,
+        description:  document.getElementById('pfDesc').value.trim()      || null,
+        price:        (parseInt(document.getElementById('pfPrice').value, 10) || 0) * 100,
+        frequency:    document.getElementById('pfFrequency').value.trim() || null,
+        features:     features,
+        is_active:    document.getElementById('pfActive').checked,
+        image_url:    document.getElementById('pfImageUrl').value.trim()  || null,
+        stat1_value:  document.getElementById('pfStat1Val').value.trim()  || null,
+        stat1_label:  document.getElementById('pfStat1Lbl').value.trim()  || null,
+        stat2_value:  document.getElementById('pfStat2Val').value.trim()  || null,
+        stat2_label:  document.getElementById('pfStat2Lbl').value.trim()  || null,
+        stat3_value:  document.getElementById('pfStat3Val').value.trim()  || null,
+        stat3_label:  document.getElementById('pfStat3Lbl').value.trim()  || null,
+        cta_url:      document.getElementById('pfCtaUrl').value.trim()    || null,
+        cta_text:     document.getElementById('pfCtaText').value.trim()   || null
+      };
+      var op = _editId
+        ? sb.from('programs').update(payload).eq('id', _editId)
+        : sb.from('programs').insert([payload]);
+      op.then(function (r) {
+        btn.textContent = 'Save Program';
+        btn.disabled = false;
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        closeProgramModal();
+        loadPrograms();
+        showToast(_editId ? 'Program updated.' : 'Program added.');
+      });
+    });
+
+    function deleteProgram(id) {
+      if (!confirm('Delete this program?')) return;
+      sb.from('programs').delete().eq('id', id).then(function (r) {
+        if (r.error) { showToast('Error: ' + r.error.message, 'error'); return; }
+        loadPrograms();
+        showToast('Program deleted.');
+      });
+    }
+
+    /* ─── INIT ─── */
+    checkAuth();
+
+    sb.auth.onAuthStateChange(function (event, session) {
+      if (event === 'SIGNED_OUT' || !session) {
+        window.location.replace('admin-login.html');
+      }
+    });
+
+  })();
+  </script>
+
+  <script>
+  /* ══════════════════════════════════════════
+     FORGE MODULE — editions, sessions, testimonials
+  ══════════════════════════════════════════ */
+  (function () {
+    'use strict';
+
+    var sb = window.supabase.createClient(
+      'https://kekljrckgwidrvftaxuu.supabase.co',
+      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
+    );
+
+    /* ── helpers ── */
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+    function toast(msg, type) {
+      var el = document.getElementById('adToast');
+      el.textContent = msg;
+      el.className = 'ad-toast ad-toast-show ad-toast-' + (type || 'success');
+      setTimeout(function () { el.className = 'ad-toast'; }, 3000);
+    }
+    function openModal(id) {
+      document.getElementById(id).classList.add('ad-open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('ad-open');
+    }
+
+    /* ── dynamic list (learn/make) ── */
+    function addListItem(containerId, value) {
+      var container = document.getElementById(containerId);
+      var row = document.createElement('div');
+      row.className = 'ad-feature-row';
+      row.innerHTML =
+        '<input class="ad-form-field" type="text" value="' + esc(value || '') + '" placeholder="Item..." />' +
+        '<button type="button" class="ad-feature-remove">×</button>';
+      row.querySelector('.ad-feature-remove').addEventListener('click', function () { row.remove(); });
+      container.appendChild(row);
+    }
+    function getListValues(containerId) {
+      return Array.from(document.getElementById(containerId).querySelectorAll('input'))
+        .map(function (i) { return i.value.trim(); })
+        .filter(Boolean);
+    }
+    function clearList(containerId) {
+      document.getElementById(containerId).innerHTML = '';
+    }
+
+    /* ═══════════════════════════════
+       DATA
+    ═══════════════════════════════ */
+    var allForgeEditions = [];
+    var currentSessionEditionId = null;
+
+    function loadForgeAll() {
+      loadForgeEditions();
+      loadForgeTst();
+      loadForgeApps();
+    }
+
+    /* populate edition selects across modals + session filter */
+    function populateEditionSelects() {
+      var opts = '<option value="">— Select Edition —</option>' +
+        allForgeEditions.map(function (e) {
+          return '<option value="' + esc(e.id) + '">' + esc(e.edition_name) + '</option>';
+        }).join('');
+      document.getElementById('fgsEdition').innerHTML = opts;
+      document.getElementById('forgeSessionsEditionFilter').innerHTML = opts;
+
+      var tstOpts = '<option value="">General (no specific edition)</option>' +
+        allForgeEditions.map(function (e) {
+          return '<option value="' + esc(e.id) + '">' + esc(e.edition_name) + '</option>';
+        }).join('');
+      document.getElementById('fgtEdition').innerHTML = tstOpts;
+    }
+
+    /* ── STATUS PILL ── */
+    function statusPill(status) {
+      var map = {
+        open: ['ad-pill-open', 'Open'],
+        closed: ['ad-pill-closed', 'Closed'],
+        past: ['ad-pill-past', 'Past'],
+        coming_soon: ['ad-pill-coming-soon', 'Coming Soon']
+      };
+      var info = map[status] || ['ad-pill-past', status];
+      return '<span class="ad-pill ' + info[0] + '">' + info[1] + '</span>';
+    }
+
+    /* ═══════════════════════════════
+       EDITIONS
+    ═══════════════════════════════ */
+    function loadForgeEditions() {
+      var grid = document.getElementById('forgeEditionsGrid');
+      grid.innerHTML = '<div class="ad-empty" style="animation:ad-pulse 1.4s infinite;">Loading editions…</div>';
+
+      sb.from('forge_editions').select('*').order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) { toast('Error loading editions', 'error'); return; }
+          allForgeEditions = r.data || [];
+          renderForgeEditions();
+          populateEditionSelects();
+        });
+    }
+
+    function renderForgeEditions() {
+      var grid = document.getElementById('forgeEditionsGrid');
+      if (!allForgeEditions.length) {
+        grid.innerHTML = '<div class="ad-empty">No editions yet. Add one above.</div>';
+        return;
+      }
+      grid.innerHTML = '';
+      allForgeEditions.forEach(function (ed) {
+        var priceDisplay = ed.price === 0 ? 'Free' : '₦' + Math.round(ed.price / 100).toLocaleString();
+        var card = document.createElement('div');
+        card.className = 'ad-forge-edition-card';
+        card.innerHTML =
+          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">' +
+            '<div class="ad-forge-edition-name">' + esc(ed.edition_name) + '</div>' +
+            statusPill(ed.status) +
+          '</div>' +
+          (ed.skill_focus ? '<div class="ad-forge-skill-focus">' + esc(ed.skill_focus) + '</div>' : '') +
+          '<div class="ad-forge-meta">' +
+            '<span>' + (ed.cohort_size ? ed.cohort_size + ' participants' : '') + '</span>' +
+            '<span>' + priceDisplay + '</span>' +
+            (ed.start_date ? '<span>Starts ' + fmtDate(ed.start_date) + '</span>' : '') +
+            (ed.session_day ? '<span>' + esc(ed.session_day) + '</span>' : '') +
+          '</div>' +
+          '<div class="ad-forge-actions">' +
+            '<button class="ad-act-btn" data-ed-edit="' + esc(ed.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger" data-ed-del="' + esc(ed.id) + '">Delete</button>' +
+          '</div>';
+        card.querySelector('[data-ed-edit]').addEventListener('click', function () { openEditEdition(ed); });
+        card.querySelector('[data-ed-del]').addEventListener('click', function () { deleteEdition(ed.id, ed.edition_name); });
+        grid.appendChild(card);
+      });
+    }
+
+    /* ── ADD EDITION ── */
+    var currentEditionId = null;
+
+    document.getElementById('addForgeEditionBtn').addEventListener('click', function () {
+      currentEditionId = null;
+      document.getElementById('forgeEditionModalTitle').textContent = 'Add Edition';
+      clearEditionForm();
+      openModal('forgeEditionModalOverlay');
+    });
+
+    document.getElementById('forgeEditionsRefreshBtn').addEventListener('click', loadForgeEditions);
+
+    document.getElementById('fgfAddLearnBtn').addEventListener('click', function () { addListItem('fgfLearnList', ''); });
+    document.getElementById('fgfAddMakeBtn').addEventListener('click', function () { addListItem('fgfMakeList', ''); });
+
+    function clearEditionForm() {
+      ['fgfName','fgfSkill','fgfDesc','fgfCohort','fgfSessionDay','fgfSessionCount','fgfDuration','fgfFormat','fgfFormUrl'].forEach(function (id) {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('fgfPrice').value = '0';
+      document.getElementById('fgfStartDate').value = '';
+      document.getElementById('fgfStatus').value = 'coming_soon';
+      clearList('fgfLearnList');
+      clearList('fgfMakeList');
+    }
+
+    function openEditEdition(ed) {
+      currentEditionId = ed.id;
+      document.getElementById('forgeEditionModalTitle').textContent = 'Edit Edition';
+      document.getElementById('fgfName').value        = ed.edition_name || '';
+      document.getElementById('fgfSkill').value       = ed.skill_focus || '';
+      document.getElementById('fgfDesc').value        = ed.description || '';
+      document.getElementById('fgfCohort').value      = ed.cohort_size || '';
+      document.getElementById('fgfPrice').value       = ed.price != null ? Math.round(ed.price / 100) : 0;
+      document.getElementById('fgfStartDate').value   = ed.start_date || '';
+      document.getElementById('fgfSessionDay').value  = ed.session_day || '';
+      document.getElementById('fgfSessionCount').value = ed.session_count || '';
+      document.getElementById('fgfDuration').value    = ed.duration_weeks || '';
+      document.getElementById('fgfFormat').value      = ed.format || '';
+      document.getElementById('fgfStatus').value      = ed.status || 'coming_soon';
+      document.getElementById('fgfFormUrl').value     = ed.google_form_url || '';
+      clearList('fgfLearnList');
+      clearList('fgfMakeList');
+      if (Array.isArray(ed.what_you_learn)) ed.what_you_learn.forEach(function (v) { addListItem('fgfLearnList', v); });
+      if (Array.isArray(ed.what_you_make))  ed.what_you_make.forEach(function (v) { addListItem('fgfMakeList', v); });
+      openModal('forgeEditionModalOverlay');
+    }
+
+    document.getElementById('saveForgeEditionBtn').addEventListener('click', function () {
+      var btn = this;
+      var priceNaira = parseInt(document.getElementById('fgfPrice').value, 10) || 0;
+      var payload = {
+        edition_name:   document.getElementById('fgfName').value.trim(),
+        skill_focus:    document.getElementById('fgfSkill').value.trim() || null,
+        description:    document.getElementById('fgfDesc').value.trim() || null,
+        cohort_size:    parseInt(document.getElementById('fgfCohort').value, 10) || null,
+        price:          priceNaira * 100,
+        start_date:     document.getElementById('fgfStartDate').value || null,
+        session_day:    document.getElementById('fgfSessionDay').value.trim() || null,
+        session_count:  parseInt(document.getElementById('fgfSessionCount').value, 10) || null,
+        duration_weeks: parseInt(document.getElementById('fgfDuration').value, 10) || null,
+        format:         document.getElementById('fgfFormat').value.trim() || null,
+        status:         document.getElementById('fgfStatus').value,
+        google_form_url: document.getElementById('fgfFormUrl').value.trim() || null,
+        what_you_learn: getListValues('fgfLearnList'),
+        what_you_make:  getListValues('fgfMakeList')
+      };
+      if (!payload.edition_name) { toast('Edition name is required', 'error'); return; }
+      btn.disabled = true;
+      var op = currentEditionId
+        ? sb.from('forge_editions').update(payload).eq('id', currentEditionId)
+        : sb.from('forge_editions').insert(payload);
+      op.then(function (r) {
+        btn.disabled = false;
+        if (r.error) { toast('Error: ' + r.error.message, 'error'); return; }
+        toast(currentEditionId ? 'Edition updated.' : 'Edition added.', 'success');
+        closeModal('forgeEditionModalOverlay');
+        loadForgeEditions();
+      });
+    });
+
+    document.getElementById('cancelForgeEditionBtn').addEventListener('click', function () { closeModal('forgeEditionModalOverlay'); });
+
+    function deleteEdition(id, name) {
+      if (!confirm('Delete edition "' + name + '"? This will also delete its sessions.')) return;
+      sb.from('forge_editions').delete().eq('id', id).then(function (r) {
+        if (r.error) { toast('Error deleting edition', 'error'); return; }
+        toast('Edition deleted.', 'success');
+        loadForgeEditions();
+      });
+    }
+
+    /* ═══════════════════════════════
+       SESSIONS
+    ═══════════════════════════════ */
+    document.getElementById('forgeSessionsEditionFilter').addEventListener('change', function () {
+      currentSessionEditionId = this.value || null;
+      if (currentSessionEditionId) loadForgeSessions(currentSessionEditionId);
+      else document.getElementById('forgeSessionsList').innerHTML = '<div class="ad-empty">Select an edition above to view sessions.</div>';
+    });
+
+    function loadForgeSessions(editionId) {
+      var list = document.getElementById('forgeSessionsList');
+      list.innerHTML = '<div class="ad-empty" style="animation:ad-pulse 1.4s infinite;">Loading sessions…</div>';
+      sb.from('forge_sessions').select('*').eq('edition_id', editionId)
+        .order('session_number', { ascending: true })
+        .then(function (r) {
+          if (r.error) { toast('Error loading sessions', 'error'); return; }
+          renderForgeSessions(r.data || []);
+        });
+    }
+
+    function renderForgeSessions(sessions) {
+      var list = document.getElementById('forgeSessionsList');
+      if (!sessions.length) {
+        list.innerHTML = '<div class="ad-empty">No sessions for this edition yet.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      sessions.forEach(function (s) {
+        var row = document.createElement('div');
+        row.className = 'ad-forge-session-row';
+        row.innerHTML =
+          '<div class="ad-forge-session-num">' + (s.session_number < 10 ? '0' : '') + s.session_number + '</div>' +
+          '<div class="ad-forge-session-body">' +
+            '<div class="ad-forge-session-title">' + esc(s.title) + '</div>' +
+            (s.description ? '<div class="ad-forge-session-desc">' + esc(s.description) + '</div>' : '') +
+            (s.session_date ? '<div class="ad-forge-session-date">' + fmtDate(s.session_date) + '</div>' : '') +
+          '</div>' +
+          '<div class="ad-forge-session-actions">' +
+            '<button class="ad-act-btn" data-sess-edit="' + esc(s.id) + '">Edit</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger" data-sess-del="' + esc(s.id) + '">Delete</button>' +
+          '</div>';
+        row.querySelector('[data-sess-edit]').addEventListener('click', function () { openEditSession(s); });
+        row.querySelector('[data-sess-del]').addEventListener('click', function () { deleteSession(s.id); });
+        list.appendChild(row);
+      });
+    }
+
+    var currentSessionId = null;
+
+    document.getElementById('addForgeSessionBtn').addEventListener('click', function () {
+      currentSessionId = null;
+      document.getElementById('forgeSessionModalTitle').textContent = 'Add Session';
+      clearSessionForm();
+      if (currentSessionEditionId) document.getElementById('fgsEdition').value = currentSessionEditionId;
+      openModal('forgeSessionModalOverlay');
+    });
+
+    function clearSessionForm() {
+      document.getElementById('fgsEdition').value = '';
+      document.getElementById('fgsNum').value = '';
+      document.getElementById('fgsDate').value = '';
+      document.getElementById('fgsTitle').value = '';
+      document.getElementById('fgsDesc').value = '';
+    }
+
+    function openEditSession(s) {
+      currentSessionId = s.id;
+      document.getElementById('forgeSessionModalTitle').textContent = 'Edit Session';
+      document.getElementById('fgsEdition').value = s.edition_id || '';
+      document.getElementById('fgsNum').value     = s.session_number || '';
+      document.getElementById('fgsDate').value    = s.session_date || '';
+      document.getElementById('fgsTitle').value   = s.title || '';
+      document.getElementById('fgsDesc').value    = s.description || '';
+      openModal('forgeSessionModalOverlay');
+    }
+
+    document.getElementById('saveForgeSessionBtn').addEventListener('click', function () {
+      var btn = this;
+      var payload = {
+        edition_id:     document.getElementById('fgsEdition').value,
+        session_number: parseInt(document.getElementById('fgsNum').value, 10) || 1,
+        title:          document.getElementById('fgsTitle').value.trim(),
+        description:    document.getElementById('fgsDesc').value.trim() || null,
+        session_date:   document.getElementById('fgsDate').value || null
+      };
+      if (!payload.edition_id) { toast('Select an edition', 'error'); return; }
+      if (!payload.title)      { toast('Title is required', 'error'); return; }
+      btn.disabled = true;
+      var op = currentSessionId
+        ? sb.from('forge_sessions').update(payload).eq('id', currentSessionId)
+        : sb.from('forge_sessions').insert(payload);
+      op.then(function (r) {
+        btn.disabled = false;
+        if (r.error) { toast('Error: ' + r.error.message, 'error'); return; }
+        toast(currentSessionId ? 'Session updated.' : 'Session added.', 'success');
+        closeModal('forgeSessionModalOverlay');
+        if (payload.edition_id === currentSessionEditionId) loadForgeSessions(currentSessionEditionId);
+      });
+    });
+
+    document.getElementById('cancelForgeSessionBtn').addEventListener('click', function () { closeModal('forgeSessionModalOverlay'); });
+
+    function deleteSession(id) {
+      if (!confirm('Delete this session?')) return;
+      sb.from('forge_sessions').delete().eq('id', id).then(function (r) {
+        if (r.error) { toast('Error deleting session', 'error'); return; }
+        toast('Session deleted.', 'success');
+        if (currentSessionEditionId) loadForgeSessions(currentSessionEditionId);
+      });
+    }
+
+    /* ═══════════════════════════════
+       FORGE TESTIMONIALS
+    ═══════════════════════════════ */
+    function loadForgeTst() {
+      var list = document.getElementById('forgeTstList');
+      list.innerHTML = '<div class="ad-empty" style="animation:ad-pulse 1.4s infinite;">Loading…</div>';
+      sb.from('forge_testimonials').select('*, forge_editions(edition_name)')
+        .order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) { toast('Error loading testimonials', 'error'); return; }
+          renderForgeTst(r.data || []);
+        });
+    }
+
+    function renderForgeTst(items) {
+      var list = document.getElementById('forgeTstList');
+      if (!items.length) {
+        list.innerHTML = '<div class="ad-empty">No Forge testimonials yet.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      items.forEach(function (t) {
+        var edName = (t.forge_editions && t.forge_editions.edition_name) ? t.forge_editions.edition_name : 'General';
+        var card = document.createElement('div');
+        card.className = 'ad-testimonial-card';
+        card.innerHTML =
+          '<div class="ad-testimonial-body">' +
+            '<div class="ad-testimonial-quote">"' + esc(t.quote.substring(0, 120)) + (t.quote.length > 120 ? '…' : '') + '"</div>' +
+            '<div class="ad-testimonial-meta">' + esc(t.member_name) +
+              (t.member_detail ? ' · ' + esc(t.member_detail) : '') +
+              ' · <span class="ad-pill ' + (t.is_active ? 'ad-pill-confirmed' : 'ad-pill-cancelled') + '">' +
+                (t.is_active ? 'Active' : 'Inactive') + '</span>' +
+              ' · <span style="color:#99B8F1;font-size:0.68rem;">' + esc(edName) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ad-testimonial-actions">' +
+            '<button class="ad-act-btn" data-ft-edit="' + esc(t.id) + '">Edit</button>' +
+            '<button class="ad-act-btn" data-ft-toggle="' + esc(t.id) + '" data-active="' + (t.is_active ? '1' : '0') + '">' +
+              (t.is_active ? 'Deactivate' : 'Activate') + '</button>' +
+            '<button class="ad-act-btn ad-act-btn--danger" data-ft-del="' + esc(t.id) + '">Delete</button>' +
+          '</div>';
+        card.querySelector('[data-ft-edit]').addEventListener('click', function () { openEditForgeTst(t); });
+        card.querySelector('[data-ft-toggle]').addEventListener('click', function () {
+          toggleForgeTst(t.id, t.is_active);
+        });
+        card.querySelector('[data-ft-del]').addEventListener('click', function () { deleteForgeTst(t.id); });
+        list.appendChild(card);
+      });
+    }
+
+    var currentForgeTstId = null;
+
+    document.getElementById('addForgeTstBtn').addEventListener('click', function () {
+      currentForgeTstId = null;
+      document.getElementById('forgeTstModalTitle').textContent = 'Add Forge Testimonial';
+      clearForgeTstForm();
+      openModal('forgeTstModalOverlay');
+    });
+
+    document.getElementById('forgeTstRefreshBtn').addEventListener('click', loadForgeTst);
+
+    function clearForgeTstForm() {
+      document.getElementById('fgtQuote').value  = '';
+      document.getElementById('fgtName').value   = '';
+      document.getElementById('fgtDetail').value = '';
+      document.getElementById('fgtEdition').value = '';
+      document.getElementById('fgtActive').checked = true;
+    }
+
+    function openEditForgeTst(t) {
+      currentForgeTstId = t.id;
+      document.getElementById('forgeTstModalTitle').textContent = 'Edit Forge Testimonial';
+      document.getElementById('fgtQuote').value   = t.quote || '';
+      document.getElementById('fgtName').value    = t.member_name || '';
+      document.getElementById('fgtDetail').value  = t.member_detail || '';
+      document.getElementById('fgtEdition').value = t.edition_id || '';
+      document.getElementById('fgtActive').checked = !!t.is_active;
+      openModal('forgeTstModalOverlay');
+    }
+
+    document.getElementById('saveForgeTstBtn').addEventListener('click', function () {
+      var btn = this;
+      var edVal = document.getElementById('fgtEdition').value;
+      var payload = {
+        quote:         document.getElementById('fgtQuote').value.trim(),
+        member_name:   document.getElementById('fgtName').value.trim(),
+        member_detail: document.getElementById('fgtDetail').value.trim() || null,
+        edition_id:    edVal || null,
+        is_active:     document.getElementById('fgtActive').checked
+      };
+      if (!payload.quote || !payload.member_name) { toast('Quote and name are required', 'error'); return; }
+      btn.disabled = true;
+      var op = currentForgeTstId
+        ? sb.from('forge_testimonials').update(payload).eq('id', currentForgeTstId)
+        : sb.from('forge_testimonials').insert(payload);
+      op.then(function (r) {
+        btn.disabled = false;
+        if (r.error) { toast('Error: ' + r.error.message, 'error'); return; }
+        toast(currentForgeTstId ? 'Testimonial updated.' : 'Testimonial added.', 'success');
+        closeModal('forgeTstModalOverlay');
+        loadForgeTst();
+      });
+    });
+
+    document.getElementById('cancelForgeTstBtn').addEventListener('click', function () { closeModal('forgeTstModalOverlay'); });
+
+    function toggleForgeTst(id, currentActive) {
+      sb.from('forge_testimonials').update({ is_active: !currentActive }).eq('id', id).then(function (r) {
+        if (r.error) { toast('Error updating', 'error'); return; }
+        toast(!currentActive ? 'Activated.' : 'Deactivated.', 'success');
+        loadForgeTst();
+      });
+    }
+
+    function deleteForgeTst(id) {
+      if (!confirm('Delete this Forge testimonial?')) return;
+      sb.from('forge_testimonials').delete().eq('id', id).then(function (r) {
+        if (r.error) { toast('Error deleting', 'error'); return; }
+        toast('Deleted.', 'success');
+        loadForgeTst();
+      });
+    }
+
+    /* ── Close modals on overlay click ── */
+    ['forgeEditionModalOverlay','forgeSessionModalOverlay','forgeTstModalOverlay'].forEach(function (id) {
+      document.getElementById(id).addEventListener('click', function (e) {
+        if (e.target === this) closeModal(id);
+      });
+    });
+
+    /* ═══════════════════════════════
+       PAGES PRIZE
+    ═══════════════════════════════ */
+    var allPPSubmissions = [];
+
+    function loadPagesPrize() {
+      var tb = document.getElementById('ppTableBody');
+      tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(6);
+      sb.from('pages_prize_interest')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) { toast('Error loading Pages Prize submissions', 'error'); return; }
+          allPPSubmissions = r.data || [];
+          document.getElementById('ppPanelTitle').textContent =
+            'Pages Prize (' + allPPSubmissions.length + ' ' + (allPPSubmissions.length === 1 ? 'person' : 'people') + ' interested)';
+          renderPPTable(allPPSubmissions);
+        });
+    }
+
+    function renderPPTable(rows) {
+      var tb = document.getElementById('ppTableBody');
+      tb.innerHTML = '';
+      if (!rows.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No submissions yet.</div></td></tr>';
+        return;
+      }
+      rows.forEach(function (row) {
+        var why = row.why_enter || row.why || '';
+        var whyTrunc = why.length > 60 ? why.slice(0, 60) + '…' : why;
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Date" style="font-size:0.78rem;color:rgba(255,241,224,0.6);white-space:nowrap">' + fmtDate(row.created_at) + '</td>' +
+          '<td data-label="Name" style="font-weight:600;color:#FFF1E0">' + esc(row.full_name || '—') + '</td>' +
+          '<td data-label="Email" style="font-size:0.78rem">' + esc(row.email || '—') + '</td>' +
+          '<td data-label="Handle" style="font-size:0.78rem;color:rgba(255,241,224,0.55)">' + esc(row.social_handle || '—') + '</td>' +
+          '<td data-label="Writing Link">' +
+            (row.writing_link ? '<a href="' + esc(row.writing_link) + '" target="_blank" rel="noopener" class="ad-link-orange">View →</a>' : '<span style="color:rgba(255,241,224,0.25)">—</span>') +
+          '</td>' +
+          '<td data-label="Why"><span class="ad-why-text" title="' + esc(why) + '">' + esc(whyTrunc) + '</span></td>' +
+          '<td data-label="Actions"><button class="ad-act-btn ad-act-btn--danger ad-pp-del" data-id="' + esc(row.id) + '">Delete</button></td>';
+        tb.appendChild(tr);
+      });
+      /* expand/collapse "why" on click */
+      tb.querySelectorAll('.ad-why-text').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var full = this.title;
+          var isExpanded = this.classList.contains('expanded');
+          this.textContent = isExpanded ? (full.length > 60 ? full.slice(0, 60) + '…' : full) : full;
+          this.classList.toggle('expanded', !isExpanded);
+        });
+      });
+      /* delete */
+      tb.onclick = function (e) {
+        var del = e.target.closest('.ad-pp-del');
+        if (del) deletePPSubmission(del.dataset.id);
+      };
+    }
+
+    function deletePPSubmission(id) {
+      if (!confirm('Delete this submission? This cannot be undone.')) return;
+      sb.from('pages_prize_interest').delete().eq('id', id).then(function (r) {
+        if (r.error) { toast('Error: ' + r.error.message, 'error'); return; }
+        allPPSubmissions = allPPSubmissions.filter(function (x) { return x.id !== id; });
+        document.getElementById('ppPanelTitle').textContent =
+          'Pages Prize (' + allPPSubmissions.length + ' ' + (allPPSubmissions.length === 1 ? 'person' : 'people') + ' interested)';
+        renderPPTable(filterPPRows(document.getElementById('ppSearchInput').value));
+        toast('Submission deleted.');
+      });
+    }
+
+    function filterPPRows(query) {
+      if (!query) return allPPSubmissions;
+      var q = query.toLowerCase();
+      return allPPSubmissions.filter(function (r) {
+        return (r.full_name || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.email || '').toLowerCase().indexOf(q) !== -1;
+      });
+    }
+
+    document.getElementById('ppSearchInput').addEventListener('input', function () {
+      renderPPTable(filterPPRows(this.value));
+    });
+
+    document.getElementById('ppRefreshBtn').addEventListener('click', function () {
+      ppLoaded = false;
+      loadPagesPrize();
+    });
+
+    document.getElementById('ppExportBtn').addEventListener('click', function () {
+      if (!allPPSubmissions.length) { toast('No submissions to export.', 'error'); return; }
+      var header = ['Date', 'Name', 'Email', 'Handle', 'Writing Link', 'Why'];
+      var rows = allPPSubmissions.map(function (r) {
+        return [
+          fmtDate(r.created_at),
+          r.full_name || '',
+          r.email || '',
+          r.social_handle || '',
+          r.writing_link || '',
+          (r.why_enter || r.why || '').replace(/"/g, '""')
+        ].map(function (v) { return '"' + v + '"'; }).join(',');
+      });
+      var csv = [header.join(',')].concat(rows).join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'pages-prize-interest-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV exported.');
+    });
+
+    /* ═══════════════════════════════
+       FORGE APPLICATIONS
+    ═══════════════════════════════ */
+    var allForgeApps = [];
+
+    function loadForgeApps() {
+      var tb = document.getElementById('forgeAppsTableBody');
+      tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(5);
+      sb.from('forge_applications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) { toast('Error loading applications', 'error'); return; }
+          allForgeApps = r.data || [];
+          document.getElementById('forgeAppsTitle').textContent =
+            'Applications (' + allForgeApps.length + ')';
+          renderForgeAppsTable(allForgeApps);
+        });
+    }
+
+    function appsStatusClass(status) {
+      if (status === 'accepted') return 'status-accepted';
+      if (status === 'rejected') return 'status-rejected';
+      return 'status-pending';
+    }
+
+    function renderForgeAppsTable(rows) {
+      var tb = document.getElementById('forgeAppsTableBody');
+      tb.innerHTML = '';
+      if (!rows.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No applications yet.</div></td></tr>';
+        return;
+      }
+      rows.forEach(function (row) {
+        var status = row.status || 'pending';
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Date" style="font-size:0.78rem;color:rgba(255,241,224,0.6);white-space:nowrap">' + fmtDate(row.created_at) + '</td>' +
+          '<td data-label="Name" style="font-weight:600;color:#FFF1E0">' + esc(row.full_name || '—') + '</td>' +
+          '<td data-label="Email" style="font-size:0.78rem">' + esc(row.email || '—') + '</td>' +
+          '<td data-label="Occupation" style="font-size:0.78rem;color:rgba(255,241,224,0.6)">' + esc(row.occupation || '—') + '</td>' +
+          '<td data-label="Skill Level"><span class="ad-pill ad-pill-pending" style="text-transform:capitalize">' + esc(row.skill_level || '—') + '</span></td>' +
+          '<td data-label="Edition" style="font-size:0.72rem;color:rgba(255,241,224,0.4)">' + esc(row.edition_name || '—') + '</td>' +
+          '<td data-label="Status">' +
+            '<select class="ad-status-select ' + appsStatusClass(status) + '" data-app-id="' + esc(row.id) + '">' +
+              '<option value="pending"'   + (status === 'pending'   ? ' selected' : '') + '>Pending</option>' +
+              '<option value="accepted"'  + (status === 'accepted'  ? ' selected' : '') + '>Accepted</option>' +
+              '<option value="rejected"'  + (status === 'rejected'  ? ' selected' : '') + '>Rejected</option>' +
+            '</select>' +
+          '</td>';
+        tb.appendChild(tr);
+      });
+      /* status change handler */
+      tb.querySelectorAll('.ad-status-select').forEach(function (sel) {
+        sel.addEventListener('change', function () {
+          var id = this.dataset.appId;
+          var newStatus = this.value;
+          var el = this;
+          el.disabled = true;
+          sb.from('forge_applications').update({ status: newStatus }).eq('id', id).then(function (r) {
+            el.disabled = false;
+            if (r.error) { toast('Error: ' + r.error.message, 'error'); el.value = el.dataset.prev || 'pending'; return; }
+            el.className = 'ad-status-select ' + appsStatusClass(newStatus);
+            /* update local cache */
+            var app = allForgeApps.find(function (x) { return x.id === id; });
+            if (app) app.status = newStatus;
+            toast('Status updated to ' + newStatus + '.');
+          });
+          el.dataset.prev = newStatus;
+        });
+        /* store initial value */
+        sel.dataset.prev = sel.value;
+      });
+    }
+
+    document.getElementById('forgeAppsRefreshBtn').addEventListener('click', loadForgeApps);
+
+    document.getElementById('forgeAppsExportBtn').addEventListener('click', function () {
+      if (!allForgeApps.length) { toast('No applications to export.', 'error'); return; }
+      var header = ['Date', 'Name', 'Email', 'Phone', 'Occupation', 'Why Apply', 'Skill Level', 'Referral', 'Edition', 'Status'];
+      var rows = allForgeApps.map(function (r) {
+        return [
+          fmtDate(r.created_at),
+          r.full_name || '',
+          r.email || '',
+          r.phone || '',
+          r.occupation || '',
+          (r.why_apply || '').replace(/"/g, '""'),
+          r.skill_level || '',
+          r.referral_source || '',
+          r.edition_name || '',
+          r.status || 'pending'
+        ].map(function (v) { return '"' + v + '"'; }).join(',');
+      });
+      var csv = [header.join(',')].concat(rows).join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'forge-applications-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV exported.');
+    });
+
+  }());
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Squared</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800;12..96,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #0a0a0a; color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: #111; border-radius: 16px; padding: 48px;
+      max-width: 400px; width: 100%;
+      border: 1px solid rgba(255,241,224,0.06);
+    }
+
+    .login-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.8rem; font-weight: 900; color: #F67A3E;
+      letter-spacing: -0.04em; margin-bottom: 6px;
+    }
+    .login-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.4rem; font-weight: 700; color: #FFF1E0;
+      margin-bottom: 32px;
+    }
+
+    .login-label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: rgba(255,241,224,0.45); letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .login-input {
+      width: 100%; background: #1a1a1a;
+      border: 1px solid rgba(255,241,224,0.08); border-radius: 8px;
+      padding: 14px 16px; color: #FFF1E0; font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      outline: none; margin-bottom: 20px; display: block;
+      transition: border-color 200ms ease;
+    }
+    .login-input:focus { border-color: rgba(255,241,224,0.25); }
+    .login-input.is-err { border-color: #e05252 !important; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-6px); }
+      80%      { transform: translateX(6px); }
+    }
+    .login-input.shake { animation: shake 0.35s ease; }
+
+    .login-err {
+      font-size: 0.78rem; color: #e05252;
+      min-height: 20px; margin-bottom: 16px; margin-top: -12px;
+    }
+
+    .login-btn {
+      width: 100%; background: #F67A3E; color: #0E0E0E;
+      border: none; border-radius: 999px; padding: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer;
+      transition: opacity 200ms ease;
+    }
+    .login-btn:hover { opacity: 0.88; }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    @media (max-width: 768px) {
+      body { padding: 0; overflow-x: hidden; }
+      .login-card {
+        margin: 0 20px;
+        padding: 28px 20px;
+        width: auto;
+        max-width: none;
+      }
+      .login-logo {
+        text-align: center;
+        font-size: 1.5rem;
+      }
+      .login-title {
+        text-align: center;
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+      }
+      .login-label {
+        font-size: 0.875rem;
+      }
+      .login-input {
+        font-size: 1rem; /* 16px — prevents iOS auto-zoom on focus */
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+      }
+      .login-err {
+        font-size: 0.875rem;
+        color: #F67A3E;
+        margin-top: -8px;
+        margin-bottom: 16px;
+      }
+      .login-btn {
+        padding: 14px;
+        color: #ffffff;
+        border-radius: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-logo">squared.</div>
+    <div class="login-title">Admin Panel</div>
+
+    <label class="login-label" for="loginEmail">Email</label>
+    <input class="login-input" id="loginEmail" type="email" placeholder="admin@example.com" autocomplete="email" />
+
+    <label class="login-label" for="loginPassword">Password</label>
+    <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+    <div class="login-err" id="loginErr"></div>
+
+    <button class="login-btn" id="loginBtn">Sign In</button>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var sb = window.supabase.createClient(
+      'https://kekljrckgwidrvftaxuu.supabase.co',
+      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
+    );
+
+    /* If already signed in, skip straight to dashboard */
+    sb.auth.getSession().then(function (result) {
+      if (result.data.session) {
+        window.location.href = 'admin.html';
+      }
+    });
+
+    var emailEl = document.getElementById('loginEmail');
+    var passEl  = document.getElementById('loginPassword');
+    var errEl   = document.getElementById('loginErr');
+    var btn     = document.getElementById('loginBtn');
+
+    function setError(msg) {
+      errEl.textContent = msg;
+      [emailEl, passEl].forEach(function (el) {
+        el.classList.add('is-err', 'shake');
+        setTimeout(function () { el.classList.remove('shake'); }, 400);
+      });
+    }
+
+    function clearError() {
+      errEl.textContent = '';
+      [emailEl, passEl].forEach(function (el) { el.classList.remove('is-err'); });
+    }
+
+    async function attemptLogin() {
+      clearError();
+      var email = emailEl.value.trim();
+      var password = passEl.value;
+
+      if (!email || !password) {
+        setError('Please enter your email and password.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      var result = await sb.auth.signInWithPassword({ email: email, password: password });
+
+      if (result.error) {
+        setError('Invalid credentials. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+        return;
+      }
+
+      window.location.href = 'admin.html';
+    }
+
+    btn.addEventListener('click', attemptLogin);
+    passEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') attemptLogin();
+    });
+    emailEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') passEl.focus();
+    });
+
+  })();
+  </script>
+
+</body>
+</html>
