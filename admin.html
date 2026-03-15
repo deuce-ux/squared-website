@@ -3103,8 +3103,14 @@
         .select('*')
         .order('created_at', { ascending: false })
         .then(function (r) {
-          if (r.error) { toast('Error loading applications', 'error'); return; }
+          if (r.error) {
+            console.error('forge_applications fetch error:', r.error);
+            toast('Error: ' + (r.error.message || 'Could not load applications'), 'error');
+            tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Error: ' + esc(r.error.message || 'RLS or table missing') + '</div></td></tr>';
+            return;
+          }
           allForgeApps = r.data || [];
+          console.log('forge_applications loaded:', allForgeApps.length, 'rows');
           document.getElementById('forgeAppsTitle').textContent =
             'Applications (' + allForgeApps.length + ')';
           renderForgeAppsTable(allForgeApps);
