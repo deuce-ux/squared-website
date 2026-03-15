@@ -357,6 +357,19 @@
     }
     .ad-forge-edition-select-row select { max-width: 260px; }
 
+    @media (max-width: 768px) {
+      .ad-forge-subheader { flex-wrap: wrap; gap: 10px; }
+      .ad-forge-subheader .ad-panel-actions { width: 100%; justify-content: flex-start; }
+      .ad-forge-subheader-title { font-size: 1.15rem; }
+      .ad-forge-edition-select-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .ad-forge-edition-select-row select { max-width: 100%; width: 100%; }
+      .ad-forge-subsection { margin-bottom: 28px; }
+      .ad-forge-subsection .ad-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .ad-forge-subsection .ad-table { min-width: 600px; }
+      .ad-forge-subsection .ad-table th,
+      .ad-forge-subsection .ad-table td { padding: 10px 12px; font-size: 0.75rem; }
+    }
+
     /* === FORGE SESSION ROWS === */
     .ad-forge-session-list { display: flex; flex-direction: column; gap: 10px; }
     .ad-forge-session-row {
