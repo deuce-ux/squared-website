@@ -3215,6 +3215,29 @@
             var app = allForgeApps.find(function (x) { return x.id === id; });
             if (app) app.status = newStatus;
             toast('Status updated to ' + newStatus + '.');
+
+            /* send acceptance email when status flipped to accepted */
+            if (newStatus === 'accepted') {
+              sb.from('forge_applications').select('full_name, email').eq('id', id).single()
+                .then(function (appRes) {
+                  if (appRes.error || !appRes.data) {
+                    toast('Status updated but could not fetch applicant details for email.', 'warn');
+                    return;
+                  }
+                  var name  = appRes.data.full_name;
+                  var email = appRes.data.email;
+                  sb.functions.invoke('send-forge-acceptance-email', {
+                    body: { applicant_name: name, applicant_email: email }
+                  }).then(function (fnRes) {
+                    if (fnRes.error) {
+                      console.error('Email function error:', fnRes.error);
+                      toast('Status updated but email failed to send.', 'warn');
+                    } else {
+                      toast('Acceptance email sent to ' + name + '.', 'success');
+                    }
+                  });
+                });
+            }
           });
           el.dataset.prev = newStatus;
         });
