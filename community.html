@@ -60,21 +60,23 @@
     .cm-sl-label { font-size: 0.72rem; color: #F67A3E; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 20px; }
     .cm-sl-heading { font-family: 'Bricolage Grotesque', sans-serif; font-size: 3rem; font-weight: 800; color: #FFF1E0; letter-spacing: -0.03em; margin: 0 0 12px; line-height: 1.05; }
     .cm-sl-sub { font-size: 1rem; color: rgba(255,241,224,0.55); max-width: 480px; margin: 0 0 48px; line-height: 1.6; }
-    .cm-sl-cards { display: flex; gap: 20px; flex-wrap: wrap; }
-    .cm-sl-card { background: #111; border-radius: 16px; padding: 28px; border: 1px solid rgba(255,241,224,0.06); box-shadow: none; flex: 1; min-width: 200px; display: flex; flex-direction: column; }
-    .cm-sl-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .cm-sl-card-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 700; color: #FFF1E0; }
-    .cm-sl-count-pill { background: rgba(246,122,62,0.15); color: #F67A3E; font-size: 0.68rem; font-weight: 500; padding: 3px 8px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
-    .cm-sl-avatars { display: flex; margin-bottom: 10px; }
-    .cm-sl-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,241,224,0.1); background: #1a1a1a; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; margin-left: -12px; }
-    .cm-sl-avatars .cm-sl-avatar:first-child { margin-left: 0; }
-    .cm-sl-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .cm-sl-avatar-more { font-size: 0.7rem; font-weight: 600; color: #F67A3E; }
-    .cm-sl-avatar-initials { font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.8rem; font-weight: 700; color: #FFF1E0; }
-    .cm-sl-names { font-size: 0.82rem; color: rgba(255,241,224,0.55); margin-bottom: 8px; line-height: 1.4; }
-    .cm-sl-meta { font-size: 0.72rem; color: rgba(255,241,224,0.35); margin-bottom: 14px; }
-    .cm-sl-cta { font-size: 0.78rem; color: #F67A3E; text-decoration: none; margin-top: auto; }
-    .cm-sl-cta:hover { text-decoration: underline; }
+    /* Square sections */
+    .cm-sl-square-section { padding-bottom: 48px; margin-bottom: 48px; border-bottom: 1px solid rgba(255,241,224,0.08); }
+    .cm-sl-square-section:last-of-type { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
+    .cm-sl-sq-header { margin-bottom: 24px; }
+    .cm-sl-sq-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; color: #F67A3E; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 6px; }
+    .cm-sl-sq-heading { font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; color: #FFF1E0; letter-spacing: -0.02em; margin: 0; }
+    /* Leaders grid */
+    .cm-sl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+    /* Individual leader card */
+    .cm-sl-leader-card { background: #111111; border-radius: 16px; padding: 20px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .cm-sl-leader-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0; }
+    .cm-sl-leader-initials { width: 64px; height: 64px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #F67A3E; flex-shrink: 0; }
+    .cm-sl-leader-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 600; color: #FFF1E0; margin-top: 12px; line-height: 1.3; }
+    .cm-sl-leader-squad { font-family: 'Poppins', sans-serif; font-size: 11px; color: rgba(255,241,224,0.4); margin-top: 4px; }
+    /* Bottom CTA bar */
+    .cm-sl-cta-bar { margin-top: 48px; padding-top: 40px; border-top: 1px solid rgba(255,241,224,0.08); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .cm-sl-cta-text { font-size: 1rem; color: rgba(255,241,224,0.55); margin: 0; }
 
     /* ── APPLY ── */
     .cm-apply-outer { background: #0a0a0a; padding: 80px 48px; }
@@ -97,9 +99,8 @@
       .cm-ct-cards { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 16px; padding-bottom: 12px; }
       .cm-ct-cards::-webkit-scrollbar { display: none; }
       .cm-ct-card { width: 120px; flex-shrink: 0; }
-      .cm-sl-cards { flex-direction: column; }
-      .cm-sl-avatar { margin-left: -8px; }
-      .cm-sl-card { min-width: unset; }
+      .cm-sl-grid { grid-template-columns: repeat(2, 1fr); }
+      .cm-sl-cta-bar { flex-direction: column; align-items: flex-start; }
       .cm-apply-card { padding: 40px 28px; }
       .cm-apply-sticker { display: none; }
       .cm-rg-expand-inner .btn-secondary { padding: 10px 20px; font-size: 13px; min-height: 40px; }
@@ -335,34 +336,26 @@
         <h2 class="cm-sl-heading">Every Square has a leader.</h2>
         <p class="cm-sl-sub">Squad leaders run the day-to-day. Check-ins, accountability, community.</p>
 
-        <div class="cm-sl-cards" id="slCardsContainer">
-          <!-- Placeholder: shown when Supabase is empty -->
-          <div class="cm-sl-card">
-            <div class="cm-sl-card-top">
-              <div class="cm-sl-card-title">Square 1</div>
-              <span class="cm-sl-count-pill">Opening soon</span>
+        <div id="slCardsContainer">
+          <!-- populated by JS; placeholder shown when Supabase returns no data -->
+          <div class="cm-sl-square-section">
+            <div class="cm-sl-sq-header">
+              <p class="cm-sl-sq-eyebrow">SQUARE</p>
+              <h3 class="cm-sl-sq-heading">Coming soon</h3>
             </div>
-            <div class="cm-sl-avatars">
-              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
-              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
+            <div class="cm-sl-grid">
+              <div class="cm-sl-leader-card">
+                <div class="cm-sl-leader-initials">?</div>
+                <div class="cm-sl-leader-name">TBA</div>
+                <div class="cm-sl-leader-squad">Squad 1</div>
+              </div>
             </div>
-            <div class="cm-sl-names">Leaders TBA</div>
-            <div class="cm-sl-meta">Tue &amp; Thu check-ins · 2–3 hrs/week</div>
-            <a href="join.html" class="btn-primary">Become a Squad Leader →</a>
           </div>
-          <div class="cm-sl-card">
-            <div class="cm-sl-card-top">
-              <div class="cm-sl-card-title">Square 2</div>
-              <span class="cm-sl-count-pill">Opening soon</span>
-            </div>
-            <div class="cm-sl-avatars">
-              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
-              <div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">SL</span></div>
-            </div>
-            <div class="cm-sl-names">Leaders TBA</div>
-            <div class="cm-sl-meta">Tue &amp; Thu check-ins · 2–3 hrs/week</div>
-            <a href="join.html" class="btn-primary">Become a Squad Leader →</a>
-          </div>
+        </div>
+
+        <div class="cm-sl-cta-bar">
+          <p class="cm-sl-cta-text">Each Square needs a dedicated leader. Think you've got what it takes?</p>
+          <a href="join.html" class="btn-primary">Become a Squad Leader →</a>
         </div>
 
       </div>
@@ -519,50 +512,58 @@
     }
 
     /* ── SQUAD LEADERS ── */
-    function slAvatarHtml(m) {
+    function slLeaderCardHtml(m) {
+      var photoHtml;
       if (m.photo_url) {
-        return '<div class="cm-sl-avatar" style="overflow:hidden;"><img src="' + esc(sbImg(m.photo_url, '?width=200&height=200&resize=cover&format=webp&quality=75')) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" /></div>';
+        photoHtml = '<img class="cm-sl-leader-photo" src="' + esc(sbImg(m.photo_url, '?width=200&height=200&resize=cover&format=webp&quality=75')) + '" alt="" />';
+      } else {
+        var initial = m.name ? m.name.trim().charAt(0).toUpperCase() : '?';
+        photoHtml = '<div class="cm-sl-leader-initials">' + esc(initial) + '</div>';
       }
-      return '<div class="cm-sl-avatar"><span class="cm-sl-avatar-initials">' + esc(m.name ? m.name.trim().charAt(0).toUpperCase() : 'L') + '</span></div>';
+      /* "Squad 1 (Bloom)" → squad display = "Squad 1" */
+      var squadDisplay = (m.squad || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+      return '<div class="cm-sl-leader-card">' +
+        photoHtml +
+        '<div class="cm-sl-leader-name">' + esc(m.name || '') + '</div>' +
+        (squadDisplay ? '<div class="cm-sl-leader-squad">' + esc(squadDisplay) + '</div>' : '') +
+      '</div>';
     }
 
-    function slCardHtml(squareName, leaders) {
-      var shown    = leaders.slice(0, 4);
-      var extra    = leaders.length - 4;
-      var avHtml   = shown.map(slAvatarHtml).join('');
-      if (extra > 0) avHtml += '<div class="cm-sl-avatar"><span class="cm-sl-avatar-more">+' + extra + '</span></div>';
-      var names    = leaders.map(function (m) { return m.name; });
-      var namesStr = names.length <= 3
-        ? names.join(', ')
-        : names.slice(0, 3).join(', ') + ' and ' + (names.length - 3) + ' more';
-      var countLabel = leaders.length + ' Leader' + (leaders.length !== 1 ? 's' : '');
-      return '<div class="cm-sl-card">' +
-        '<div class="cm-sl-card-top">' +
-          '<div class="cm-sl-card-title">' + esc(squareName) + '</div>' +
-          '<span class="cm-sl-count-pill">' + esc(countLabel) + '</span>' +
+    function slSquareSectionHtml(squareName, leaders) {
+      /* sort by squad number within the square */
+      leaders.sort(function(a, b) {
+        var na = parseInt((a.squad || '').replace(/\D/g, ''), 10) || 0;
+        var nb = parseInt((b.squad || '').replace(/\D/g, ''), 10) || 0;
+        return na - nb || (a.name || '').localeCompare(b.name || '');
+      });
+      return '<div class="cm-sl-square-section">' +
+        '<div class="cm-sl-sq-header">' +
+          '<p class="cm-sl-sq-eyebrow">SQUARE</p>' +
+          '<h3 class="cm-sl-sq-heading">' + esc(squareName) + '</h3>' +
         '</div>' +
-        '<div class="cm-sl-avatars">' + avHtml + '</div>' +
-        '<div class="cm-sl-names">' + esc(namesStr) + '</div>' +
-        '<div class="cm-sl-meta">Tue &amp; Thu check-ins &middot; 2&ndash;3 hrs/week</div>' +
-        '<a href="join.html" class="btn-primary">Become a Squad Leader &rarr;</a>' +
+        '<div class="cm-sl-grid">' +
+          leaders.map(slLeaderCardHtml).join('') +
+        '</div>' +
       '</div>';
     }
 
     function renderSquadLeaders(leaders) {
       var container = document.getElementById('slCardsContainer');
       if (!container || !leaders.length) return; /* keep placeholder */
-      var grouped = {}, order = [];
-      leaders.forEach(function (m) {
-        var sq = (m.squad || 'Unassigned').trim();
-        if (!grouped[sq]) { grouped[sq] = []; order.push(sq); }
-        grouped[sq].push(m);
+      var groups = {}, squareOrder = [];
+      leaders.forEach(function(m) {
+        var squad = (m.squad || '').trim();
+        var match = squad.match(/\(([^)]+)\)/);
+        var squareName = match ? match[1].trim() : 'General';
+        if (!groups[squareName]) { groups[squareName] = []; squareOrder.push(squareName); }
+        groups[squareName].push(m);
       });
-      order.sort(function (a, b) {
-        var na = parseInt(a.replace(/\D/g, ''), 10) || 0;
-        var nb = parseInt(b.replace(/\D/g, ''), 10) || 0;
-        return na - nb || a.localeCompare(b);
-      });
-      container.innerHTML = order.map(function (sq) { return slCardHtml(sq, grouped[sq]); }).join('');
+      /* General last, rest in insertion order (oldest member first = cohort order) */
+      var generalIdx = squareOrder.indexOf('General');
+      if (generalIdx !== -1) { squareOrder.splice(generalIdx, 1); squareOrder.push('General'); }
+      container.innerHTML = squareOrder.map(function(sq) {
+        return slSquareSectionHtml(sq, groups[sq]);
+      }).join('');
     }
 
     if (!window.supabase) return;
@@ -579,7 +580,7 @@
 
     /* Squad Leaders: grouped by squad field */
     sb.from('members').select('*').eq('role', 'Squad Leader')
-      .eq('is_active', true).order('squad', { ascending: true }).order('created_at', { ascending: true })
+      .eq('is_active', true).order('created_at', { ascending: true })
       .then(function (r) {
         if (r.error || !r.data || !r.data.length) return;
         renderSquadLeaders(r.data);
