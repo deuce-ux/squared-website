@@ -3226,15 +3226,25 @@
                   }
                   var name  = appRes.data.full_name;
                   var email = appRes.data.email;
-                  sb.functions.invoke('send-forge-acceptance-email', {
-                    body: { applicant_name: name, applicant_email: email }
-                  }).then(function (fnRes) {
-                    if (fnRes.error) {
-                      console.error('Email function error:', fnRes.error);
+                  fetch('https://kekljrckgwidrvftaxuu.supabase.co/functions/v1/send-forge-acceptance-email', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + SUPABASE_KEY
+                    },
+                    body: JSON.stringify({ applicant_name: name, applicant_email: email })
+                  }).then(function (r) { return r.json(); })
+                  .then(function (fnData) {
+                    console.log('Email function response:', fnData);
+                    if (fnData.error || fnData.statusCode === 400) {
+                      console.error('Email error detail:', fnData);
                       toast('Status updated but email failed to send.', 'warn');
                     } else {
                       toast('Acceptance email sent to ' + name + '.', 'success');
                     }
+                  }).catch(function (err) {
+                    console.error('Email fetch error:', err);
+                    toast('Status updated but email failed to send.', 'warn');
                   });
                 });
             }
