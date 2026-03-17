@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Squared Bookshop</title>
+  <title>Admin — Squared</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800;12..96,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -546,6 +546,39 @@
       /* Misc */
       .ad-forge-grid { grid-template-columns: 1fr; }
     }
+
+    /* === APPLICATIONS TOGGLE === */
+    .ad-apps-toggle-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0 18px; margin-bottom: 4px;
+      border-bottom: 1px solid rgba(255,241,224,0.06);
+    }
+    .ad-apps-toggle-label {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1rem; font-weight: 700; color: #FFF1E0; letter-spacing: -0.02em;
+    }
+    .ad-toggle-switch {
+      position: relative; width: 44px; height: 24px; flex-shrink: 0;
+    }
+    .ad-toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .ad-toggle-track {
+      position: absolute; inset: 0; border-radius: 9999px;
+      background: rgba(255,241,224,0.12); cursor: pointer;
+      transition: background 200ms ease;
+    }
+    .ad-toggle-track::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(255,241,224,0.45);
+      transition: transform 200ms ease, background 200ms ease;
+    }
+    .ad-toggle-switch input:checked + .ad-toggle-track { background: #22c55e; }
+    .ad-toggle-switch input:checked + .ad-toggle-track::after { transform: translateX(20px); background: #fff; }
+    .ad-apps-toggle-status {
+      font-size: 0.78rem; font-weight: 600; border-radius: 999px; padding: 4px 12px;
+    }
+    .ad-apps-toggle-status.open   { color: #22c55e; background: rgba(34,197,94,0.1); }
+    .ad-apps-toggle-status.closed { color: rgba(255,241,224,0.35); background: rgba(255,241,224,0.05); }
   </style>
   <script>document.documentElement.style.visibility = 'hidden';</script>
 </head>
@@ -748,7 +781,7 @@
         <div class="ad-panel-header">
           <div class="ad-panel-title" id="ppPanelTitle">Pages Prize</div>
           <div class="ad-panel-actions">
-            <input type="text" class="ad-search-input" id="ppSearchInput" placeholder="Search name or email…" />
+            <input type="text" class="ad-search-input" id="ppSearchInput" placeholder="Search name or email…" autocomplete="off" />
             <button class="ad-btn-ghost" id="ppRefreshBtn">↺ Refresh</button>
             <button class="ad-btn-ghost" id="ppExportBtn">↓ Export CSV</button>
           </div>
@@ -824,6 +857,17 @@
               <button class="ad-btn-ghost" id="forgeAppsExportBtn">↓ Export CSV</button>
             </div>
           </div>
+
+          <!-- Applications open/closed toggle -->
+          <div class="ad-apps-toggle-row">
+            <span class="ad-apps-toggle-label">Forge 1.0 Applications</span>
+            <label class="ad-toggle-switch" title="Toggle applications open/closed">
+              <input type="checkbox" id="forgeAppsToggle" />
+              <span class="ad-toggle-track"></span>
+            </label>
+            <span class="ad-apps-toggle-status closed" id="forgeAppsToggleStatus">Loading…</span>
+          </div>
+
           <div class="ad-table-wrap">
             <table class="ad-table">
               <thead>
@@ -1363,14 +1407,18 @@
 
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script>
+    /* ─── Single shared Supabase client for the whole admin ─── */
+    window._adminSb = window.supabase.createClient(
+      'https://kekljrckgwidrvftaxuu.supabase.co',
+      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
+    );
+  </script>
+  <script>
   (function () {
     'use strict';
 
     /* ─── CONFIG ─── */
-    var sb = window.supabase.createClient(
-      'https://kekljrckgwidrvftaxuu.supabase.co',
-      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
-    );
+    var sb = window._adminSb;
 
     /* ─── HELPERS ─── */
     function esc(s) {
@@ -2557,10 +2605,7 @@
   (function () {
     'use strict';
 
-    var sb = window.supabase.createClient(
-      'https://kekljrckgwidrvftaxuu.supabase.co',
-      'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
-    );
+    var sb = window._adminSb;
 
     /* ── helpers ── */
     function esc(s) {
@@ -2615,6 +2660,7 @@
       loadForgeEditions();
       loadForgeTst();
       loadForgeApps();
+      loadForgeAppSetting();
     }
     window.loadForgeAll = loadForgeAll;
 
@@ -3144,6 +3190,54 @@
     /* ═══════════════════════════════
        FORGE APPLICATIONS
     ═══════════════════════════════ */
+
+    /* ── Applications open/closed toggle ── */
+    function loadForgeAppSetting() {
+      sb.from('settings')
+        .select('value')
+        .eq('key', 'forge_applications_open')
+        .single()
+        .then(function (r) {
+          var isOpen = !r.error && r.data && r.data.value === 'true';
+          var toggle = document.getElementById('forgeAppsToggle');
+          var status = document.getElementById('forgeAppsToggleStatus');
+          if (toggle) toggle.checked = isOpen;
+          if (status) {
+            status.textContent = isOpen ? 'Accepting applications' : 'Applications closed';
+            status.className = 'ad-apps-toggle-status ' + (isOpen ? 'open' : 'closed');
+          }
+        });
+    }
+
+    document.getElementById('forgeAppsToggle').addEventListener('change', function () {
+      var isOpen = this.checked;
+      var toggleEl = this;
+      var status = document.getElementById('forgeAppsToggleStatus');
+      if (status) {
+        status.textContent = 'Saving…';
+        status.className = 'ad-apps-toggle-status closed';
+      }
+      sb.from('settings')
+        .update({ value: isOpen ? 'true' : 'false', updated_at: new Date().toISOString() })
+        .eq('key', 'forge_applications_open')
+        .then(function (r) {
+          if (r.error) {
+            toast('Could not save setting.', 'error');
+            toggleEl.checked = !isOpen;
+            if (status) {
+              status.textContent = !isOpen ? 'Accepting applications' : 'Applications closed';
+              status.className = 'ad-apps-toggle-status ' + (!isOpen ? 'open' : 'closed');
+            }
+            return;
+          }
+          if (status) {
+            status.textContent = isOpen ? 'Accepting applications' : 'Applications closed';
+            status.className = 'ad-apps-toggle-status ' + (isOpen ? 'open' : 'closed');
+          }
+          toast(isOpen ? 'Applications opened.' : 'Applications closed.', 'success');
+        });
+    });
+
     var allForgeApps = [];
 
     function loadForgeApps() {
@@ -3236,11 +3330,11 @@
                   }).then(function (r) { return r.json(); })
                   .then(function (fnData) {
                     console.log('Email function response:', fnData);
-                    if (fnData.error || fnData.statusCode === 400) {
+                    if (fnData.id) {
+                      toast('Acceptance email sent to ' + name + '.', 'success');
+                    } else {
                       console.error('Email error detail:', fnData);
                       toast('Status updated but email failed to send.', 'warn');
-                    } else {
-                      toast('Acceptance email sent to ' + name + '.', 'success');
                     }
                   }).catch(function (err) {
                     console.error('Email fetch error:', err);

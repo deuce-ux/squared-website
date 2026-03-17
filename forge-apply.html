@@ -751,6 +751,17 @@
 
     var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    /* ── Guard: redirect to forge.html if applications are closed ── */
+    sb.from('settings')
+      .select('value')
+      .eq('key', 'forge_applications_open')
+      .single()
+      .then(function (r) {
+        if (!r.error && r.data && r.data.value === 'false') {
+          window.location.replace('forge.html');
+        }
+      });
+
     sb.from('forge_editions')
       .select('edition_name, skill_focus, cohort_size, price, start_date, session_count, session_day, format, what_you_make')
       .eq('status', 'open')
