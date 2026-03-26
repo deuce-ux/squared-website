@@ -657,6 +657,7 @@
         <button class="ad-tab" data-tab="programs">Programs</button>
         <button class="ad-tab" data-tab="pagesprize">Pages Prize</button>
         <button class="ad-tab" data-tab="forge">Forge</button>
+        <button class="ad-tab" data-tab="joinapps">Join Applications</button>
       </div>
 
       <!-- Books Panel -->
@@ -887,6 +888,33 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Join Applications Panel -->
+      <div class="ad-tab-panel" id="panelJoinapps">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="joinAppsPanelTitle">Join Applications</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="joinAppsRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-ghost" id="joinAppsExportBtn">↓ Export CSV</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Location</th>
+                <th>Occupation</th>
+                <th>Why Join</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="joinAppsTableBody"></tbody>
+          </table>
+        </div>
       </div>
 
     </div>
@@ -1470,6 +1498,7 @@
     var programsLoaded     = false;
     var forgeLoaded        = false;
     var ppLoaded           = false;
+    var joinAppsLoaded     = false;
     document.querySelectorAll('.ad-tab').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.ad-tab').forEach(function (b) { b.classList.remove('ad-active'); });
@@ -1485,6 +1514,7 @@
         if (key === 'programs'     && !programsLoaded)     { programsLoaded     = true; loadPrograms(); }
         if (key === 'pagesprize'   && !ppLoaded)           { ppLoaded           = true; loadPagesPrize(); }
         if (key === 'forge'        && !forgeLoaded)        { forgeLoaded        = true; loadForgeAll(); }
+        if (key === 'joinapps'     && !joinAppsLoaded)     { joinAppsLoaded     = true; loadJoinApps(); }
       });
     });
 
@@ -3375,6 +3405,197 @@
       var a = document.createElement('a');
       a.href = url;
       a.download = 'forge-applications-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV exported.');
+    });
+
+  }());
+  </script>
+
+  <script>
+  /* ══════════════════════════════════════════
+     JOIN APPLICATIONS MODULE
+  ══════════════════════════════════════════ */
+  (function () {
+    'use strict';
+
+    var sb = window._adminSb;
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      var d = new Date(iso);
+      return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+    function toast(msg, type) {
+      var el = document.getElementById('adToast');
+      el.textContent = msg;
+      el.className = 'ad-toast ad-toast-show ad-toast-' + (type || 'success');
+      setTimeout(function () { el.className = 'ad-toast'; }, 3000);
+    }
+
+    var allJoinApps = [];
+
+    function joinStatusClass(status) {
+      if (status === 'accepted') return 'status-accepted';
+      if (status === 'rejected') return 'status-rejected';
+      return 'status-pending';
+    }
+
+    function loadJoinApps() {
+      var tb = document.getElementById('joinAppsTableBody');
+      tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(6);
+
+      sb.from('join_applications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) {
+            console.error('join_applications fetch error:', r.error);
+            toast('Error loading join applications: ' + (r.error.message || 'check RLS'), 'error');
+            tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Error: ' + esc(r.error.message || 'Could not load') + '</div></td></tr>';
+            return;
+          }
+          allJoinApps = r.data || [];
+          document.getElementById('joinAppsPanelTitle').textContent =
+            'Join Applications (' + allJoinApps.length + ')';
+          renderJoinAppsTable(allJoinApps);
+        });
+    }
+
+    window.loadJoinApps = loadJoinApps;
+
+    function renderJoinAppsTable(rows) {
+      var tb = document.getElementById('joinAppsTableBody');
+      tb.innerHTML = '';
+      if (!rows.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No applications yet.</div></td></tr>';
+        return;
+      }
+      rows.forEach(function (row) {
+        var status   = row.status || 'pending';
+        var why      = row.why_join || '';
+        var whyShort = why.length > 80 ? why.slice(0, 80) + '…' : why;
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Date" style="font-size:0.78rem;color:rgba(255,241,224,0.6);white-space:nowrap">' + fmtDate(row.created_at) + '</td>' +
+          '<td data-label="Name" style="font-weight:600;color:#FFF1E0">' + esc(row.full_name || '—') + '</td>' +
+          '<td data-label="Email" style="font-size:0.78rem">' + esc(row.email || '—') + '</td>' +
+          '<td data-label="Location" style="font-size:0.78rem;color:rgba(255,241,224,0.55)">' + esc(row.location || '—') + '</td>' +
+          '<td data-label="Occupation" style="font-size:0.78rem;color:rgba(255,241,224,0.6)">' + esc(row.occupation || '—') + '</td>' +
+          '<td data-label="Why Join" style="font-size:0.78rem;color:rgba(255,241,224,0.75);max-width:260px;line-height:1.5">' +
+            '<span class="ad-why-text ja-why" title="' + esc(why) + '">' + esc(whyShort) + '</span>' +
+          '</td>' +
+          '<td data-label="Status">' +
+            '<select class="ad-status-select ' + joinStatusClass(status) + '" data-ja-id="' + esc(row.id) + '" data-ja-name="' + esc(row.full_name || '') + '" data-ja-email="' + esc(row.email || '') + '">' +
+              '<option value="pending"'  + (status === 'pending'  ? ' selected' : '') + '>Pending</option>'  +
+              '<option value="accepted"' + (status === 'accepted' ? ' selected' : '') + '>Accepted</option>' +
+              '<option value="rejected"' + (status === 'rejected' ? ' selected' : '') + '>Rejected</option>' +
+            '</select>' +
+          '</td>';
+        tb.appendChild(tr);
+      });
+
+      /* expand why on click */
+      tb.querySelectorAll('.ja-why').forEach(function (el) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function () {
+          var full       = this.title;
+          var expanded   = this.classList.contains('expanded');
+          this.textContent = expanded ? (full.length > 80 ? full.slice(0, 80) + '…' : full) : full;
+          this.classList.toggle('expanded', !expanded);
+        });
+      });
+
+      /* status change */
+      tb.querySelectorAll('.ad-status-select').forEach(function (sel) {
+        sel.dataset.prev = sel.value;
+        sel.addEventListener('change', function () {
+          var id        = this.dataset.jaId;
+          var name      = this.dataset.jaName;
+          var email     = this.dataset.jaEmail;
+          var newStatus = this.value;
+          var el        = this;
+          el.disabled = true;
+
+          sb.from('join_applications').update({ status: newStatus }).eq('id', id).then(function (r) {
+            el.disabled = false;
+            if (r.error) {
+              toast('Error: ' + r.error.message, 'error');
+              el.value = el.dataset.prev || 'pending';
+              el.className = 'ad-status-select ' + joinStatusClass(el.value);
+              return;
+            }
+            el.className = 'ad-status-select ' + joinStatusClass(newStatus);
+            var app = allJoinApps.find(function (x) { return x.id === id; });
+            if (app) app.status = newStatus;
+            toast('Status updated to ' + newStatus + '.');
+            el.dataset.prev = newStatus;
+
+            /* send acceptance email when flipped to accepted */
+            if (newStatus === 'accepted') {
+              fetch('https://kekljrckgwidrvftaxuu.supabase.co/functions/v1/send-squared-acceptance-email', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO'
+                },
+                body: JSON.stringify({ applicant_name: name, applicant_email: email })
+              })
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                if (data.id) {
+                  toast('Acceptance email sent to ' + name + '.', 'success');
+                } else {
+                  console.error('Squared acceptance email error:', data);
+                  toast('Status updated but email failed to send.', 'warn');
+                }
+              })
+              .catch(function (err) {
+                console.error('Squared acceptance email fetch error:', err);
+                toast('Status updated but email failed to send.', 'warn');
+              });
+            }
+          });
+        });
+      });
+    }
+
+    document.getElementById('joinAppsRefreshBtn').addEventListener('click', function () {
+      joinAppsLoaded = true;
+      loadJoinApps();
+    });
+
+    document.getElementById('joinAppsExportBtn').addEventListener('click', function () {
+      if (!allJoinApps.length) { toast('No applications to export.', 'error'); return; }
+      var header = ['Date','Name','Email','Phone','Location','Occupation','Why Join','Working On','Looking For','Birthday','Referral','Follows Squared','Status'];
+      var rows = allJoinApps.map(function (r) {
+        return [
+          fmtDate(r.created_at),
+          r.full_name   || '',
+          r.email       || '',
+          r.phone       || '',
+          r.location    || '',
+          r.occupation  || '',
+          (r.why_join   || '').replace(/"/g, '""'),
+          (r.working_on || '').replace(/"/g, '""'),
+          (r.looking_for|| '').replace(/"/g, '""'),
+          r.birthday    || '',
+          r.referral    || '',
+          r.follows_squared || '',
+          r.status      || 'pending'
+        ].map(function (v) { return '"' + v + '"'; }).join(',');
+      });
+      var csv  = [header.join(',')].concat(rows).join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'join-applications-' + new Date().toISOString().slice(0, 10) + '.csv';
       a.click();
       URL.revokeObjectURL(url);
       toast('CSV exported.');

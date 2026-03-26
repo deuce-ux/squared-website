@@ -3,13 +3,391 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Join Squared — Start Showing Up</title>
+  <title>Join Squared — Apply</title>
+  <meta name="description" content="Apply to join Squared — a paid productivity community for ambitious young Nigerians." />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=25" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css" />
+
   <style>
-    /* === CURSOR === */
+    /* ============================================================
+       JOIN APPLICATION PAGE — ja- prefix
+    ============================================================ */
+
+    .ja-page {
+      background: #0a0a0a;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .ja-hero {
+      padding: 120px 48px 40px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .ja-hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 14px;
+    }
+
+    .ja-hero-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      line-height: 1.0;
+      margin: 0 0 20px;
+    }
+
+    .ja-hero-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      line-height: 1.75;
+      color: rgba(255,241,224,0.55);
+      margin: 0;
+      max-width: 560px;
+    }
+
+    /* ── BODY ── */
+    .ja-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    /* ── FORM PANEL ── */
+    .ja-form-panel {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.06);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .ja-form-row {
+      margin-bottom: 20px;
+    }
+
+    .ja-form-label {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.5);
+      margin-bottom: 8px;
+    }
+
+    .ja-form-field {
+      width: 100%;
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      color: #FFF1E0;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .ja-form-field::placeholder { color: rgba(255,241,224,0.3); }
+    .ja-form-field:focus         { border-color: #F67A3E; }
+
+    textarea.ja-form-field {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* date input calendar icon tint */
+    input[type="date"].ja-form-field::-webkit-calendar-picker-indicator {
+      filter: invert(0.6);
+      cursor: pointer;
+    }
+
+    /* ── SELECT ── */
+    .ja-select-wrap {
+      position: relative;
+    }
+
+    .ja-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 8px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255%2C241%2C224%2C0.4)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      pointer-events: none;
+    }
+
+    select.ja-form-field {
+      cursor: pointer;
+      padding-right: 40px;
+    }
+
+    select.ja-form-field option {
+      background: #1a1a1a;
+      color: #FFF1E0;
+    }
+
+    /* ── RADIO GROUP ── */
+    .ja-radio-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ja-radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,241,224,0.7);
+      user-select: none;
+    }
+
+    .ja-radio-option:has(input:checked) {
+      border-color: #F67A3E;
+      background: rgba(246,122,62,0.06);
+      color: #FFF1E0;
+    }
+
+    .ja-radio-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #F67A3E;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .ja-radio-helper {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(255,241,224,0.3);
+      margin-top: 8px;
+    }
+
+    .ja-follows-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,241,224,0.5);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .ja-follows-note strong {
+      color: #FFF1E0;
+      font-weight: 600;
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .ja-section-gap {
+      height: 1px;
+      background: rgba(255,241,224,0.06);
+      margin: 40px 0 32px;
+    }
+
+    /* ── INFO CARDS (expectations + payment) ── */
+    .ja-info-card {
+      background: rgba(255,241,224,0.025);
+      border: 1px solid rgba(255,241,224,0.07);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .ja-card-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      margin-bottom: 8px;
+    }
+
+    .ja-card-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF1E0;
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    .ja-card-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: rgba(255,241,224,0.5);
+      margin: 0 0 16px;
+    }
+
+    .ja-card-body {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.75;
+      color: rgba(255,241,224,0.55);
+      margin: 0 0 16px;
+    }
+
+    .ja-card-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ja-card-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,241,224,0.65);
+      line-height: 1.6;
+    }
+
+    .ja-card-list li::before {
+      content: '+';
+      color: #F67A3E;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      margin-top: 1px;
+    }
+
+    .ja-card-footnote {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.73rem;
+      color: rgba(255,241,224,0.28);
+      line-height: 1.65;
+      font-style: italic;
+      margin: 0;
+    }
+
+    /* ── CHECKBOX ── */
+    .ja-checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(255,241,224,0.03);
+      border: 1px solid rgba(255,241,224,0.07);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 24px 0;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .ja-checkbox-row:has(input:checked) {
+      border-color: rgba(246,122,62,0.35);
+    }
+
+    .ja-checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: #F67A3E;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .ja-checkbox-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: rgba(255,241,224,0.65);
+      cursor: pointer;
+    }
+
+    /* ── ERROR ── */
+    .ja-form-error {
+      display: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      color: #F67A3E;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* ── SUBMIT ── */
+    .ja-form-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    /* ── SUCCESS ── */
+    .ja-form-success {
+      display: none;
+      padding: 56px 16px;
+      text-align: center;
+    }
+
+    .ja-success-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(116,166,139,0.12);
+      border: 1px solid rgba(116,166,139,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: #74A68B;
+      font-size: 1.3rem;
+    }
+
+    .ja-success-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      margin: 0 0 12px;
+    }
+
+    .ja-success-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,241,224,0.5);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* ── CURSOR ── */
     body { cursor: none; }
     #sq-cursor {
       position: fixed;
@@ -23,270 +401,278 @@
       transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, background 0.3s ease;
       mix-blend-mode: normal;
     }
-    #sq-cursor.hover {
-      width: 40px;
-      height: 40px;
-      opacity: 0.75;
-      background: #F67A3E;
-    }
-    #sq-cursor.clicking {
-      width: 24px;
-      height: 24px;
-      opacity: 1;
-      background: #F67A3E;
-    }
-    #sq-cursor.hidden {
-      opacity: 0;
-    }
+    #sq-cursor.hover  { width: 40px; height: 40px; opacity: 0.75; }
+    #sq-cursor.clicking { width: 24px; height: 24px; opacity: 1; }
+    #sq-cursor.hidden { opacity: 0; }
     @media (hover: none) and (pointer: coarse) {
       #sq-cursor { display: none; }
       body { cursor: auto; }
     }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      /* Hero */
+      .ja-hero {
+        padding: 80px 20px 28px;
+      }
+      .ja-hero-heading {
+        font-size: 2.25rem;
+        line-height: 1.05;
+      }
+      .ja-hero-sub {
+        font-size: 0.9375rem;
+      }
+
+      /* Body + panel */
+      .ja-body {
+        padding: 0 20px 48px;
+      }
+      .ja-form-panel {
+        padding: 24px 20px;
+        border-radius: 14px;
+      }
+
+      /* All inputs / textareas / selects */
+      .ja-form-field {
+        width: 100%;
+        font-size: 16px; /* prevents iOS zoom */
+        padding: 14px 16px;
+        border-radius: 12px;
+        box-sizing: border-box;
+      }
+      .ja-form-row {
+        margin-bottom: 20px;
+      }
+      .ja-select-wrap {
+        width: 100%;
+      }
+
+      /* Radio buttons — stack full width */
+      .ja-radio-group {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .ja-radio-option {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Info cards */
+      .ja-info-card {
+        padding: 20px 18px;
+        border-radius: 12px;
+      }
+      .ja-card-heading {
+        font-size: 1.15rem;
+      }
+      .ja-card-list li {
+        font-size: 0.8rem;
+      }
+
+      /* Checkbox row */
+      .ja-checkbox-row {
+        padding: 16px;
+      }
+
+      /* Submit button */
+      .ja-form-submit {
+        width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+        box-sizing: border-box;
+      }
+
+      /* Section divider */
+      .ja-section-gap {
+        margin: 32px 0 24px;
+      }
+    }
   </style>
 </head>
-<body>
-  <div id="sq-cursor"></div>
+<body class="ja-page">
+<div id="sq-cursor"></div>
 
-  <!-- ===================== HERO ===================== -->
-  <section class="jn-hero-outer">
-    <div class="jn-hero-panel">
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav-pill">
+    <div class="nav-left">
+      <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+    </div>
+    <div class="nav-center">
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="programs.html" class="nav-link">Programs</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="bookshop.html" class="nav-link">Bookshop</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <a href="join.html" class="nav-link">Join</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="join.html" class="btn-primary">Join Now</a>
+    </div>
+  </nav>
 
-      <!-- NAV inside hero card -->
-      <nav class="nav-pill">
-        <div class="nav-left">
-          <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+  <!-- ===================== HERO / HEADER ===================== -->
+  <div class="ja-hero">
+    <div class="ja-hero-label">JOIN SQUARED</div>
+    <h1 class="ja-hero-heading">We want to know you first.</h1>
+    <p class="ja-hero-sub">Squared is a paid community of ambitious young Nigerians who show up, stay focused, and grow together. Answer these questions honestly — we read every response.</p>
+  </div>
+
+  <!-- ===================== FORM ===================== -->
+  <div class="ja-body">
+    <div class="ja-form-panel" id="jaFormPanel">
+
+      <form id="jaForm" novalidate>
+
+        <!-- 1. Full Name -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaName">Full Name *</label>
+          <input type="text" id="jaName" class="ja-form-field" placeholder="Your full name" required autocomplete="name" />
         </div>
-        <div class="nav-center">
-          <a href="community.html" class="nav-link">Community</a>
-          <a href="programs.html" class="nav-link">Programs</a>
-          <a href="blog.html" class="nav-link">Blog</a>
-          <a href="bookshop.html" class="nav-link">Bookshop</a>
-          <a href="events.html" class="nav-link">Events</a>
-          <a href="join.html" class="nav-link">Join</a>
+
+        <!-- 2. Email -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaEmail">Email Address *</label>
+          <input type="email" id="jaEmail" class="ja-form-field" placeholder="you@example.com" required autocomplete="email" />
         </div>
-        <div class="nav-right">
-          <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
-            <span></span><span></span><span></span>
-          </button>
-          <a href="join.html" class="btn-primary">Join Now</a>
+
+        <!-- 3. Phone -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaPhone">Phone Number *</label>
+          <input type="tel" id="jaPhone" class="ja-form-field" placeholder="08xxxxxxxxx" required autocomplete="tel" />
         </div>
-      </nav>
 
-      <!-- HERO BODY — two columns -->
-      <div class="jn-hero-body">
+        <!-- 4. Location -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaLocation">Where are you based? *</label>
+          <input type="text" id="jaLocation" class="ja-form-field" placeholder="Country, city, state" required />
+        </div>
 
-        <!-- LEFT COLUMN -->
-        <div class="jn-hero-left">
-          <span class="jn-hero-label">JOIN SQUARED</span>
+        <!-- 5. Occupation -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaOccupation">What do you do? *</label>
+          <input type="text" id="jaOccupation" class="ja-form-field" placeholder="Student, designer, developer, entrepreneur, freelancer..." required />
+        </div>
 
-          <h1 class="jn-hero-heading">
-            <span class="jn-hero-line">Your next</span>
-            <span class="jn-hero-line">chapter <span class="jn-hero-accent">starts</span></span>
-            <span class="jn-hero-line">here.</span>
-          </h1>
+        <!-- 6. Why Join -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaWhyJoin">Why do you want to join Squared? *</label>
+          <textarea id="jaWhyJoin" class="ja-form-field" rows="4" placeholder="Tell us in a few sentences what drew you here. We read every response." required></textarea>
+        </div>
 
-          <p class="jn-hero-sub">Squared is a paid productivity community for ambitious young Nigerians. Apply, get assigned to a squad, and start showing up.</p>
+        <!-- 7. Working On -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaWorkingOn">What are you working on? *</label>
+          <textarea id="jaWorkingOn" class="ja-form-field" rows="3" placeholder="A skill, a side hustle, schoolwork, a business — anything." required></textarea>
+        </div>
 
-          <div class="jn-hero-pills">
-            <span class="jn-pill jn-pill--dark">25+ Active Members</span>
-            <span class="jn-pill jn-pill--orange">₦4,000/month</span>
+        <!-- 8. Looking For -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaLookingFor">What are you looking for? *</label>
+          <textarea id="jaLookingFor" class="ja-form-field" rows="3" placeholder="How can we support you better?" required></textarea>
+        </div>
+
+        <!-- 9. Birthday -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaBirthday">Your Birthday *</label>
+          <input type="date" id="jaBirthday" class="ja-form-field" required />
+        </div>
+
+        <!-- 10. Referral -->
+        <div class="ja-form-row">
+          <label class="ja-form-label" for="jaReferral">How did you hear about us? *</label>
+          <div class="ja-select-wrap">
+            <select id="jaReferral" class="ja-form-field" required>
+              <option value="" disabled selected>Select an option</option>
+              <option value="Twitter/X">Twitter/X</option>
+              <option value="Instagram">Instagram</option>
+              <option value="A friend">A friend</option>
+              <option value="Someone in the community">Someone in the community</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div class="jn-hero-right">
-          <img src="Visual Assets/Stickers/Soft life on hold Sticker.png"  class="jn-sticker jn-sticker--soft"  alt="" aria-hidden="true" />
-          <img src="Visual Assets/Stickers/Stay squared sticker.png"        class="jn-sticker jn-sticker--stay"  alt="" aria-hidden="true" />
-          <img src="Visual Assets/Stickers/Focus mode Sticker.png"          class="jn-sticker jn-sticker--focus" alt="" aria-hidden="true" />
+        <!-- 11. Social Handles -->
+        <div class="ja-form-row">
+          <label class="ja-form-label">Your Social Media *</label>
+          <input type="text" id="jaSocialInstagram" class="ja-form-field" placeholder="Instagram username or profile link" style="margin-bottom:10px;" />
+          <input type="text" id="jaSocialX" class="ja-form-field" placeholder="Twitter/X username or profile link" />
+          <div class="ja-radio-helper" style="margin-top:8px;">At least one is required.</div>
         </div>
 
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== HOW IT WORKS ===================== -->
-  <section class="hiw-outer">
-    <div class="hiw-inner">
-
-      <!-- Header -->
-      <div class="hiw-header">
-        <span class="hiw-label">THE PROCESS</span>
-        <h2 class="hiw-title">Four steps to get in.</h2>
-      </div>
-
-      <!-- Steps row -->
-      <div class="hiw-steps-wrap">
-
-        <!-- Step 1 -->
-        <div class="hiw-step">
-          <span class="hiw-step-num" aria-hidden="true">01</span>
-          <h3 class="hiw-step-title">Apply</h3>
-          <p class="hiw-step-desc">Fill out a short application form. Tell us who you are and why you want to join Squared.</p>
-        </div>
-
-        <span class="hiw-connector" aria-hidden="true">→</span>
-
-        <!-- Step 2 -->
-        <div class="hiw-step">
-          <span class="hiw-step-num" aria-hidden="true">02</span>
-          <h3 class="hiw-step-title">Get Reviewed</h3>
-          <p class="hiw-step-desc">We review every application personally. We're looking for people who are serious about showing up.</p>
-        </div>
-
-        <span class="hiw-connector" aria-hidden="true">→</span>
-
-        <!-- Step 3 -->
-        <div class="hiw-step">
-          <span class="hiw-step-num" aria-hidden="true">03</span>
-          <h3 class="hiw-step-title">Pay & Join</h3>
-          <p class="hiw-step-desc">Once accepted, pay ₦4,000 for your first month. You'll get access to the app and your squad assignment.</p>
-        </div>
-
-        <span class="hiw-connector" aria-hidden="true">→</span>
-
-        <!-- Step 4 -->
-        <div class="hiw-step">
-          <span class="hiw-step-num" aria-hidden="true">04</span>
-          <h3 class="hiw-step-title">Show Up</h3>
-          <p class="hiw-step-desc">Get assigned to a squad of 5, set your first goals, and attend your first focus session. You're in.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== PRICING ===================== -->
-  <section class="jnpr-outer">
-    <div class="jnpr-inner">
-
-      <!-- Header -->
-      <div class="jnpr-header">
-        <span class="jnpr-label">PRICING</span>
-        <h2 class="jnpr-title">Simple, honest pricing.</h2>
-      </div>
-
-      <!-- Cards row -->
-      <div class="jnpr-cards">
-
-        <!-- Card 1: Squared Core (featured) -->
-        <div class="jnpr-card jnpr-card--orange">
-          <span class="jnpr-plan-label">SQUARED CORE</span>
-          <div class="jnpr-price-row">
-            <span class="jnpr-price">₦4,000</span>
-            <span class="jnpr-per">/month</span>
+        <!-- 12. Follows Squared -->
+        <div class="ja-form-row">
+          <label class="ja-form-label">Have you followed us? *</label>
+          <div class="ja-radio-group">
+            <label class="ja-radio-option">
+              <input type="radio" name="jaFollows" value="yes" required /> Yes, I've followed
+            </label>
+            <label class="ja-radio-option">
+              <input type="radio" name="jaFollows" value="not_yet" /> Not yet
+            </label>
           </div>
-          <p class="jnpr-tagline">Paid monthly. Cancel anytime.</p>
-          <div class="jnpr-divider"></div>
-          <ul class="jnpr-features">
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Weekly Goals</li>
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Squad Accountability</li>
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Focus Sessions</li>
+          <div class="ja-radio-helper">Find us <strong style="color:rgba(255,241,224,0.6);font-weight:600;">@TheSquaredHq</strong> everywhere.</div>
+        </div>
+
+        <!-- ── SECTION BREAK ── -->
+        <div class="ja-section-gap"></div>
+
+        <!-- EXPECTATIONS CARD -->
+        <div class="ja-info-card">
+          <div class="ja-card-eyebrow">BEFORE YOU CONTINUE</div>
+          <h2 class="ja-card-heading">Here's what membership looks like.</h2>
+          <p class="ja-card-sub">Squared is not a passive community. If you're in, you're expected to show up. Here's the minimum:</p>
+          <ul class="ja-card-list">
+            <li>Attend at least 4 focus sessions out of every 12 scheduled</li>
+            <li>Participate actively in your squad — check in, respond, show up for your people</li>
+            <li>Attend at least 1 Market Square session every 2 months</li>
+            <li>Set your weekly goals every Monday</li>
+            <li>Communicate if you're going through something — we work with life, not against it</li>
           </ul>
-          <a href="join.html" class="btn-primary">Join Squared →</a>
+          <p class="ja-card-footnote">These aren't rules to police you. They're the minimum for the community to actually work.</p>
         </div>
 
-        <!-- Card 2: Free Events -->
-        <div class="jnpr-card jnpr-card--dark">
-          <span class="jnpr-plan-label">FREE EVENTS</span>
-          <div class="jnpr-price-row">
-            <span class="jnpr-price">Free</span>
-          </div>
-          <p class="jnpr-tagline">No sign-up needed. Just show up.</p>
-          <div class="jnpr-divider"></div>
-          <ul class="jnpr-features">
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Public Events</li>
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Pages Reading Sessions</li>
-            <li class="jnpr-feature"><span class="jnpr-marker">+</span>Market Square</li>
+        <!-- PAYMENT & TERMS CARD -->
+        <div class="ja-info-card">
+          <div class="ja-card-eyebrow">BEFORE YOU SUBMIT</div>
+          <h2 class="ja-card-heading">Squared costs ₦4,000/month.</h2>
+          <p class="ja-card-body">You can also pay ₦2,000 bi-weekly or ₦1,000 per week — whichever works for you. Submitting this form does not guarantee admission. If selected, you'll receive an email with your acceptance and payment instructions. You'll have 48–72 hours to pay. If payment isn't made in time, your spot goes to the next person.</p>
+          <ul class="ja-card-list">
+            <li>Selection is not guaranteed</li>
+            <li>Payment is only required if you're accepted</li>
+            <li>Spots are limited</li>
+            <li>Deadlines are strict</li>
           </ul>
-          <a href="events.html" class="btn-secondary">View Events →</a>
         </div>
 
+        <!-- AGREEMENT CHECKBOX -->
+        <label class="ja-checkbox-row" for="jaAgreed">
+          <input type="checkbox" id="jaAgreed" required />
+          <span class="ja-checkbox-label">I understand that Squared is a paid community, filling this form does not guarantee entry, and deadlines are strict.</span>
+        </label>
+
+        <div class="ja-form-error" id="jaFormError"></div>
+
+        <button type="submit" class="btn-primary ja-form-submit">Submit Application →</button>
+
+      </form>
+
+      <!-- SUCCESS STATE -->
+      <div class="ja-form-success" id="jaFormSuccess">
+        <div class="ja-success-icon">✓</div>
+        <div class="ja-success-heading">Application received.</div>
+        <p class="ja-success-sub">We'll review your response and get back to you.<br>Keep an eye on your inbox.</p>
       </div>
+
     </div>
-  </section>
-
-  <!-- ===================== FAQ ===================== -->
-  <section class="jnfaq-outer">
-    <div class="jnfaq-inner">
-
-      <!-- Header -->
-      <div class="jnfaq-header">
-        <span class="jnfaq-label">FAQ</span>
-        <h2 class="jnfaq-title">Good questions.</h2>
-      </div>
-
-      <!-- Accordion -->
-      <div class="jnfaq-list">
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>Do I need to apply to join?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>Yes. Every member goes through a short application process. We review applications personally to make sure Squared is the right fit for you and you're the right fit for Squared.</p>
-          </div>
-        </div>
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>What happens if I miss a week?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>Life happens. Your squad leader will check in if you go quiet. We're not here to shame you — we're here to help you get back on track.</p>
-          </div>
-        </div>
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>Can I cancel anytime?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>Yes. Squared is month-to-month. You can cancel before your next billing cycle and you won't be charged again.</p>
-          </div>
-        </div>
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>What is the Squared app?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>The Squared app is where you set your weekly goals, check in with your squad, and track your progress. It's available on web and mobile.</p>
-          </div>
-        </div>
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>How are squads formed?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>Squads are assigned by us based on your application, timezone, and interests. Each squad has 5 members and one Squad Leader.</p>
-          </div>
-        </div>
-
-        <div class="jnfaq-item">
-          <button class="jnfaq-q" aria-expanded="false">
-            <span>Is there a free trial?</span>
-            <span class="jnfaq-toggle">+</span>
-          </button>
-          <div class="jnfaq-a" hidden>
-            <p>We don't offer a free trial for Squared Core, but you can attend a free Pages reading session or Market Square X Space to get a feel for the community before applying.</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
+  </div>
 
   <!-- ===================== FOOTER ===================== -->
   <footer class="footer-outer">
     <div class="footer-inner">
-
-      <!-- Top row -->
       <div class="footer-top">
         <div class="footer-logo">
           <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
@@ -301,11 +687,7 @@
           <a href="join.html"      class="footer-nav-link">Join</a>
         </nav>
       </div>
-
-      <!-- Divider -->
       <div class="footer-divider"></div>
-
-      <!-- Bottom row -->
       <div class="footer-bottom">
         <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
         <div class="footer-socials">
@@ -313,7 +695,6 @@
           <a href="#" class="footer-social-link">Instagram</a>
         </div>
       </div>
-
     </div>
   </footer>
 
@@ -321,7 +702,7 @@
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
     <nav class="mobile-menu-nav">
-      <a href="index.html"    class="mobile-menu-link">Home</a>
+      <a href="index.html"     class="mobile-menu-link">Home</a>
       <a href="community.html" class="mobile-menu-link">Community</a>
       <a href="programs.html"  class="mobile-menu-link">Programs</a>
       <a href="blog.html"      class="mobile-menu-link">Blog</a>
@@ -333,40 +714,139 @@
   </div>
 
   <script src="script.js"></script>
+
+  <!-- ===================== JOIN APPLICATION FORM ===================== -->
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    var form      = document.getElementById('jaForm');
+    var errEl     = document.getElementById('jaFormError');
+    var successEl = document.getElementById('jaFormSuccess');
+
+    function showError(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideError() {
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+    }
+
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      hideError();
+
+      var name       = document.getElementById('jaName').value.trim();
+      var email      = document.getElementById('jaEmail').value.trim();
+      var phone      = document.getElementById('jaPhone').value.trim();
+      var location   = document.getElementById('jaLocation').value.trim();
+      var occupation = document.getElementById('jaOccupation').value.trim();
+      var whyJoin    = document.getElementById('jaWhyJoin').value.trim();
+      var workingOn  = document.getElementById('jaWorkingOn').value.trim();
+      var lookingFor = document.getElementById('jaLookingFor').value.trim();
+      var birthday   = document.getElementById('jaBirthday').value;
+      var referral        = document.getElementById('jaReferral').value;
+      var socialInstagram = document.getElementById('jaSocialInstagram').value.trim();
+      var socialX         = document.getElementById('jaSocialX').value.trim();
+      var followsEl       = document.querySelector('input[name="jaFollows"]:checked');
+      var agreed          = document.getElementById('jaAgreed').checked;
+
+      /* ── validation ── */
+      if (!name)                                                          { showError('Please enter your full name.'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))          { showError('Please enter a valid email address.'); return; }
+      if (!phone)                                                         { showError('Please enter your phone number.'); return; }
+      if (!location)                                                      { showError('Please tell us where you\'re based.'); return; }
+      if (!occupation)                                                    { showError('Please tell us what you do.'); return; }
+      if (!whyJoin)                                                       { showError('Please tell us why you want to join Squared.'); return; }
+      if (!workingOn)                                                     { showError('Please tell us what you\'re currently working on.'); return; }
+      if (!lookingFor)                                                    { showError('Please tell us what you\'re looking for.'); return; }
+      if (!birthday)                                                      { showError('Please enter your birthday.'); return; }
+      if (!referral)                                                      { showError('Please tell us how you heard about Squared.'); return; }
+      if (!socialInstagram && !socialX)                                   { showError('Please enter at least one social media handle (Instagram or Twitter/X).'); return; }
+      if (!followsEl)                                                     { showError('Please answer whether you follow us on social.'); return; }
+      if (!agreed)                                                        { showError('Please read and agree to the terms before submitting.'); return; }
+
+      /* combine handles for storage — requires a `social_handles` text column in join_applications */
+      var socialHandles = [socialInstagram ? 'IG: ' + socialInstagram : '', socialX ? 'X: ' + socialX : ''].filter(Boolean).join(' · ');
+
+      /* ── disable submit ── */
+      var submitBtn = form.querySelector('[type="submit"]');
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Submitting…';
+
+      if (!window.supabase) {
+        showError('Could not connect. Please try again later.');
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Submit Application →';
+        return;
+      }
+
+      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      sb.from('join_applications').insert([{
+        full_name:            name,
+        email:                email,
+        phone:                phone,
+        location:             location,
+        occupation:           occupation,
+        why_join:             whyJoin,
+        working_on:           workingOn,
+        looking_for:          lookingFor,
+        birthday:             birthday,
+        referral:             referral,
+        social_handles:       socialHandles,
+        follows_squared:      followsEl.value,
+        expectations_agreed:  true,
+        status:               'pending'
+      }]).then(function (r) {
+        if (r.error) {
+          submitBtn.disabled    = false;
+          submitBtn.textContent = 'Submit Application →';
+          showError('Something went wrong. Please try again.');
+          console.error('Supabase error (join_applications):', r.error);
+          return;
+        }
+        /* success */
+        form.style.display        = 'none';
+        successEl.style.display   = 'block';
+      });
+    });
+
+  }());
+  </script>
+
+  <!-- cursor -->
   <script>
   const cursor = document.getElementById('sq-cursor');
-  let mouseX = 0, mouseY = 0;
-  let cursorX = 0, cursorY = 0;
-  function lerp(start, end, factor) {
-    return start + (end - start) * factor;
-  }
+  let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+  function lerp(a, b, f) { return a + (b - a) * f; }
   function animateCursor() {
     cursorX = lerp(cursorX, mouseX, 0.15);
     cursorY = lerp(cursorY, mouseY, 0.15);
     cursor.style.left = cursorX + 'px';
-    cursor.style.top = cursorY + 'px';
+    cursor.style.top  = cursorY + 'px';
     requestAnimationFrame(animateCursor);
   }
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    cursor.classList.remove('hidden');
-  });
-  const hoverTargets = 'a, button, .book, input, textarea, select, [data-hover], .filter-btn, .accordion-row, .event-card, .program-card, .member-card, .post-card, label';
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; cursor.classList.remove('hidden'); });
+  const hoverTargets = 'a, button, input, textarea, select, label, [data-hover]';
   document.querySelectorAll(hoverTargets).forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
   });
-  document.addEventListener('mousedown', () => {
-    cursor.classList.add('clicking');
-    cursor.classList.remove('hover');
-  });
-  document.addEventListener('mouseup', () => {
-    cursor.classList.remove('clicking');
-  });
-  document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
-  document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+  document.addEventListener('mousedown', () => { cursor.classList.add('clicking'); cursor.classList.remove('hover'); });
+  document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+  document.addEventListener('mouseleave',() => cursor.classList.add('hidden'));
+  document.addEventListener('mouseenter',() => cursor.classList.remove('hidden'));
   animateCursor();
   </script>
+
 </body>
 </html>
