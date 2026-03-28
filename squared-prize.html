@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squared Prize — Squared</title>
+  <meta name="description" content="Squared Prize is our annual competition for young Nigerians. Each year, one discipline. Edition 01 is writing. One winner. ₦500,000+." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800;12..96,900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* === CURSOR === */
+    body { cursor: none; background: #0a0a0a; }
+    #sq-cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: #F67A3E; border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1), height 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    #sq-cursor.hover  { width: 40px; height: 40px; opacity: 0.75; }
+    #sq-cursor.clicking { width: 24px; height: 24px; opacity: 1; }
+    #sq-cursor.hidden { opacity: 0; }
+    @media (hover: none) and (pointer: coarse) {
+      #sq-cursor { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* === SHARED === */
+    .pp-page { overflow-x: hidden; }
+
+    .pp-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .pp-section {
+      padding: 64px 0;
+    }
+
+    .pp-section + .pp-section {
+      border-top: 1px solid rgba(255,241,224,0.05);
+    }
+
+    .pp-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.35);
+      margin-bottom: 18px;
+    }
+
+    .pp-section-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: #FFF1E0;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      margin: 0 0 16px;
+    }
+
+    .pp-section-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .pp-section-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,241,224,0.45);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 0;
+    }
+
+    /* === REVEAL === */
+    .pp-reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1);
+    }
+    .pp-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .pp-d1 { transition-delay: 0.08s; }
+    .pp-d2 { transition-delay: 0.16s; }
+    .pp-d3 { transition-delay: 0.24s; }
+    .pp-d4 { transition-delay: 0.32s; }
+
+    /* === HERO === */
+    .pp-hero {
+      padding-top: 140px;
+      padding-bottom: 96px;
+      position: relative;
+      background: linear-gradient(135deg, #0a0a0a 0%, #0d1219 100%);
+      overflow: hidden;
+    }
+
+    .pp-hero-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,241,224,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,241,224,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .pp-hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 120px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Right column — edition motif */
+    .pp-prize-motif {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .pp-prize-motif-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.3);
+      margin-bottom: 16px;
+    }
+
+    .pp-prize-motif-item {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: rgba(255,241,224,0.12);
+      line-height: 1.2;
+      transition: color 0.4s ease;
+    }
+
+    .pp-prize-motif-item.active { color: #99B8F1; }
+
+    .pp-hero-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 4.5rem;
+      font-weight: 800;
+      color: #FFF1E0;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      margin: 0 0 28px;
+      max-width: 600px;
+    }
+
+    .pp-hero-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .pp-hero-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.65;
+      max-width: 460px;
+      margin: 0 0 12px;
+    }
+
+    .pp-hero-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: rgba(255,241,224,0.3);
+      margin: 0 0 28px;
+    }
+
+    .pp-hero-pills {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pp-pill-filled {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #F67A3E;
+      color: #0a0a0a;
+      border-radius: 999px;
+      padding: 8px 20px;
+    }
+
+    .pp-pill-outlined {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: transparent;
+      color: rgba(255,241,224,0.7);
+      border: 1px solid rgba(255,241,224,0.25);
+      border-radius: 999px;
+      padding: 8px 20px;
+    }
+
+    .pp-pill-edition {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(153,184,241,0.12);
+      color: #99B8F1;
+      border: 1px solid rgba(153,184,241,0.3);
+      border-radius: 999px;
+      padding: 8px 20px;
+    }
+
+    /* === ABOUT SECTION === */
+    .pp-about-section {
+      background: rgba(255,241,224,0.02);
+    }
+
+    .pp-about-inner {
+      max-width: 720px;
+    }
+
+    .pp-manifesto {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: rgba(255,241,224,0.65);
+      line-height: 1.7;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+
+    /* === HOW IT WORKS === */
+    .pp-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+
+    .pp-step-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.05);
+      border-radius: 16px;
+      padding: 26px 22px;
+    }
+
+    .pp-step-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #F67A3E;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .pp-step-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFF1E0;
+      margin-bottom: 8px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .pp-step-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      color: rgba(255,241,224,0.4);
+      line-height: 1.6;
+    }
+
+    /* === FORM === */
+    .pp-waitlist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .pp-form-wrap {
+      margin-top: 0;
+    }
+
+    .pp-form-row {
+      margin-bottom: 20px;
+    }
+
+    .pp-form-label {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.5);
+      margin-bottom: 8px;
+    }
+
+    .pp-form-field {
+      width: 100%;
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      color: #FFF1E0;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .pp-form-field::placeholder {
+      color: rgba(255,241,224,0.3);
+    }
+
+    .pp-form-field:focus {
+      border-color: #F67A3E;
+    }
+
+    textarea.pp-form-field {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .pp-form-submit {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+      box-sizing: border-box;
+    }
+
+    .pp-form-success {
+      display: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      color: #FFF1E0;
+      background: rgba(255,241,224,0.05);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 12px;
+      padding: 24px 28px;
+      line-height: 1.6;
+    }
+
+    .pp-form-error {
+      display: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      color: #F67A3E;
+      margin-top: 12px;
+    }
+
+    /* === FACEBOOK CTA === */
+    .pp-fb-section {
+      text-align: center;
+      padding: 96px 0;
+      border-top: 1px solid rgba(255,241,224,0.05);
+    }
+
+    .pp-fb-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #FFF1E0;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .pp-fb-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      color: rgba(255,241,224,0.5);
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    /* === MOBILE === */
+    @media (max-width: 768px) {
+
+      /* ── Layout ── */
+      .pp-inner   { padding: 0 24px; }
+      .pp-section { padding: 48px 0; }
+
+      /* ── Hero ── */
+      .pp-hero      { padding-top: 48px; min-height: auto; }
+      .pp-hero-inner { padding: 32px 24px 48px; grid-template-columns: 1fr; gap: 0; }
+      .pp-prize-motif { display: none; }
+
+      /* ── Hero typography ── */
+      .pp-hero-heading { font-size: 2.8rem; line-height: 0.9; }
+      .pp-hero-sub     { font-size: 0.9rem; }
+
+      /* ── Section typography ── */
+      .pp-section-heading { font-size: 2.2rem; }
+
+      /* ── Step cards ── */
+      .pp-steps-grid { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+      .pp-step-card  { padding: 22px 20px; }
+      .pp-step-title { font-size: 0.92rem; }
+      .pp-step-desc  { font-size: 0.78rem; }
+
+      /* ── Waitlist / form ── */
+      .pp-waitlist-grid { grid-template-columns: 1fr; gap: 40px; }
+      .pp-form-wrap     { margin-top: 0; }
+
+      /* ── Pills ── */
+      .pp-pill-filled   { font-size: 0.75rem; padding: 6px 14px; }
+      .pp-pill-outlined { font-size: 0.75rem; padding: 6px 14px; }
+      .pp-pill-edition  { font-size: 0.75rem; padding: 6px 14px; }
+
+      /* ── Final CTA ── */
+      .pp-fb-heading { font-size: 2.2rem; }
+      .pp-fb-section { padding: 48px 24px; }
+
+    }
+  </style>
+</head>
+<body class="pp-page">
+
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav-pill">
+    <div class="nav-left">
+      <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+    </div>
+    <div class="nav-center">
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="programs.html" class="nav-link">Programs</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="bookshop.html" class="nav-link">Bookshop</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <a href="join.html" class="nav-link">Join</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="join.html" class="btn-primary">Join Now</a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="pp-hero">
+    <div class="pp-hero-grid-overlay"></div>
+    <div class="pp-hero-inner">
+
+      <!-- Left -->
+      <div>
+        <div class="pp-eyebrow pp-reveal">SQUARED PRIZE — EDITION 01</div>
+        <h1 class="pp-hero-heading pp-reveal pp-d1">
+          The Squared<br /><em>Prize.</em>
+        </h1>
+        <p class="pp-hero-sub pp-reveal pp-d2">
+          One competition. One winner. Real recognition. Every year, we pick a discipline and we go all in. This year — writing.
+        </p>
+        <p class="pp-hero-note pp-reveal pp-d3">Each year, a new discipline. This year — writing. Next year — who knows.</p>
+        <div class="pp-hero-pills pp-reveal pp-d4">
+          <span class="pp-pill-edition">Edition 01: Writing</span>
+          <span class="pp-pill-filled">₦500,000+ Prize Pool</span>
+          <span class="pp-pill-outlined">Open to Everyone</span>
+        </div>
+      </div>
+
+      <!-- Right — edition motif -->
+      <div class="pp-prize-motif" aria-hidden="true">
+        <div class="pp-prize-motif-label">This Edition</div>
+        <div class="pp-prize-motif-item">Edition 01</div>
+        <div class="pp-prize-motif-item">Writing</div>
+        <div class="pp-prize-motif-item">₦500,000+</div>
+        <div class="pp-prize-motif-item">Annual Prize</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT THE PRIZE ===================== -->
+  <section class="pp-section pp-about-section">
+    <div class="pp-inner">
+      <div class="pp-eyebrow pp-reveal">THE CONCEPT</div>
+      <h2 class="pp-section-heading pp-reveal pp-d1">A different discipline.<br /><em>Every year.</em></h2>
+      <p class="pp-manifesto pp-reveal pp-d2">
+        The Squared Prize is our annual competition open to young Nigerians. Each edition picks one creative discipline and challenges you to produce your best work. The winner gets real money and real recognition. Edition 01 is writing. Show us what you've got.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="pp-section">
+    <div class="pp-inner">
+      <div class="pp-eyebrow pp-reveal">The Format</div>
+      <h2 class="pp-section-heading pp-reveal pp-d1">Simple. <em>Brutal.</em> Fair.</h2>
+      <div class="pp-steps-grid">
+        <div class="pp-step-card pp-reveal pp-d1">
+          <div class="pp-step-num">01</div>
+          <div class="pp-step-title">Get a Prompt</div>
+          <div class="pp-step-desc">Each round starts with a theme. You write a short fiction piece responding to it.</div>
+        </div>
+        <div class="pp-step-card pp-reveal pp-d2">
+          <div class="pp-step-num">02</div>
+          <div class="pp-step-title">Submit Your Entry</div>
+          <div class="pp-step-desc">Share your piece in the Squared Facebook group before the deadline.</div>
+        </div>
+        <div class="pp-step-card pp-reveal pp-d3">
+          <div class="pp-step-num">03</div>
+          <div class="pp-step-title">Community Reads</div>
+          <div class="pp-step-desc">23,000 members read and engage. Judges score based on craft and community response.</div>
+        </div>
+        <div class="pp-step-card pp-reveal pp-d4">
+          <div class="pp-step-num">04</div>
+          <div class="pp-step-title">Survive the Cut</div>
+          <div class="pp-step-desc">Weakest entries are eliminated each round. Four rounds. One winner.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INTEREST FORM ===================== -->
+  <section class="pp-section" id="waitlist">
+    <div class="pp-inner">
+      <div class="pp-waitlist-grid">
+
+        <!-- Left — context -->
+        <div class="pp-waitlist-left">
+          <div class="pp-eyebrow pp-reveal">Join the Waitlist</div>
+          <h2 class="pp-section-heading pp-reveal pp-d1">Squared Prize is coming.</h2>
+          <p class="pp-section-sub pp-reveal pp-d2">
+            We're finalising the date and details. Drop your name, email, and a link to something you've written — we'll reach out when applications open.
+          </p>
+        </div>
+
+        <!-- Right — form -->
+        <div class="pp-waitlist-right">
+          <div class="pp-form-wrap pp-reveal pp-d1" id="ppFormWrap">
+            <form id="ppForm" novalidate>
+              <div class="pp-form-row">
+                <label class="pp-form-label" for="ppName">Full Name</label>
+                <input class="pp-form-field" id="ppName" type="text" placeholder="Your full name" required />
+              </div>
+              <div class="pp-form-row">
+                <label class="pp-form-label" for="ppEmail">Email Address</label>
+                <input class="pp-form-field" id="ppEmail" type="email" placeholder="you@example.com" required />
+              </div>
+              <div class="pp-form-row">
+                <label class="pp-form-label" for="ppHandle">Instagram or X Handle <span style="opacity:0.4;font-weight:400">(optional)</span></label>
+                <input class="pp-form-field" id="ppHandle" type="text" placeholder="@yourhandle" />
+              </div>
+              <div class="pp-form-row">
+                <label class="pp-form-label" for="ppLink">Link to a piece you've written</label>
+                <input class="pp-form-field" id="ppLink" type="url" placeholder="Google Doc, Medium, anywhere" />
+              </div>
+              <div class="pp-form-row">
+                <label class="pp-form-label" for="ppWhy">Why do you want to enter? <span style="opacity:0.4;font-weight:400">(optional)</span></label>
+                <textarea class="pp-form-field" id="ppWhy" rows="3" placeholder="Tell us a little..."></textarea>
+              </div>
+              <button type="submit" class="btn-primary pp-form-submit" id="ppSubmitBtn">I'm Interested →</button>
+              <div class="pp-form-error" id="ppFormError">Something went wrong. Try again.</div>
+            </form>
+          </div>
+
+          <div class="pp-form-success" id="ppFormSuccess">
+            We've got you. We'll be in touch when Squared Prize opens.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FACEBOOK CTA ===================== -->
+  <section class="pp-fb-section">
+    <div class="pp-inner">
+      <h2 class="pp-fb-heading pp-reveal">The contest lives here.</h2>
+      <p class="pp-fb-sub pp-reveal pp-d1">
+        Everything happens inside the Squared Facebook group — 23,000 members and growing. Join now so you're ready when Squared Prize launches.
+      </p>
+      <a href="https://web.facebook.com/share/g/1KeHqxb7Q1/" target="_blank" rel="noopener" class="btn-secondary pp-reveal pp-d2">Join the Facebook Group →</a>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="32" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"     class="footer-nav-link">Home</a>
+          <a href="community.html" class="footer-nav-link">Community</a>
+          <a href="programs.html"  class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"  class="footer-nav-link">Bookshop</a>
+          <a href="events.html"    class="footer-nav-link">Events</a>
+          <a href="blog.html"      class="footer-nav-link">Blog</a>
+          <a href="join.html"      class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social-link">X (Twitter)</a>
+          <a href="#" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="index.html" class="mobile-menu-link">Home</a>
+      <a href="community.html" class="mobile-menu-link">Community</a>
+      <a href="programs.html" class="mobile-menu-link">Programs</a>
+      <a href="blog.html" class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html" class="mobile-menu-link">Bookshop</a>
+      <a href="events.html" class="mobile-menu-link">Events</a>
+      <a href="join.html" class="mobile-menu-link">Join</a>
+      <a href="join.html" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kekljrckgwidrvftaxuu.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UBhQZKJZ_bb7IbENW4DyAQ_C1Cpr_oO';
+
+    /* ── SCROLL REVEAL ── */
+    var revealEls = document.querySelectorAll('.pp-reveal');
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(function (el) { observer.observe(el); });
+
+    /* ── FORM SUBMIT ── */
+    if (!window.supabase) return;
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById('ppForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name  = document.getElementById('ppName').value.trim();
+      var email = document.getElementById('ppEmail').value.trim();
+      var errEl = document.getElementById('ppFormError');
+      var btn   = document.getElementById('ppSubmitBtn');
+
+      errEl.style.display = 'none';
+
+      if (!name || !email) {
+        errEl.textContent = 'Please fill in your name and email.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      sb.from('pages_prize_interest').insert([{
+        full_name:     name,
+        email:         email,
+        social_handle: document.getElementById('ppHandle').value.trim() || null,
+        writing_link:  document.getElementById('ppLink').value.trim()   || null,
+        why:           document.getElementById('ppWhy').value.trim()    || null
+      }]).then(function (r) {
+        btn.textContent = 'I\'m Interested →';
+        btn.disabled = false;
+        if (r.error) {
+          console.error('Supabase error (pages_prize_interest):', r.error);
+          errEl.textContent = 'Something went wrong. Try again.';
+          errEl.style.display = 'block';
+          return;
+        }
+        document.getElementById('ppFormWrap').style.display = 'none';
+        document.getElementById('ppFormSuccess').style.display = 'block';
+      });
+    });
+
+  }());
+  </script>
+
+  <script>
+  /* Edition motif cycling */
+  (function () {
+    var items = document.querySelectorAll('.pp-prize-motif-item');
+    if (!items.length) return;
+    var current = 0;
+    items[current].classList.add('active');
+    setInterval(function () {
+      items[current].classList.remove('active');
+      current = (current + 1) % items.length;
+      items[current].classList.add('active');
+    }, 1800);
+  }());
+
+  /* Custom cursor */
+  const cursor = document.getElementById('sq-cursor');
+  if (cursor) {
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let cx = mx, cy = my;
+    document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; });
+    document.addEventListener('mousedown', function () { cursor.classList.add('clicking'); });
+    document.addEventListener('mouseup',   function () { cursor.classList.remove('clicking'); });
+    document.addEventListener('mouseleave', function () { cursor.classList.add('hidden'); });
+    document.addEventListener('mouseenter', function () { cursor.classList.remove('hidden'); });
+    document.querySelectorAll('a, button, [role="button"]').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { cursor.classList.add('hover'); });
+      el.addEventListener('mouseleave', function () { cursor.classList.remove('hover'); });
+    });
+    (function loop() {
+      cx += (mx - cx) * 0.18;
+      cy += (my - cy) * 0.18;
+      cursor.style.left = cx + 'px';
+      cursor.style.top  = cy + 'px';
+      requestAnimationFrame(loop);
+    })();
+  }
+  </script>
+
+</body>
+</html>

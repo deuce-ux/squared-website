@@ -23,8 +23,8 @@ Deno.serve(async (req: Request) => {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#ffffff;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr><td align="center" style="padding:48px 24px;">
 <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
 
@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
   </td></tr>
 
   <tr><td style="padding-bottom:20px;">
-    <p style="margin:0;font-size:16px;line-height:1.75;font-family:Arial,sans-serif;color:#1a1a1a;">Before you join the group, I'd love for you to take a moment to read this post. It explains what Squared is, why we exist, what you stand to gain, and the values we uphold: <a href="https://squared.ng" style="color:#F67A3E;font-weight:600;text-decoration:none;">Read the post here.</a></p>
+    <p style="margin:0;font-size:16px;line-height:1.75;font-family:Arial,sans-serif;color:#1a1a1a;">Before you join the group, I'd love for you to take a moment to read this post. It explains what Squared is, why we exist, what you stand to gain, and the values we uphold: <a href="https://www.instagram.com/p/DLo8ecEIeKm/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" style="color:#F67A3E;font-weight:600;text-decoration:none;">Read the post here.</a></p>
   </td></tr>
 
   <tr><td style="padding-bottom:28px;">
@@ -177,7 +177,7 @@ Deno.serve(async (req: Request) => {
         "Authorization": "Bearer " + Deno.env.get("RESEND_API_KEY"),
       },
       body: JSON.stringify({
-        from:    "Covenant @ Squared <hello@squared.ng>",
+        from:    "Covenant from Squared <hello@squared.ng>",
         to:      applicant_email,
         subject: "You\u2019re in \u2014 Welcome to Squared",
         html:    html,
