@@ -1,3 +1,9 @@
+[[redirects]]
+  from = "/*.html"
+  to = "/:splat"
+  status = 301
+  force = false
+
 [[headers]]
   for = "/*"
   [headers.values]
