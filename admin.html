@@ -1437,7 +1437,7 @@
   <script>
     /* ─── Single shared Supabase client for the whole admin ─── */
     window._adminSb = window.supabase.createClient(
-      'https://kvsanzlkekfpmbzeesh.supabase.co',
+      'https://kvsanzslkekfpmbzeesh.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw'
     );
   </script>
@@ -3350,7 +3350,7 @@
                   }
                   var name  = appRes.data.full_name;
                   var email = appRes.data.email;
-                  fetch('https://kvsanzlkekfpmbzeesh.supabase.co/functions/v1/send-forge-acceptance-email', {
+                  fetch('https://kvsanzslkekfpmbzeesh.supabase.co/functions/v1/send-forge-acceptance-email', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -3538,7 +3538,7 @@
 
             /* send acceptance email when flipped to accepted */
             if (newStatus === 'accepted') {
-              fetch('https://kvsanzlkekfpmbzeesh.supabase.co/functions/v1/send-squared-acceptance-email', {
+              fetch('https://kvsanzslkekfpmbzeesh.supabase.co/functions/v1/send-squared-acceptance-email', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

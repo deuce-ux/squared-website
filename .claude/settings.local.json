@@ -83,7 +83,10 @@
       "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\verify-chars.ps1\")",
       "Bash(Remove-Item \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\fix-admin-chars.ps1\", \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\fix-admin-chars2.ps1\", \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\inspect-chars.ps1\", \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\verify-chars.ps1\")",
       "Bash(powershell -ExecutionPolicy Bypass -Command \"Remove-Item ''C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\fix-admin-chars.ps1'',''C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\fix-admin-chars2.ps1'',''C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\inspect-chars.ps1'',''C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\\\\verify-chars.ps1''\")",
-      "Bash(findstr \"IPv4\")"
+      "Bash(findstr \"IPv4\")",
+      "Bash(winget install:*)",
+      "Bash(npm install:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\1\\\\Downloads\\\\Squared Website\"/*.html)"
     ]
   }
 }

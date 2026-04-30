@@ -1,4 +1,4 @@
-const SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
+const SUPABASE_URL = 'https://kvsanzslkekfpmbzeesh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw';
 
 export default async function handler(req, res) {
