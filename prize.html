@@ -251,20 +251,6 @@
       margin-bottom: 6px;
     }
 
-    /* ── Counter ── */
-    .sp-counter {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: rgba(255,241,224,0.55);
-      letter-spacing: -0.02em;
-      margin-bottom: 28px;
-    }
-
-    .sp-counter strong {
-      color: #F67A3E;
-      font-size: 1.5rem;
-    }
 
     .sp-card-rule {
       height: 1px;
@@ -571,8 +557,6 @@
       <div class="sp-hero-card sp-reveal sp-d2">
 
         <div class="sp-hero-card-eyebrow">Register your interest</div>
-        <div class="sp-counter" id="counterText">—</div>
-
         <div class="sp-card-rule"></div>
 
         <!-- Form -->
@@ -696,7 +680,6 @@
   (function () {
     'use strict';
 
-    var counterEl  = document.getElementById('counterText');
     var form       = document.getElementById('waitlistForm');
     var successEl  = document.getElementById('successState');
     var submitBtn  = document.getElementById('submitBtn');
@@ -705,24 +688,6 @@
     var emailInput = document.getElementById('email');
     var nameError  = document.getElementById('nameError');
     var emailError = document.getElementById('emailError');
-
-    function fetchCount() {
-      fetch('/api/prize-count')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-          var n = data.count;
-          if (!n || n === 0) {
-            counterEl.innerHTML = 'Be the first to register.';
-          } else {
-            counterEl.innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'person' : 'people') + ' already registered';
-          }
-        })
-        .catch(function () {
-          counterEl.innerHTML = 'Be among the first to register.';
-        });
-    }
-
-    fetchCount();
 
     function isValidEmail(v) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -776,7 +741,6 @@
           if (r.ok) {
             form.style.display = 'none';
             successEl.style.display = 'block';
-            fetchCount();
             return;
           }
           return r.json().then(function (data) {
