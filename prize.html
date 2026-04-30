@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -700,6 +700,10 @@
     var SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
     var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw';
 
+    if (!window.supabase) {
+      console.error('Supabase SDK failed to load');
+      return;
+    }
     var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     var counterEl  = document.getElementById('counterText');
@@ -778,10 +782,11 @@
           if (res.error) {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Register My Interest';
+            console.error('Supabase error:', res.error);
             if (res.error.code === '23505') {
               showMsg("You're already registered — we'll be in touch!", 'info');
             } else {
-              showMsg('Something went wrong. Please try again.', 'error');
+              showMsg(res.error.message || 'Something went wrong. Please try again.', 'error');
             }
             return;
           }
