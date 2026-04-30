@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -696,12 +697,10 @@
   (function () {
     'use strict';
 
-    var API_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co/rest/v1/prize_waitlist';
-    var API_KEY = 'sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi';
-    var HEADERS = {
-      'apikey': API_KEY,
-      'Authorization': 'Bearer ' + API_KEY
-    };
+    var SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw';
+
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     var counterEl  = document.getElementById('counterText');
     var form       = document.getElementById('waitlistForm');
@@ -714,19 +713,18 @@
     var emailError = document.getElementById('emailError');
 
     function fetchCount() {
-      fetch(API_URL + '?select=id', {
-        headers: Object.assign({}, HEADERS, { 'Prefer': 'count=exact' })
-      }).then(function (res) {
-        var range = res.headers.get('content-range');
-        var n = range ? parseInt(range.split('/')[1], 10) : null;
-        if (!n || isNaN(n) || n === 0) {
-          counterEl.innerHTML = n === 0 ? 'Be the first to register.' : 'Be among the first to register.';
-        } else {
-          counterEl.innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'person' : 'people') + ' already registered';
-        }
-      }).catch(function () {
-        counterEl.innerHTML = 'Register your interest below.';
-      });
+      sb.from('prize_waitlist')
+        .select('id', { count: 'exact', head: true })
+        .then(function (res) {
+          var n = (res && res.count != null) ? res.count : null;
+          if (n === null) {
+            counterEl.innerHTML = 'Be among the first to register.';
+          } else if (n === 0) {
+            counterEl.innerHTML = 'Be the first to register.';
+          } else {
+            counterEl.innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'person' : 'people') + ' already registered';
+          }
+        });
     }
 
     fetchCount();
@@ -774,35 +772,23 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Registering…';
 
-      fetch(API_URL, {
-        method: 'POST',
-        headers: Object.assign({}, HEADERS, {
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        }),
-        body: JSON.stringify({ full_name: name, email: email })
-      }).then(function (res) {
-        if (res.ok) {
+      sb.from('prize_waitlist')
+        .insert({ full_name: name, email: email })
+        .then(function (res) {
+          if (res.error) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register My Interest';
+            if (res.error.code === '23505') {
+              showMsg("You're already registered — we'll be in touch!", 'info');
+            } else {
+              showMsg(res.error.message || 'Something went wrong. Please try again.', 'error');
+            }
+            return;
+          }
           form.style.display = 'none';
           successEl.style.display = 'block';
           fetchCount();
-          return;
-        }
-        return res.json().then(function (data) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Register My Interest';
-          if (data.code === '23505' || (data.message && data.message.indexOf('duplicate') !== -1)) {
-            showMsg("You're already registered — we'll be in touch!", 'info');
-          } else {
-            showMsg(data.message || 'Something went wrong. Please try again.', 'error');
-          }
         });
-      }).catch(function (err) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Register My Interest';
-        console.error(err);
-        showMsg('Network error. Please check your connection and try again.', 'error');
-      });
     });
 
     /* ── Scroll reveal ── */
