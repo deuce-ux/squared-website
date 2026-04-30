@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squared Prize — Write. Win. ₦500,000.</title>
+  <meta name="description" content="The Squared Prize is a writing contest for ambitious Nigerians. Top writers share a ₦500,000 prize pool. Register your interest today." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800;12..96,900&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ============================================================
+       SQUARED PRIZE WAITLIST — prize- prefix
+    ============================================================ */
+
+    .prize-page {
+      background: #0a0a0a;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* hamburger spans are dark by default (for orange nav bg) — flip for dark page */
+    .prize-page .nav-hamburger span {
+      background: #FFF1E0;
+    }
+
+    /* ── TOP STRIP: orange nav bar ── */
+    .prize-nav-strip {
+      background: #F67A3E;
+      padding: 0 48px;
+    }
+
+    .prize-nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+    }
+
+    .prize-nav-logo img {
+      width: 110px;
+      display: block;
+    }
+
+    .prize-nav-back {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0E0E0E;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 180ms ease;
+    }
+
+    .prize-nav-back:hover { opacity: 0.55; }
+
+    .prize-nav-back svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .prize-nav-strip { padding: 0 20px; }
+    }
+
+    /* ── HERO ── */
+    .prize-hero {
+      padding: 80px 48px 72px;
+      max-width: 860px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .prize-eyebrow {
+      display: inline-block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #F67A3E;
+      background: rgba(246,122,62,0.1);
+      border: 1px solid rgba(246,122,62,0.2);
+      border-radius: 999px;
+      padding: 5px 14px;
+      margin-bottom: 28px;
+    }
+
+    .prize-headline {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      color: #FFF1E0;
+      margin: 0 0 28px;
+    }
+
+    .prize-headline .hl-orange { color: #F67A3E; }
+    .prize-headline .hl-yellow { color: #FCCA59; }
+
+    .prize-subhead {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: rgba(255,241,224,0.6);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .prize-hero { padding: 56px 20px 52px; }
+      .prize-subhead { font-size: 0.95rem; }
+    }
+
+    /* ── COUNTER ── */
+    .prize-counter-wrap {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .prize-counter-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: rgba(255,241,224,0.45);
+      letter-spacing: -0.01em;
+    }
+
+    .prize-counter-text strong {
+      color: #FFF1E0;
+      font-weight: 700;
+    }
+
+    /* ── FORM SECTION ── */
+    .prize-form-section {
+      padding: 0 48px 80px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .prize-form-panel {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.07);
+      border-radius: 20px;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .prize-field {
+      margin-bottom: 16px;
+    }
+
+    .prize-label {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.45);
+      margin-bottom: 8px;
+    }
+
+    .prize-input {
+      width: 100%;
+      background: rgba(255,241,224,0.04);
+      border: 1px solid rgba(255,241,224,0.1);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: #FFF1E0;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      -webkit-appearance: none;
+    }
+
+    .prize-input::placeholder { color: rgba(255,241,224,0.2); }
+
+    .prize-input:focus {
+      border-color: rgba(246,122,62,0.45);
+      background: rgba(246,122,62,0.04);
+    }
+
+    .prize-input.is-error {
+      border-color: rgba(246,122,62,0.6);
+    }
+
+    .prize-field-error {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      color: #F67A3E;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .prize-form-msg {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      text-align: center;
+      margin-bottom: 16px;
+      min-height: 20px;
+      display: none;
+    }
+
+    .prize-form-msg.error   { color: #F67A3E; display: block; }
+    .prize-form-msg.info    { color: rgba(255,241,224,0.55); display: block; }
+
+    .prize-submit {
+      display: block;
+      width: 100%;
+      background: #F67A3E;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 15px 24px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: url('Logo Files/PNG/Squared Icon orange png.png') 16 16, pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      margin-top: 24px;
+    }
+
+    .prize-submit:hover:not(:disabled) {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    .prize-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── SUCCESS STATE ── */
+    .prize-success {
+      display: none;
+      padding: 48px 16px;
+      text-align: center;
+    }
+
+    .prize-success-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(116,166,139,0.12);
+      border: 1px solid rgba(116,166,139,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 1.4rem;
+    }
+
+    .prize-success-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      margin: 0 0 12px;
+    }
+
+    .prize-success-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: rgba(255,241,224,0.5);
+    }
+
+    /* ── INFO CARDS ── */
+    .prize-cards-section {
+      padding: 0 48px 96px;
+    }
+
+    .prize-cards-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .prize-card {
+      background: rgba(255,241,224,0.03);
+      border: 1px solid rgba(255,241,224,0.08);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .prize-card-icon {
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .prize-card-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF1E0;
+      margin: 0 0 6px;
+    }
+
+    .prize-card-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: rgba(255,241,224,0.45);
+    }
+
+    .prize-card:nth-child(1) { border-top: 2px solid #99B8F1; }
+    .prize-card:nth-child(2) { border-top: 2px solid #FCCA59; }
+    .prize-card:nth-child(3) { border-top: 2px solid #74A68B; }
+
+    @media (max-width: 768px) {
+      .prize-cards-section { padding: 0 20px 72px; }
+      .prize-cards-inner { grid-template-columns: 1fr; }
+      .prize-form-section { padding: 0 20px 64px; }
+      .prize-form-panel { padding: 28px 20px; }
+    }
+
+    /* ── FOOTER ── */
+    .prize-footer {
+      border-top: 1px solid rgba(255,241,224,0.08);
+      padding: 32px 48px;
+    }
+
+    .prize-footer-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .prize-footer-copy {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(255,241,224,0.3);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .prize-footer-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .prize-footer-link {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: rgba(255,241,224,0.45);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s ease;
+    }
+
+    .prize-footer-link:hover { color: #F67A3E; }
+
+    @media (max-width: 768px) {
+      .prize-footer { padding: 28px 20px; }
+      .prize-footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
+</head>
+<body class="prize-page">
+
+  <!-- ── NAV ── -->
+  <div class="prize-nav-strip">
+    <div class="prize-nav-inner">
+      <a href="index.html" class="prize-nav-logo">
+        <img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" />
+      </a>
+      <a href="index.html" class="prize-nav-back">
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.5 2.5L4 7l4.5 4.5" stroke="#0E0E0E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Squared
+      </a>
+    </div>
+  </div>
+
+  <!-- ── HERO ── -->
+  <section class="prize-hero">
+    <div class="prize-eyebrow">Squared Prize · Coming Soon</div>
+    <h1 class="prize-headline">
+      Write.<br />
+      Win.<br />
+      <span class="hl-yellow">₦500,000.</span>
+    </h1>
+    <p class="prize-subhead">
+      The Squared Prize is a writing contest for ambitious Nigerians.
+      Top writers share a ₦500,000 prize pool.
+      Register your interest — we'll notify you the moment applications open.
+    </p>
+  </section>
+
+  <!-- ── COUNTER + FORM ── -->
+  <div class="prize-form-section">
+
+    <div class="prize-counter-wrap">
+      <p class="prize-counter-text" id="counterText">Loading registrations…</p>
+    </div>
+
+    <div class="prize-form-panel" id="formPanel">
+
+      <!-- form -->
+      <form id="waitlistForm" novalidate>
+
+        <div class="prize-field">
+          <label class="prize-label" for="fullName">Full Name</label>
+          <input class="prize-input" type="text" id="fullName" name="full_name" placeholder="Your full name" autocomplete="name" />
+          <span class="prize-field-error" id="nameError">Please enter your full name.</span>
+        </div>
+
+        <div class="prize-field">
+          <label class="prize-label" for="email">Email Address</label>
+          <input class="prize-input" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" />
+          <span class="prize-field-error" id="emailError">Please enter a valid email address.</span>
+        </div>
+
+        <p class="prize-form-msg" id="formMsg"></p>
+
+        <button class="prize-submit" type="submit" id="submitBtn">
+          Register My Interest
+        </button>
+
+      </form>
+
+      <!-- success state (hidden until submit) -->
+      <div class="prize-success" id="successState">
+        <div class="prize-success-icon">✓</div>
+        <p class="prize-success-heading">You're in.</p>
+        <p class="prize-success-sub">We'll reach out as soon as applications open.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── INFO CARDS ── -->
+  <section class="prize-cards-section">
+    <div class="prize-cards-inner">
+
+      <div class="prize-card">
+        <span class="prize-card-icon">🇳🇬</span>
+        <p class="prize-card-title">Open to all Nigerians</p>
+        <p class="prize-card-desc">Anywhere in the country. Any background. If you can write, you can enter.</p>
+      </div>
+
+      <div class="prize-card">
+        <span class="prize-card-icon">💰</span>
+        <p class="prize-card-title">₦500,000 prize pool</p>
+        <p class="prize-card-desc">Real money, shared among the top writers. The stakes are as high as your ambition.</p>
+      </div>
+
+      <div class="prize-card">
+        <span class="prize-card-icon">📢</span>
+        <p class="prize-card-title">Winners announced publicly</p>
+        <p class="prize-card-desc">Your name, your work, your moment. Winners are celebrated in front of the whole community.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="prize-footer">
+    <div class="prize-footer-inner">
+      <p class="prize-footer-copy">© 2025 Squared. All rights reserved.</p>
+      <div class="prize-footer-links">
+        <a href="index.html" class="prize-footer-link">squared.ng</a>
+        <a href="https://instagram.com/SquaredNG" target="_blank" rel="noopener" class="prize-footer-link">Instagram</a>
+        <a href="https://x.com/Squared_NG" target="_blank" rel="noopener" class="prize-footer-link">X</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw';
+
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    var counterText = document.getElementById('counterText');
+    var waitlistForm = document.getElementById('waitlistForm');
+    var formPanel    = document.getElementById('formPanel');
+    var successState = document.getElementById('successState');
+    var submitBtn    = document.getElementById('submitBtn');
+    var formMsg      = document.getElementById('formMsg');
+    var nameInput    = document.getElementById('fullName');
+    var emailInput   = document.getElementById('email');
+    var nameError    = document.getElementById('nameError');
+    var emailError   = document.getElementById('emailError');
+
+    function fetchCount() {
+      sb.from('prize_waitlist')
+        .select('id', { count: 'exact', head: true })
+        .then(function (res) {
+          var count = (res && res.count != null) ? res.count : null;
+          if (count === null) {
+            counterText.textContent = 'Be among the first to register.';
+          } else if (count === 0) {
+            counterText.textContent = 'Be the first to register.';
+          } else {
+            counterText.innerHTML = 'Join <strong>' + count + '</strong> ' + (count === 1 ? 'person' : 'others') + ' already registered.';
+          }
+        });
+    }
+
+    fetchCount();
+
+    function isValidEmail(val) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+    }
+
+    function clearErrors() {
+      nameInput.classList.remove('is-error');
+      emailInput.classList.remove('is-error');
+      nameError.style.display = 'none';
+      emailError.style.display = 'none';
+      formMsg.className = 'prize-form-msg';
+      formMsg.textContent = '';
+    }
+
+    function showMsg(text, type) {
+      formMsg.textContent = text;
+      formMsg.className = 'prize-form-msg ' + type;
+    }
+
+    waitlistForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var name  = nameInput.value.trim();
+      var email = emailInput.value.trim();
+      var valid = true;
+
+      if (!name) {
+        nameInput.classList.add('is-error');
+        nameError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!isValidEmail(email)) {
+        emailInput.classList.add('is-error');
+        emailError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering…';
+
+      sb.from('prize_waitlist')
+        .insert({ full_name: name, email: email })
+        .then(function (res) {
+          if (res.error) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register My Interest';
+
+            if (res.error.code === '23505') {
+              showMsg("You're already registered — we'll be in touch!", 'info');
+            } else {
+              showMsg('Something went wrong. Please try again.', 'error');
+            }
+            return;
+          }
+
+          waitlistForm.style.display = 'none';
+          successState.style.display = 'block';
+          fetchCount();
+        });
+    });
+
+  }());
+  </script>
+
+</body>
+</html>
