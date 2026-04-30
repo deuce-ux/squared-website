@@ -785,7 +785,7 @@
             if (r.status === 409 || data.error === 'duplicate') {
               showMsg("You're already registered — we'll be in touch!", 'info');
             } else {
-              showMsg(data.detail || 'Something went wrong. Please try again.', 'error');
+              showMsg((data.status ? data.status + ': ' : '') + (data.detail || 'Something went wrong.'), 'error');
             }
           });
         })

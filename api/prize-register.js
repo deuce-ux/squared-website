@@ -17,11 +17,10 @@ export default async function handler(req, res) {
     body: JSON.stringify({ full_name, email })
   });
 
+  const text = await response.text();
   if (response.status === 409) return res.status(409).json({ error: 'duplicate' });
   if (!response.ok) {
-    const text = await response.text();
-    console.error('Supabase error:', response.status, text);
-    return res.status(500).json({ error: 'failed', detail: text });
+    return res.status(500).json({ error: 'failed', status: response.status, detail: text });
   }
   return res.status(200).json({ success: true });
 }
