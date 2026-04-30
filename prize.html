@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css" />
 
   <style>
@@ -697,11 +696,6 @@
   (function () {
     'use strict';
 
-    var SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
-    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw';
-
-    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
     var counterEl  = document.getElementById('counterText');
     var form       = document.getElementById('waitlistForm');
     var successEl  = document.getElementById('successState');
@@ -713,17 +707,18 @@
     var emailError = document.getElementById('emailError');
 
     function fetchCount() {
-      sb.from('prize_waitlist')
-        .select('id', { count: 'exact', head: true })
-        .then(function (res) {
-          var n = (res && res.count != null) ? res.count : null;
-          if (n === null) {
-            counterEl.innerHTML = 'Be among the first to register.';
-          } else if (n === 0) {
+      fetch('/api/prize-count')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var n = data.count;
+          if (!n || n === 0) {
             counterEl.innerHTML = 'Be the first to register.';
           } else {
             counterEl.innerHTML = '<strong>' + n + '</strong> ' + (n === 1 ? 'person' : 'people') + ' already registered';
           }
+        })
+        .catch(function () {
+          counterEl.innerHTML = 'Be among the first to register.';
         });
     }
 
@@ -772,22 +767,32 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Registering…';
 
-      sb.from('prize_waitlist')
-        .insert({ full_name: name, email: email })
-        .then(function (res) {
-          if (res.error) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Register My Interest';
-            if (res.error.code === '23505') {
-              showMsg("You're already registered — we'll be in touch!", 'info');
-            } else {
-              showMsg(res.error.message || 'Something went wrong. Please try again.', 'error');
-            }
+      fetch('/api/prize-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: name, email: email })
+      })
+        .then(function (r) {
+          if (r.ok) {
+            form.style.display = 'none';
+            successEl.style.display = 'block';
+            fetchCount();
             return;
           }
-          form.style.display = 'none';
-          successEl.style.display = 'block';
-          fetchCount();
+          return r.json().then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register My Interest';
+            if (r.status === 409 || data.error === 'duplicate') {
+              showMsg("You're already registered — we'll be in touch!", 'info');
+            } else {
+              showMsg('Something went wrong. Please try again.', 'error');
+            }
+          });
+        })
+        .catch(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Register My Interest';
+          showMsg('Something went wrong. Please try again.', 'error');
         });
     });
 
