@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteer — Squared</title>
+  <meta name="description" content="Help us build Squared from the ground floor. Six open volunteer roles for people who believe in what we're building." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ============================================================
+       VOLUNTEER PAGE — vl- prefix
+       All dark throughout. Modelled after prize.html / forge.html.
+    ============================================================ */
+
+    .vl-page {
+      background: #0a0a0a;
+      color: #FFF1E0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Nav overrides for dark page */
+    .vl-page .nav-link { color: #FFF1E0; }
+    .vl-page .nav-link:hover { opacity: 0.5; }
+    .vl-page .nav-pill .btn-primary {
+      background: #F67A3E;
+      color: #0E0E0E;
+      border-color: #F67A3E;
+    }
+    .vl-page .nav-hamburger span { background: #FFF1E0; }
+
+    /* ── Grid overlay ── */
+    .vl-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,241,224,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,241,224,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Section spacing ── */
+    .vl-section {
+      padding: 80px 0;
+      position: relative;
+    }
+
+    .vl-section + .vl-section {
+      border-top: 1px solid rgba(255,241,224,0.05);
+    }
+
+    .vl-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Shared text ── */
+    .vl-eyebrow {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.3);
+      margin-bottom: 18px;
+    }
+
+    .vl-section-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+      color: #FFF1E0;
+      margin: 0 0 20px;
+    }
+
+    .vl-section-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .vl-section-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,241,224,0.45);
+      line-height: 1.7;
+      max-width: 580px;
+      margin-bottom: 0;
+    }
+
+    .vl-body-text {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.8;
+      max-width: 680px;
+    }
+
+    .vl-body-text p + p { margin-top: 14px; }
+
+    /* ── Dark card base ── */
+    .vl-card {
+      background: #111111;
+      border: 1px solid rgba(255,241,224,0.05);
+      border-radius: 16px;
+    }
+
+    /* ── Scroll reveal ── */
+    .vl-reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 600ms cubic-bezier(0.16,1,0.3,1), transform 600ms cubic-bezier(0.16,1,0.3,1);
+    }
+    .vl-reveal.vl-in { opacity: 1; transform: translateY(0); }
+    .vl-d1 { transition-delay: 0.08s; }
+    .vl-d2 { transition-delay: 0.16s; }
+    .vl-d3 { transition-delay: 0.24s; }
+    .vl-d4 { transition-delay: 0.32s; }
+    .vl-d5 { transition-delay: 0.40s; }
+    .vl-d6 { transition-delay: 0.48s; }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    .vl-hero {
+      position: relative;
+      padding-top: 140px;
+      padding-bottom: 80px;
+      overflow: hidden;
+    }
+
+    .vl-hero-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 40%, rgba(246,122,62,0.10) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 20%, rgba(153,184,241,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vl-hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vl-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.45);
+      border: 1px solid rgba(255,241,224,0.12);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 32px;
+    }
+
+    .vl-hero-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 5.5rem;
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      color: #FFF1E0;
+      margin: 0 0 32px;
+      max-width: 820px;
+    }
+
+    .vl-hero-heading em {
+      font-style: italic;
+      color: #F67A3E;
+    }
+
+    .vl-hero-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      color: rgba(255,241,224,0.5);
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    /* ============================================================
+       SECTION: WHERE WE ARE
+    ============================================================ */
+    .vl-honest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .vl-honest-left {
+      position: sticky;
+      top: 120px;
+    }
+
+    /* ── Stat strip ── */
+    .vl-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .vl-stat-card {
+      padding: 20px 18px;
+      border-radius: 12px;
+    }
+
+    .vl-stat-num {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #F67A3E;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .vl-stat-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.75rem;
+      color: rgba(255,241,224,0.4);
+      line-height: 1.4;
+    }
+
+    /* ============================================================
+       SECTION: THE HONEST ASK
+    ============================================================ */
+    .vl-honest-ask {
+      background: #0f0f0f;
+    }
+
+    .vl-honest-ask-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── Offer list ── */
+    .vl-offer-list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .vl-offer-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: rgba(255,241,224,0.55);
+      line-height: 1.55;
+    }
+
+    .vl-offer-item::before {
+      content: '→';
+      color: #F67A3E;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ============================================================
+       SECTION: ROLES
+    ============================================================ */
+    .vl-roles-header {
+      margin-bottom: 48px;
+    }
+
+    .vl-roles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .vl-role-card {
+      padding: 28px 26px;
+      transition: border-color 300ms, transform 300ms cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .vl-role-card:hover {
+      border-color: rgba(246,122,62,0.2);
+      transform: translateY(-2px);
+    }
+
+    .vl-role-icon {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .vl-role-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFF1E0;
+      margin-bottom: 10px;
+    }
+
+    .vl-role-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.83rem;
+      color: rgba(255,241,224,0.45);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .vl-role-need {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.78rem;
+      color: rgba(255,241,224,0.3);
+      line-height: 1.6;
+      border-top: 1px solid rgba(255,241,224,0.06);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .vl-role-need strong {
+      color: rgba(255,241,224,0.5);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       SECTION: APPLICATION FORM
+    ============================================================ */
+    .vl-apply-header {
+      margin-bottom: 48px;
+    }
+
+    .vl-form-card {
+      max-width: 720px;
+      padding: 40px 36px;
+      border-radius: 20px;
+    }
+
+    .vl-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 20px;
+    }
+
+    .vl-field {
+      margin-bottom: 20px;
+    }
+
+    .vl-field--full {
+      grid-column: 1 / -1;
+    }
+
+    .vl-label {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.63rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,241,224,0.3);
+      margin-bottom: 8px;
+    }
+
+    .vl-input,
+    .vl-select,
+    .vl-textarea {
+      width: 100%;
+      background: rgba(255,241,224,0.04);
+      border: 1px solid rgba(255,241,224,0.08);
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: #FFF1E0;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      -webkit-appearance: none;
+      box-sizing: border-box;
+    }
+
+    .vl-select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,241,224,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .vl-select option {
+      background: #111111;
+      color: #FFF1E0;
+    }
+
+    .vl-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .vl-input::placeholder,
+    .vl-textarea::placeholder { color: rgba(255,241,224,0.2); }
+
+    .vl-input:focus,
+    .vl-select:focus,
+    .vl-textarea:focus {
+      border-color: rgba(246,122,62,0.4);
+      background: rgba(246,122,62,0.03);
+    }
+
+    .vl-input.is-error,
+    .vl-select.is-error,
+    .vl-textarea.is-error { border-color: rgba(246,122,62,0.55); }
+
+    .vl-field-error {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.72rem;
+      color: #F67A3E;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .vl-form-msg {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.82rem;
+      min-height: 18px;
+      margin-bottom: 8px;
+      display: none;
+    }
+
+    .vl-form-msg.error { color: #F67A3E; display: block; }
+    .vl-form-msg.info  { color: rgba(255,241,224,0.5); display: block; }
+
+    .vl-submit {
+      display: block;
+      width: 100%;
+      background: #F67A3E;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 9999px;
+      padding: 15px 24px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      transition: transform 300ms cubic-bezier(0.16,1,0.3,1), background 200ms;
+      margin-top: 8px;
+    }
+
+    .vl-submit:hover:not(:disabled) {
+      transform: rotate(-2deg);
+      background: #ff9060;
+    }
+
+    .vl-submit:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Success state ── */
+    .vl-success {
+      display: none;
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .vl-success-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(246,122,62,0.12);
+      border: 1px solid rgba(246,122,62,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin: 0 auto 20px;
+      color: #F67A3E;
+    }
+
+    .vl-success-heading {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFF1E0;
+      margin-bottom: 10px;
+    }
+
+    .vl-success-sub {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.88rem;
+      color: rgba(255,241,224,0.4);
+      line-height: 1.6;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    /* ============================================================
+       MOBILE — max-width 768px
+    ============================================================ */
+    @media (max-width: 768px) {
+      .vl-inner { padding: 0 24px; }
+      .vl-section { padding: 56px 0; }
+      .vl-hero { padding-top: 100px; padding-bottom: 56px; }
+      .vl-hero-inner { padding: 0 24px; }
+      .vl-hero-heading { font-size: 2.8rem; }
+      .vl-hero-sub { font-size: 0.92rem; }
+      .vl-section-heading { font-size: 2.2rem; }
+
+      .vl-honest-grid,
+      .vl-honest-ask-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .vl-honest-left { position: static; }
+
+      .vl-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .vl-roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vl-form-card { padding: 28px 24px; }
+
+      .vl-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .vl-field--full { grid-column: 1; }
+    }
+  </style>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+</head>
+<body class="vl-page">
+  <div id="sq-cursor"></div>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav-pill">
+    <div class="nav-left">
+      <a href="index.html"><img src="Logo Files/PNG/Squared primary logo orange png.png" alt="Squared" class="nav-logo-img" /></a>
+    </div>
+    <div class="nav-center">
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="programs.html" class="nav-link">Programs</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="bookshop.html" class="nav-link">Bookshop</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <a href="volunteer.html" class="nav-link">Volunteer</a>
+      <a href="https://app.squared.ng" class="nav-link">Join</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <a href="https://app.squared.ng" class="btn-primary">Join Now</a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="vl-hero">
+    <div class="vl-grid-overlay"></div>
+    <div class="vl-hero-glow"></div>
+
+    <div class="vl-hero-inner">
+      <div class="vl-hero-label vl-reveal">By young people, for young people</div>
+
+      <h1 class="vl-hero-heading vl-reveal vl-d1">
+        Help us build something<br />
+        that actually <em>matters.</em>
+      </h1>
+
+      <p class="vl-hero-sub vl-reveal vl-d2">
+        Squared is looking for a small group of cracked people who believe in what we're building — and want to be part of it from the ground floor.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 1: WHERE WE ARE ===================== -->
+  <section class="vl-section">
+    <div class="vl-inner">
+      <div class="vl-honest-grid">
+
+        <div class="vl-honest-left vl-reveal">
+          <div class="vl-eyebrow">Honest context</div>
+          <h2 class="vl-section-heading">Here's where<br />we are.</h2>
+
+          <div class="vl-stats">
+            <div class="vl-card vl-stat-card">
+              <div class="vl-stat-num">35+</div>
+              <div class="vl-stat-label">Paying members across two cohorts</div>
+            </div>
+            <div class="vl-card vl-stat-card">
+              <div class="vl-stat-num">3x</div>
+              <div class="vl-stat-label">Focus sessions every single week</div>
+            </div>
+            <div class="vl-card vl-stat-card">
+              <div class="vl-stat-num">200+</div>
+              <div class="vl-stat-label">Prize waitlist signups, zero paid ads</div>
+            </div>
+            <div class="vl-card vl-stat-card">
+              <div class="vl-stat-num">&lt;1yr</div>
+              <div class="vl-stat-label">Old. Still moving.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vl-reveal vl-d1">
+          <div class="vl-body-text">
+            <p>Squared is not a finished product. It is a nascent idea with real motion behind it.</p>
+            <p>In less than a year, we have built a fully functional accountability app used by over 35 paying members across two cohorts. We run three focus sessions every week. We have squads with dedicated leaders. We have a goal system, a coin reward system, a mentorship layer, and a community that genuinely shows up for each other.</p>
+            <p>Over 200 people have signed up to the Squared Prize waitlist in a matter of days — without a single paid ad.</p>
+            <p>We are building the biggest platform for ambitious young creatives in Nigeria. That is not a small thing. And we are doing it with almost nothing.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2: THE HONEST ASK ===================== -->
+  <section class="vl-section vl-honest-ask">
+    <div class="vl-inner">
+      <div class="vl-honest-ask-inner">
+
+        <div class="vl-reveal">
+          <div class="vl-eyebrow">The offer</div>
+          <h2 class="vl-section-heading">We can't pay you.<br /><em>We want to be upfront about that.</em></h2>
+        </div>
+
+        <div class="vl-reveal vl-d1">
+          <div class="vl-body-text">
+            <p>Squared is bootstrapped and founder-led. Every naira we make goes back into the product and the community. We are not in a position to hire right now — and we refuse to pretend otherwise.</p>
+            <p>What we can offer is this:</p>
+          </div>
+          <ul class="vl-offer-list">
+            <li class="vl-offer-item">A front-row seat to something being built from scratch.</li>
+            <li class="vl-offer-item">Real responsibility — not busywork.</li>
+            <li class="vl-offer-item">A community that will know your name.</li>
+            <li class="vl-offer-item">The kind of experience that only comes from being early to something that works.</li>
+          </ul>
+          <p class="vl-body-text" style="margin-top: 20px;">If you are the kind of person who sees value in that — we want to hear from you.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: OPEN ROLES ===================== -->
+  <section class="vl-section">
+    <div class="vl-inner">
+
+      <div class="vl-roles-header">
+        <div class="vl-eyebrow vl-reveal">Open roles</div>
+        <h2 class="vl-section-heading vl-reveal vl-d1">What we're<br />looking for.</h2>
+        <p class="vl-section-sub vl-reveal vl-d2">Six roles. A few good people. That's all.</p>
+      </div>
+
+      <div class="vl-roles-grid">
+
+        <div class="vl-card vl-role-card vl-reveal">
+          <span class="vl-role-icon">🎙️</span>
+          <div class="vl-role-title">Community Manager</div>
+          <div class="vl-role-desc">
+            This is the most important role on this list. You will own the Squared Facebook community day-to-day. Posting, responding, DMing people who engage, keeping the energy alive between our major pushes. As we grow from 23,000 members to 50,000 and beyond, the community needs a human presence that isn't just the founder. That human is you.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> Someone who writes well in a casual, warm tone. Someone who is already active in Nigerian online communities. Someone who genuinely cares.
+          </div>
+        </div>
+
+        <div class="vl-card vl-role-card vl-reveal vl-d1">
+          <span class="vl-role-icon">📱</span>
+          <div class="vl-role-title">Social Media Manager</div>
+          <div class="vl-role-desc">
+            You will own Squared's presence on X, Instagram, and TikTok. Scheduling, posting, engaging, growing. We have a strong brand voice — your job is to carry it consistently across every platform so Squared stays visible and relevant even when the founder is heads-down building.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> Someone who understands how each platform works differently. Someone with an eye for what performs. Someone consistent.
+          </div>
+        </div>
+
+        <div class="vl-card vl-role-card vl-reveal vl-d2">
+          <span class="vl-role-icon">✍️</span>
+          <div class="vl-role-title">Content Contributor</div>
+          <div class="vl-role-desc">
+            Squared has stories worth telling — member wins, community moments, ideas about productivity, ambition, and what it means to build something in Nigeria. You will help us tell them. Blog posts, newsletters, social content. You write, we publish.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> Someone who can write. Really write. Clear, honest, and in a voice that sounds like a person — not a brand.
+          </div>
+        </div>
+
+        <div class="vl-card vl-role-card vl-reveal vl-d3">
+          <span class="vl-role-icon">🎬</span>
+          <div class="vl-role-title">Videographer / Editor</div>
+          <div class="vl-role-desc">
+            Content at scale needs to look good. We need someone who can shoot and edit — member spotlights, behind-the-scenes moments, short-form content for social. If you have a phone and know how to make things not look terrible, we want to talk.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> Someone with basic shooting and editing skills. Consistency over perfection.
+          </div>
+        </div>
+
+        <div class="vl-card vl-role-card vl-reveal vl-d4">
+          <span class="vl-role-icon">🛡️</span>
+          <div class="vl-role-title">Moderator</div>
+          <div class="vl-role-desc">
+            As the community grows, quality and tone become harder to maintain. You will help us keep the Squared community the kind of place people actually want to be in. Flagging spam, welcoming new members, keeping conversations on track.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> Someone trustworthy, calm, and fair. Someone who understands what Squared stands for.
+          </div>
+        </div>
+
+        <div class="vl-card vl-role-card vl-reveal vl-d5">
+          <span class="vl-role-icon">🎓</span>
+          <div class="vl-role-title">Campus Ambassador</div>
+          <div class="vl-role-desc">
+            Squared's long-term vision includes physical presence on Nigerian university campuses. Before we get there, we need people already on the ground — building awareness, identifying potential members, and representing Squared in their schools.
+          </div>
+          <div class="vl-role-need">
+            <strong>What we need:</strong> A current university student in Nigeria. Someone known and respected in their campus community. Someone who moves.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4: APPLY ===================== -->
+  <section class="vl-section" style="background: #0f0f0f;">
+    <div class="vl-inner">
+
+      <div class="vl-apply-header">
+        <div class="vl-eyebrow vl-reveal">Apply</div>
+        <h2 class="vl-section-heading vl-reveal vl-d1">Think this is you?</h2>
+        <p class="vl-section-sub vl-reveal vl-d2">We are not collecting CVs. Just tell us who you are and why you want in.</p>
+      </div>
+
+      <div class="vl-card vl-form-card vl-reveal vl-d3">
+
+        <form id="volunteerForm" novalidate>
+          <div class="vl-form-grid">
+
+            <div class="vl-field">
+              <label class="vl-label" for="vlName">Full Name</label>
+              <input class="vl-input" type="text" id="vlName" placeholder="Your full name" autocomplete="name" />
+              <span class="vl-field-error" id="vlNameError">Please enter your full name.</span>
+            </div>
+
+            <div class="vl-field">
+              <label class="vl-label" for="vlEmail">Email Address</label>
+              <input class="vl-input" type="email" id="vlEmail" placeholder="you@example.com" autocomplete="email" />
+              <span class="vl-field-error" id="vlEmailError">Please enter a valid email address.</span>
+            </div>
+
+            <div class="vl-field vl-field--full">
+              <label class="vl-label" for="vlRole">Role You're Applying For</label>
+              <select class="vl-select" id="vlRole">
+                <option value="" disabled selected>Select a role…</option>
+                <option value="Community Manager">🎙️ Community Manager</option>
+                <option value="Social Media Manager">📱 Social Media Manager</option>
+                <option value="Content Contributor">✍️ Content Contributor</option>
+                <option value="Videographer / Editor">🎬 Videographer / Editor</option>
+                <option value="Moderator">🛡️ Moderator</option>
+                <option value="Campus Ambassador">🎓 Campus Ambassador</option>
+              </select>
+              <span class="vl-field-error" id="vlRoleError">Please select a role.</span>
+            </div>
+
+            <div class="vl-field vl-field--full">
+              <label class="vl-label" for="vlAbout">About You</label>
+              <textarea class="vl-textarea" id="vlAbout" rows="4" placeholder="Who are you, what do you do, what have you built or contributed to?"></textarea>
+              <span class="vl-field-error" id="vlAboutError">Please tell us a bit about yourself.</span>
+            </div>
+
+            <div class="vl-field vl-field--full">
+              <label class="vl-label" for="vlWhy">Why Squared?</label>
+              <textarea class="vl-textarea" id="vlWhy" rows="4" placeholder="Why do you want to volunteer with Squared?"></textarea>
+              <span class="vl-field-error" id="vlWhyError">Please tell us why you want to volunteer.</span>
+            </div>
+
+            <div class="vl-field vl-field--full">
+              <label class="vl-label" for="vlLink">Link to Your Work <span style="opacity:0.4; text-transform: none; letter-spacing: 0; font-weight: 400;">(optional)</span></label>
+              <input class="vl-input" type="url" id="vlLink" placeholder="Portfolio, social profile, writing sample — anything you want us to see" />
+            </div>
+
+          </div>
+
+          <p class="vl-form-msg" id="vlFormMsg"></p>
+          <button class="vl-submit" type="submit" id="vlSubmitBtn">Send My Application</button>
+        </form>
+
+        <div class="vl-success" id="vlSuccess">
+          <div class="vl-success-icon">✓</div>
+          <p class="vl-success-heading">We've received your application.</p>
+          <p class="vl-success-sub">If it's a good fit, we'll reach out.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer-outer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-logo">
+          <img src="Logo Files/SVG/Squared primary logo white svg.svg" alt="Squared" height="40" loading="lazy" />
+        </div>
+        <nav class="footer-nav">
+          <a href="index.html"      class="footer-nav-link">Home</a>
+          <a href="community.html"  class="footer-nav-link">Community</a>
+          <a href="programs.html"   class="footer-nav-link">Programs</a>
+          <a href="bookshop.html"   class="footer-nav-link">Bookshop</a>
+          <a href="events.html"     class="footer-nav-link">Events</a>
+          <a href="blog.html"       class="footer-nav-link">Blog</a>
+          <a href="volunteer.html"  class="footer-nav-link">Volunteer</a>
+          <a href="https://app.squared.ng" class="footer-nav-link">Join</a>
+        </nav>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 Squared. All rights reserved.</p>
+        <div class="footer-socials">
+          <a href="https://x.com/Squared_NG" target="_blank" rel="noopener" class="footer-social-link">X (Twitter)</a>
+          <a href="https://instagram.com/SquaredNG" target="_blank" rel="noopener" class="footer-social-link">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== MOBILE MENU ===================== -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Close menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="community.html"  class="mobile-menu-link">Community</a>
+      <a href="programs.html"   class="mobile-menu-link">Programs</a>
+      <a href="blog.html"       class="mobile-menu-link">Blog</a>
+      <a href="bookshop.html"   class="mobile-menu-link">Bookshop</a>
+      <a href="events.html"     class="mobile-menu-link">Events</a>
+      <a href="volunteer.html"  class="mobile-menu-link">Volunteer</a>
+      <a href="https://app.squared.ng" class="mobile-menu-link">Join</a>
+      <a href="https://app.squared.ng" class="btn-primary">Join Now →</a>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    var SUPABASE_URL = 'https://kvsanzlkekfpmbzeesh.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi';
+
+    var form      = document.getElementById('volunteerForm');
+    var successEl = document.getElementById('vlSuccess');
+    var submitBtn = document.getElementById('vlSubmitBtn');
+    var formMsg   = document.getElementById('vlFormMsg');
+
+    function $(id) { return document.getElementById(id); }
+
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    }
+
+    function showFieldError(inputId, errorId) {
+      $(inputId).classList.add('is-error');
+      $(errorId).style.display = 'block';
+    }
+
+    function clearErrors() {
+      ['vlName','vlEmail','vlRole','vlAbout','vlWhy'].forEach(function (id) {
+        $(id).classList.remove('is-error');
+      });
+      ['vlNameError','vlEmailError','vlRoleError','vlAboutError','vlWhyError'].forEach(function (id) {
+        $(id).style.display = 'none';
+      });
+      formMsg.className = 'vl-form-msg';
+      formMsg.textContent = '';
+    }
+
+    function showMsg(text, type) {
+      formMsg.textContent = text;
+      formMsg.className = 'vl-form-msg ' + type;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearErrors();
+
+      var name  = $('vlName').value.trim();
+      var email = $('vlEmail').value.trim();
+      var role  = $('vlRole').value;
+      var about = $('vlAbout').value.trim();
+      var why   = $('vlWhy').value.trim();
+      var link  = $('vlLink').value.trim();
+
+      var valid = true;
+
+      if (!name)               { showFieldError('vlName',  'vlNameError');  valid = false; }
+      if (!isValidEmail(email)){ showFieldError('vlEmail', 'vlEmailError'); valid = false; }
+      if (!role)               { showFieldError('vlRole',  'vlRoleError');  valid = false; }
+      if (!about)              { showFieldError('vlAbout', 'vlAboutError'); valid = false; }
+      if (!why)                { showFieldError('vlWhy',   'vlWhyError');   valid = false; }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      var payload = {
+        full_name: name,
+        email:     email,
+        role:      role,
+        about:     about,
+        why:       why
+      };
+      if (link) payload.link = link;
+
+      fetch(SUPABASE_URL + '/rest/v1/volunteer_applications', {
+        method: 'POST',
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type':  'application/json',
+          'Prefer':        'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) {
+          if (r.ok || r.status === 201) {
+            form.style.display = 'none';
+            successEl.style.display = 'block';
+            return;
+          }
+          return r.json().then(function (data) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send My Application';
+            showMsg('Something went wrong. Please try again or email us at hello@squared.ng', 'error');
+            console.error('Supabase error:', data);
+          });
+        })
+        .catch(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send My Application';
+          showMsg('Something went wrong. Please try again or email us at hello@squared.ng', 'error');
+        });
+    });
+
+    /* ── Scroll reveal ── */
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('vl-in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.vl-reveal').forEach(function (el) {
+      observer.observe(el);
+    });
+
+  }());
+  </script>
+
+</body>
+</html>
