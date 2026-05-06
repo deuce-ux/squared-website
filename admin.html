@@ -659,6 +659,7 @@
         <button class="ad-tab" data-tab="pagesprize">Squared Prize</button>
         <button class="ad-tab" data-tab="forge">Forge</button>
         <button class="ad-tab" data-tab="joinapps">Join Applications</button>
+        <button class="ad-tab" data-tab="volunteers">Volunteers</button>
       </div>
 
       <!-- Books Panel -->
@@ -889,6 +890,33 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Volunteers Panel -->
+      <div class="ad-tab-panel" id="panelVolunteers">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title" id="volunteersPanelTitle">Volunteers</div>
+          <div class="ad-panel-actions">
+            <button class="ad-btn-ghost" id="volunteersRefreshBtn">↺ Refresh</button>
+            <button class="ad-btn-ghost" id="volunteersExportBtn">↓ Export CSV</button>
+          </div>
+        </div>
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>About</th>
+                <th>Why Squared</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody id="volunteersTableBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Join Applications Panel -->
@@ -1500,6 +1528,7 @@
     var forgeLoaded        = false;
     var ppLoaded           = false;
     var joinAppsLoaded     = false;
+    var volunteersLoaded   = false;
     document.querySelectorAll('.ad-tab').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.ad-tab').forEach(function (b) { b.classList.remove('ad-active'); });
@@ -1516,6 +1545,7 @@
         if (key === 'pagesprize'   && !ppLoaded)           { ppLoaded           = true; loadPagesPrize(); }
         if (key === 'forge'        && !forgeLoaded)        { forgeLoaded        = true; loadForgeAll(); }
         if (key === 'joinapps'     && !joinAppsLoaded)     { joinAppsLoaded     = true; loadJoinApps(); }
+        if (key === 'volunteers'   && !volunteersLoaded)   { volunteersLoaded   = true; loadVolunteers(); }
       });
     });
 
@@ -3569,6 +3599,108 @@
     document.getElementById('joinAppsRefreshBtn').addEventListener('click', function () {
       joinAppsLoaded = true;
       loadJoinApps();
+    });
+
+    /* ─── VOLUNTEERS ─── */
+    var allVolunteers = [];
+
+    function loadVolunteers() {
+      var tb = document.getElementById('volunteersTableBody');
+      tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(6);
+
+      fetch('https://kvsanzlkekfpmbzeesh.supabase.co/rest/v1/volunteer_applications?order=created_at.desc', {
+        headers: {
+          'apikey':        'sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi',
+          'Authorization': 'Bearer sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi'
+        }
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!Array.isArray(data)) {
+            toast('Error loading volunteers', 'error');
+            tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Could not load. Check RLS policy on volunteer_applications.</div></td></tr>';
+            return;
+          }
+          allVolunteers = data;
+          document.getElementById('volunteersPanelTitle').textContent =
+            'Volunteers (' + allVolunteers.length + ')';
+          renderVolunteersTable(allVolunteers);
+        })
+        .catch(function (err) {
+          console.error('volunteer_applications fetch error:', err);
+          toast('Error loading volunteers', 'error');
+          tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Network error.</div></td></tr>';
+        });
+    }
+
+    function renderVolunteersTable(rows) {
+      var tb = document.getElementById('volunteersTableBody');
+      tb.innerHTML = '';
+      if (!rows.length) {
+        tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty">No applications yet.</div></td></tr>';
+        return;
+      }
+      rows.forEach(function (row) {
+        var about    = row.about || '';
+        var why      = row.why   || '';
+        var link     = row.link  || '';
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td data-label="Date" style="font-size:0.78rem;color:rgba(255,241,224,0.6);white-space:nowrap">' + fmtDate(row.created_at) + '</td>' +
+          '<td data-label="Name" style="font-weight:600;color:#FFF1E0">' + esc(row.full_name || '—') + '</td>' +
+          '<td data-label="Email" style="font-size:0.78rem">' + esc(row.email || '—') + '</td>' +
+          '<td data-label="Role"><span class="ad-pill ad-pill-pending">' + esc(row.role || '—') + '</span></td>' +
+          '<td data-label="About" style="max-width:220px">' +
+            '<span class="ad-why-text vl-about-text" title="' + esc(about) + '">' + esc(about.length > 80 ? about.slice(0, 80) + '…' : about) + '</span>' +
+          '</td>' +
+          '<td data-label="Why Squared" style="max-width:220px">' +
+            '<span class="ad-why-text vl-why-text" title="' + esc(why) + '">' + esc(why.length > 80 ? why.slice(0, 80) + '…' : why) + '</span>' +
+          '</td>' +
+          '<td data-label="Link">' +
+            (link ? '<a class="ad-link-orange" href="' + esc(link) + '" target="_blank" rel="noopener">View ↗</a>' : '<span style="color:rgba(255,241,224,0.25)">—</span>') +
+          '</td>';
+        tb.appendChild(tr);
+      });
+
+      tb.querySelectorAll('.vl-about-text, .vl-why-text').forEach(function (el) {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', function () {
+          var full     = this.title;
+          var expanded = this.classList.contains('expanded');
+          this.textContent = expanded ? (full.length > 80 ? full.slice(0, 80) + '…' : full) : full;
+          this.classList.toggle('expanded', !expanded);
+        });
+      });
+    }
+
+    document.getElementById('volunteersRefreshBtn').addEventListener('click', function () {
+      volunteersLoaded = true;
+      loadVolunteers();
+    });
+
+    document.getElementById('volunteersExportBtn').addEventListener('click', function () {
+      if (!allVolunteers.length) { toast('No applications to export.', 'error'); return; }
+      var header = ['Date', 'Name', 'Email', 'Role', 'About', 'Why Squared', 'Link'];
+      var rows = allVolunteers.map(function (r) {
+        return [
+          fmtDate(r.created_at),
+          r.full_name || '',
+          r.email     || '',
+          r.role      || '',
+          (r.about    || '').replace(/"/g, '""'),
+          (r.why      || '').replace(/"/g, '""'),
+          r.link      || ''
+        ].map(function (v) { return '"' + v + '"'; }).join(',');
+      });
+      var csv  = [header.join(',')].concat(rows).join('\r\n');
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'volunteer-applications-' + new Date().toISOString().slice(0, 10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('CSV exported.');
     });
 
     document.getElementById('joinAppsExportBtn').addEventListener('click', function () {
