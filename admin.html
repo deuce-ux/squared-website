@@ -1520,15 +1520,8 @@
     });
 
     /* ─── TABS ─── */
-    var ordersLoaded       = false;
-    var membersLoaded      = false;
-    var eventsLoaded       = false;
-    var testimonialsLoaded = false;
-    var programsLoaded     = false;
-    var forgeLoaded        = false;
-    var ppLoaded           = false;
-    var joinAppsLoaded     = false;
-    var volunteersLoaded   = false;
+    /* Single object tracks which tabs have already loaded data */
+    window._adminTabLoaded = window._adminTabLoaded || {};
     document.querySelectorAll('.ad-tab').forEach(function (btn) {
       btn.addEventListener('click', function () {
         document.querySelectorAll('.ad-tab').forEach(function (b) { b.classList.remove('ad-active'); });
@@ -1537,15 +1530,21 @@
         var key = btn.dataset.tab;
         var panel = document.getElementById('panel' + key.charAt(0).toUpperCase() + key.slice(1));
         if (panel) panel.classList.add('ad-active');
-        if (key === 'orders'       && !ordersLoaded)       { ordersLoaded       = true; loadOrders(); }
-        if (key === 'members'      && !membersLoaded)      { membersLoaded      = true; loadMembers(); }
-        if (key === 'events'       && !eventsLoaded)       { eventsLoaded       = true; loadEvents(); }
-        if (key === 'testimonials' && !testimonialsLoaded) { testimonialsLoaded = true; loadTestimonials(); }
-        if (key === 'programs'     && !programsLoaded)     { programsLoaded     = true; loadPrograms(); }
-        if (key === 'pagesprize'   && !ppLoaded)           { ppLoaded           = true; loadPagesPrize(); }
-        if (key === 'forge'        && !forgeLoaded)        { forgeLoaded        = true; loadForgeAll(); }
-        if (key === 'joinapps'     && !joinAppsLoaded)     { joinAppsLoaded     = true; loadJoinApps(); }
-        if (key === 'volunteers'   && !volunteersLoaded)   { volunteersLoaded   = true; loadVolunteers(); }
+        if (!window._adminTabLoaded[key]) {
+          window._adminTabLoaded[key] = true;
+          var loaderMap = {
+            orders:       function () { window._adminLoad.orders(); },
+            members:      function () { window._adminLoad.members(); },
+            events:       function () { window._adminLoad.events(); },
+            testimonials: function () { window._adminLoad.testimonials(); },
+            programs:     function () { window._adminLoad.programs(); },
+            pagesprize:   function () { window._adminLoad.pagesprize(); },
+            forge:        function () { window._adminLoad.forge(); },
+            joinapps:     function () { window._adminLoad.joinapps(); },
+            volunteers:   function () { window._adminLoad.volunteers(); }
+          };
+          if (loaderMap[key]) loaderMap[key]();
+        }
       });
     });
 
@@ -1825,7 +1824,7 @@
     }
 
     document.getElementById('ordersRefreshBtn').addEventListener('click', function () {
-      ordersLoaded = true; loadOrders();
+      delete window._adminTabLoaded['orders']; loadOrders();
     });
 
     /* ─── ORDER DETAIL MODAL ─── */
@@ -3220,7 +3219,7 @@
     });
 
     document.getElementById('ppRefreshBtn').addEventListener('click', function () {
-      ppLoaded = false;
+      delete window._adminTabLoaded['pagesprize'];
       loadPagesPrize();
     });
 
@@ -3501,6 +3500,19 @@
     window.loadJoinApps   = loadJoinApps;
     window.loadVolunteers = loadVolunteers;
 
+    /* ─── centralised loader map (used by tab handler + refresh buttons) ─── */
+    window._adminLoad = {
+      orders:       loadOrders,
+      members:      loadMembers,
+      events:       loadEvents,
+      testimonials: loadTestimonials,
+      programs:     loadPrograms,
+      pagesprize:   loadPagesPrize,
+      forge:        loadForgeAll,
+      joinapps:     loadJoinApps,
+      volunteers:   loadVolunteers
+    };
+
     function renderJoinAppsTable(rows) {
       var tb = document.getElementById('joinAppsTableBody');
       tb.innerHTML = '';
@@ -3598,7 +3610,7 @@
     }
 
     document.getElementById('joinAppsRefreshBtn').addEventListener('click', function () {
-      joinAppsLoaded = true;
+      delete window._adminTabLoaded['joinapps'];
       loadJoinApps();
     });
 
@@ -3667,7 +3679,7 @@
     }
 
     document.getElementById('volunteersRefreshBtn').addEventListener('click', function () {
-      volunteersLoaded = true;
+      delete window._adminTabLoaded['volunteers'];
       loadVolunteers();
     });
 
