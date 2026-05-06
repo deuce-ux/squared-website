@@ -1472,7 +1472,6 @@
   </script>
   <script>
   (function () {
-    'use strict';
 
     /* ─── CONFIG ─── */
     var sb = window._adminSb;
@@ -2653,6 +2652,13 @@
       }
     });
 
+    /* ── exports from main IIFE ── */
+    window.loadOrders       = loadOrders;
+    window.loadMembers      = loadMembers;
+    window.loadEvents       = loadEvents;
+    window.loadTestimonials = loadTestimonials;
+    window.loadPrograms     = loadPrograms;
+
   })();
   </script>
 
@@ -3438,6 +3444,10 @@
       toast('CSV exported.');
     });
 
+    /* ── exports from forge IIFE ── */
+    window.loadPagesPrize = loadPagesPrize;
+    /* window.loadForgeAll already exported above */
+
   }());
   </script>
 
@@ -3728,16 +3738,11 @@
        before being referenced. Dispatcher uses window.* so
        there is zero closure lookup required.
     ══════════════════════════════════════════════════════════ */
-    window.loadOrders       = loadOrders;
-    window.loadMembers      = loadMembers;
-    window.loadEvents       = loadEvents;
-    window.loadTestimonials = loadTestimonials;
-    window.loadPrograms     = loadPrograms;
-    window.loadPagesPrize   = loadPagesPrize;
-    window.loadForgeAll     = loadForgeAll;
-    window.loadJoinApps     = loadJoinApps;
-    window.loadVolunteers   = loadVolunteers;
+    /* ── exports from join-apps IIFE ── */
+    window.loadJoinApps   = loadJoinApps;
+    window.loadVolunteers = loadVolunteers;
 
+    /* ── central dispatcher: all window.loadXxx are set by now ── */
     window._adLoad = function (key) {
       if      (key === 'orders')       window.loadOrders();
       else if (key === 'members')      window.loadMembers();
