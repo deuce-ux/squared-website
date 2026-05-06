@@ -1532,18 +1532,16 @@
         if (panel) panel.classList.add('ad-active');
         if (!window._adminTabLoaded[key]) {
           window._adminTabLoaded[key] = true;
-          var loaderMap = {
-            orders:       function () { window._adminLoad.orders(); },
-            members:      function () { window._adminLoad.members(); },
-            events:       function () { window._adminLoad.events(); },
-            testimonials: function () { window._adminLoad.testimonials(); },
-            programs:     function () { window._adminLoad.programs(); },
-            pagesprize:   function () { window._adminLoad.pagesprize(); },
-            forge:        function () { window._adminLoad.forge(); },
-            joinapps:     function () { window._adminLoad.joinapps(); },
-            volunteers:   function () { window._adminLoad.volunteers(); }
-          };
-          if (loaderMap[key]) loaderMap[key]();
+          /* Call via window.* — guaranteed defined by the time any tab is clicked */
+          if (key === 'orders')       window._adLoad('orders');
+          if (key === 'members')      window._adLoad('members');
+          if (key === 'events')       window._adLoad('events');
+          if (key === 'testimonials') window._adLoad('testimonials');
+          if (key === 'programs')     window._adLoad('programs');
+          if (key === 'pagesprize')   window._adLoad('pagesprize');
+          if (key === 'forge')        window._adLoad('forge');
+          if (key === 'joinapps')     window._adLoad('joinapps');
+          if (key === 'volunteers')   window._adLoad('volunteers');
         }
       });
     });
@@ -1824,7 +1822,7 @@
     }
 
     document.getElementById('ordersRefreshBtn').addEventListener('click', function () {
-      delete window._adminTabLoaded['orders']; loadOrders();
+      delete window._adminTabLoaded['orders']; window._adLoad('orders');
     });
 
     /* ─── ORDER DETAIL MODAL ─── */
@@ -3220,7 +3218,7 @@
 
     document.getElementById('ppRefreshBtn').addEventListener('click', function () {
       delete window._adminTabLoaded['pagesprize'];
-      loadPagesPrize();
+      window._adLoad('pagesprize');
     });
 
     document.getElementById('ppExportBtn').addEventListener('click', function () {
@@ -3500,17 +3498,17 @@
     window.loadJoinApps   = loadJoinApps;
     window.loadVolunteers = loadVolunteers;
 
-    /* ─── centralised loader map (used by tab handler + refresh buttons) ─── */
-    window._adminLoad = {
-      orders:       loadOrders,
-      members:      loadMembers,
-      events:       loadEvents,
-      testimonials: loadTestimonials,
-      programs:     loadPrograms,
-      pagesprize:   loadPagesPrize,
-      forge:        loadForgeAll,
-      joinapps:     loadJoinApps,
-      volunteers:   loadVolunteers
+    /* ─── centralised dispatcher — registered at end of IIFE so all fns are defined ─── */
+    window._adLoad = function (key) {
+      if (key === 'orders')       loadOrders();
+      else if (key === 'members')      loadMembers();
+      else if (key === 'events')       loadEvents();
+      else if (key === 'testimonials') loadTestimonials();
+      else if (key === 'programs')     loadPrograms();
+      else if (key === 'pagesprize')   loadPagesPrize();
+      else if (key === 'forge')        loadForgeAll();
+      else if (key === 'joinapps')     loadJoinApps();
+      else if (key === 'volunteers')   loadVolunteers();
     };
 
     function renderJoinAppsTable(rows) {
@@ -3611,7 +3609,7 @@
 
     document.getElementById('joinAppsRefreshBtn').addEventListener('click', function () {
       delete window._adminTabLoaded['joinapps'];
-      loadJoinApps();
+      window._adLoad('joinapps');
     });
 
     /* ─── VOLUNTEERS ─── */
@@ -3680,7 +3678,7 @@
 
     document.getElementById('volunteersRefreshBtn').addEventListener('click', function () {
       delete window._adminTabLoaded['volunteers'];
-      loadVolunteers();
+      window._adLoad('volunteers');
     });
 
     document.getElementById('volunteersExportBtn').addEventListener('click', function () {
