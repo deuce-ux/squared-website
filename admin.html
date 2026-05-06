@@ -3608,10 +3608,10 @@
       var tb = document.getElementById('volunteersTableBody');
       tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(6);
 
-      fetch('https://kvsanzlkekfpmbzeesh.supabase.co/rest/v1/volunteer_applications?order=created_at.desc', {
+      fetch('https://kvsanzslkekfpmbzeesh.supabase.co/rest/v1/volunteer_applications?order=created_at.desc', {
         headers: {
-          'apikey':        'sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi',
-          'Authorization': 'Bearer sb_publishable_gVozftJ489LvZBkI55GidA_nvIzhOFi'
+          'apikey':        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw'
         }
       })
         .then(function (r) { return r.json(); })
