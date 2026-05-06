@@ -3608,28 +3608,20 @@
       var tb = document.getElementById('volunteersTableBody');
       tb.innerHTML = '<tr class="ad-skel-row"><td colspan="7"></td></tr>'.repeat(6);
 
-      fetch('https://kvsanzslkekfpmbzeesh.supabase.co/rest/v1/volunteer_applications?order=created_at.desc', {
-        headers: {
-          'apikey':        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2c2FuenNsa2VrZnBtYnplZXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk3NjgsImV4cCI6MjA5MzE0NTc2OH0.o3dtNSmp6FKQKjkWnD_VAbDww8naCKkxj60tg1s56Fw'
-        }
-      })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-          if (!Array.isArray(data)) {
-            toast('Error loading volunteers', 'error');
-            tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Could not load. Check RLS policy on volunteer_applications.</div></td></tr>';
+      sb.from('volunteer_applications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(function (r) {
+          if (r.error) {
+            console.error('volunteer_applications fetch error:', r.error);
+            toast('Error loading volunteers: ' + (r.error.message || 'check table exists + RLS'), 'error');
+            tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Error: ' + esc(r.error.message || 'Could not load') + '</div></td></tr>';
             return;
           }
-          allVolunteers = data;
+          allVolunteers = r.data || [];
           document.getElementById('volunteersPanelTitle').textContent =
             'Volunteers (' + allVolunteers.length + ')';
           renderVolunteersTable(allVolunteers);
-        })
-        .catch(function (err) {
-          console.error('volunteer_applications fetch error:', err);
-          toast('Error loading volunteers', 'error');
-          tb.innerHTML = '<tr><td colspan="7"><div class="ad-empty" style="color:#F67A3E">Network error.</div></td></tr>';
         });
     }
 
