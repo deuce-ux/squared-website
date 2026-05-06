@@ -3495,21 +3495,6 @@
         });
     }
 
-    window.loadJoinApps   = loadJoinApps;
-    window.loadVolunteers = loadVolunteers;
-
-    /* ─── centralised dispatcher — registered at end of IIFE so all fns are defined ─── */
-    window._adLoad = function (key) {
-      if (key === 'orders')       loadOrders();
-      else if (key === 'members')      loadMembers();
-      else if (key === 'events')       loadEvents();
-      else if (key === 'testimonials') loadTestimonials();
-      else if (key === 'programs')     loadPrograms();
-      else if (key === 'pagesprize')   loadPagesPrize();
-      else if (key === 'forge')        loadForgeAll();
-      else if (key === 'joinapps')     loadJoinApps();
-      else if (key === 'volunteers')   loadVolunteers();
-    };
 
     function renderJoinAppsTable(rows) {
       var tb = document.getElementById('joinAppsTableBody');
@@ -3736,6 +3721,34 @@
       URL.revokeObjectURL(url);
       toast('CSV exported.');
     });
+
+    /* ══════════════════════════════════════════════════════════
+       WINDOW EXPORTS + DISPATCHER
+       At the very end — every function is sequentially defined
+       before being referenced. Dispatcher uses window.* so
+       there is zero closure lookup required.
+    ══════════════════════════════════════════════════════════ */
+    window.loadOrders       = loadOrders;
+    window.loadMembers      = loadMembers;
+    window.loadEvents       = loadEvents;
+    window.loadTestimonials = loadTestimonials;
+    window.loadPrograms     = loadPrograms;
+    window.loadPagesPrize   = loadPagesPrize;
+    window.loadForgeAll     = loadForgeAll;
+    window.loadJoinApps     = loadJoinApps;
+    window.loadVolunteers   = loadVolunteers;
+
+    window._adLoad = function (key) {
+      if      (key === 'orders')       window.loadOrders();
+      else if (key === 'members')      window.loadMembers();
+      else if (key === 'events')       window.loadEvents();
+      else if (key === 'testimonials') window.loadTestimonials();
+      else if (key === 'programs')     window.loadPrograms();
+      else if (key === 'pagesprize')   window.loadPagesPrize();
+      else if (key === 'forge')        window.loadForgeAll();
+      else if (key === 'joinapps')     window.loadJoinApps();
+      else if (key === 'volunteers')   window.loadVolunteers();
+    };
 
   }());
   </script>
