@@ -1462,7 +1462,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js?v=2"></script>
   <script>
     /* ─── Single shared Supabase client for the whole admin ─── */
     window._adminSb = window.supabase.createClient(
@@ -3498,7 +3498,8 @@
         });
     }
 
-    window.loadJoinApps = loadJoinApps;
+    window.loadJoinApps   = loadJoinApps;
+    window.loadVolunteers = loadVolunteers;
 
     function renderJoinAppsTable(rows) {
       var tb = document.getElementById('joinAppsTableBody');
