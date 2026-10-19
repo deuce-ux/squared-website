@@ -132,17 +132,12 @@
   );
   var plansNigeria = document.getElementById("plans");
   var plansInternational = document.getElementById("plansIntl");
-  var regionLabel = document.getElementById("regionLabel");
   var pricingSection = document.querySelector(".pricing");
-
-  var REGION_LABELS = { ng: "Nigeria", intl: "International" };
 
   function setRegion(region) {
     regionButtons.forEach(function (btn) {
       btn.setAttribute("aria-pressed", btn.dataset.region === region ? "true" : "false");
     });
-
-    if (regionLabel) regionLabel.textContent = REGION_LABELS[region] || region;
 
     var isNigeria = region === "ng";
     if (plansNigeria) plansNigeria.hidden = !isNigeria;

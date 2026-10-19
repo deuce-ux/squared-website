@@ -1143,15 +1143,6 @@ button {
   color: #c9c9c9;
 }
 
-.pricing__region-label {
-  margin-top: 86px;
-  color: #777777;
-  font-size: 10px;
-  line-height: 11px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
 .plans {
   display: flex;
   gap: 22px;
@@ -2038,10 +2029,6 @@ button {
     max-width: none;
     font-size: 16px;
     line-height: 24px;
-  }
-
-  .pricing__region-label {
-    display: none;
   }
 
   .region {
