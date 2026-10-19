@@ -16,6 +16,24 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="homepage.css" />
+    <script>
+      /* Motion is progressive enhancement. Add the class before first paint so
+         revealed sections never flash, and drop it again if the deferred
+         homepage script fails to initialise. */
+      (function () {
+        var root = document.documentElement;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce || typeof window.IntersectionObserver !== "function") return;
+        root.classList.add("motion");
+        window.setTimeout(function () {
+          if (!root.hasAttribute("data-motion-ready")) {
+            root.classList.remove("motion");
+          }
+        }, 2500);
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -206,10 +224,10 @@
       <section class="section what" id="what-is-squared" aria-labelledby="what-title">
         <div class="container">
           <div class="what__grid">
-            <div class="what__intro">
-              <p class="eyebrow">What Squared is</p>
-              <h2 class="what__title" id="what-title">An OS for the ambitious young Nigerian.</h2>
-              <div class="what__body">
+            <div class="what__intro" data-reveal-group>
+              <p class="eyebrow" data-reveal>What Squared is</p>
+              <h2 class="what__title" id="what-title" data-reveal>An OS for the ambitious young Nigerian.</h2>
+              <div class="what__body" data-reveal>
                 <p class="bp-desktop">
                   Think of Squared as the operating system running in the background of a young
                   person's life. It gives them structure without rigidity, accountability without
@@ -229,8 +247,8 @@
               </div>
             </div>
 
-            <div class="what__cards">
-              <article class="what-card">
+            <div class="what__cards" data-reveal-group>
+              <article class="what-card" data-reveal>
                 <div class="what-card__icon" aria-hidden="true">
                   <span class="bp-desktop">🎯</span>
                   <svg class="what-card__glyph bp-notdesktop" aria-hidden="true">
@@ -253,7 +271,7 @@
                 </div>
               </article>
 
-              <article class="what-card">
+              <article class="what-card" data-reveal>
                 <div class="what-card__icon" aria-hidden="true">
                   <span class="bp-desktop">👥</span>
                   <svg class="what-card__glyph bp-notdesktop" aria-hidden="true">
@@ -275,7 +293,7 @@
                 </div>
               </article>
 
-              <article class="what-card">
+              <article class="what-card" data-reveal>
                 <div class="what-card__icon" aria-hidden="true">
                   <span class="bp-desktop">🧘</span>
                   <svg class="what-card__glyph bp-notdesktop" aria-hidden="true">
@@ -298,7 +316,7 @@
                 </div>
               </article>
 
-              <article class="what-card">
+              <article class="what-card" data-reveal>
                 <div class="what-card__icon" aria-hidden="true">
                   <span class="bp-desktop">🤝</span>
                   <svg class="what-card__glyph bp-notdesktop" aria-hidden="true">
@@ -330,17 +348,17 @@
         <span class="problem__sticker" aria-hidden="true"></span>
 
         <div class="container">
-          <p class="problem__label">The problem</p>
+          <p class="problem__label" data-reveal>The problem</p>
 
-          <h2 class="problem__headline headline headline--68" id="problem-title">
+          <h2 class="problem__headline headline headline--68" id="problem-title" data-reveal>
             <span class="headline__primary">People are not lazy.</span>
             <span class="headline__secondary">
               They are just doing hard things <br class="br-only-desktop" />completely alone.
             </span>
           </h2>
 
-          <div class="problem__stats">
-            <div class="problem__stat">
+          <div class="problem__stats" data-reveal-group>
+            <div class="problem__stat" data-reveal>
               <p class="problem__stat-value">52%</p>
               <p class="problem__stat-text">
                 <span class="bp-desktop"
@@ -350,7 +368,7 @@
                 <span class="bp-notdesktop">of online-course learners never finish.</span>
               </p>
             </div>
-            <div class="problem__stat">
+            <div class="problem__stat" data-reveal>
               <p class="problem__stat-value">50%</p>
               <p class="problem__stat-text">
                 <span class="bp-desktop"
@@ -359,7 +377,7 @@
                 <span class="bp-notdesktop">of people who set goals never achieve them.</span>
               </p>
             </div>
-            <div class="problem__stat">
+            <div class="problem__stat" data-reveal>
               <p class="problem__stat-value problem__stat-value--accent">51%</p>
               <p class="problem__stat-text">
                 <span class="bp-desktop"
@@ -369,7 +387,7 @@
                 <span class="bp-notdesktop">more likely to succeed with accountability.</span>
               </p>
             </div>
-            <div class="problem__stat">
+            <div class="problem__stat" data-reveal>
               <p class="problem__stat-value">22%+</p>
               <p class="problem__stat-text">
                 <span class="bp-desktop"
@@ -381,7 +399,7 @@
             </div>
           </div>
 
-          <p class="problem__closing">
+          <p class="problem__closing" data-reveal>
             <span class="bp-desktop"
               >Squared exists to solve exactly that — by making consistency a shared, social, and
               supported experience.</span
@@ -396,7 +414,7 @@
       <!-- ===================== 04 — Why Squared Works ===================== -->
       <section class="section why" aria-labelledby="why-title">
         <div class="container">
-          <div class="why__header">
+          <div class="why__header" data-reveal>
             <p class="why__label">Why Squared works</p>
             <h2 class="why__headline headline headline--68" id="why-title">
               <span class="headline__primary">Ambition gets you started.</span>
@@ -404,8 +422,8 @@
             </h2>
           </div>
 
-          <div class="why__columns">
-            <div class="why__col">
+          <div class="why__columns" data-reveal-group>
+            <div class="why__col" data-reveal>
               <svg class="why__icon" aria-hidden="true"><use href="#i-compass"></use></svg>
               <p class="why__col-label">Direction</p>
               <h3 class="why__col-title">Know what matters.</h3>
@@ -414,7 +432,7 @@
               </p>
             </div>
 
-            <div class="why__col">
+            <div class="why__col" data-reveal>
               <svg class="why__icon" aria-hidden="true"><use href="#i-handshake"></use></svg>
               <p class="why__col-label">Accountability</p>
               <h3 class="why__col-title">Someone's in your corner.</h3>
@@ -429,7 +447,7 @@
               </p>
             </div>
 
-            <div class="why__col">
+            <div class="why__col" data-reveal>
               <svg class="why__icon" aria-hidden="true"><use href="#i-repeat"></use></svg>
               <p class="why__col-label">Consistency</p>
               <h3 class="why__col-title">Keep showing up.</h3>
@@ -444,7 +462,7 @@
               </p>
             </div>
 
-            <div class="why__col">
+            <div class="why__col" data-reveal>
               <svg class="why__icon" aria-hidden="true"><use href="#i-users"></use></svg>
               <p class="why__col-label">Community</p>
               <h3 class="why__col-title">Grow with your people.</h3>
@@ -495,7 +513,7 @@
       <!-- =================== 05 — Pricing + Final CTA =================== -->
       <section class="section pricing" aria-labelledby="pricing-title">
         <div class="container">
-          <div class="pricing__head">
+          <div class="pricing__head" data-reveal>
             <div>
               <p class="pricing__label">Pricing</p>
               <h2 class="pricing__title" id="pricing-title">Simple pricing.</h2>
@@ -518,8 +536,8 @@
           </div>
 
           <div class="pricing__flat" id="plans">
-            <div class="plans">
-              <article class="plan" aria-labelledby="plan-weekly-name">
+            <div class="plans" data-reveal-group>
+              <article class="plan" data-reveal aria-labelledby="plan-weekly-name">
                 <header class="plan__header">
                   <h3 class="plan__name" id="plan-weekly-name">Weekly</h3>
                 </header>
@@ -562,7 +580,7 @@
                 </ul>
               </article>
 
-              <article class="plan" aria-labelledby="plan-biweekly-name">
+              <article class="plan" data-reveal aria-labelledby="plan-biweekly-name">
                 <header class="plan__header">
                   <h3 class="plan__name" id="plan-biweekly-name">Biweekly</h3>
                 </header>
@@ -605,7 +623,7 @@
                 </ul>
               </article>
 
-              <article class="plan plan--featured" aria-labelledby="plan-monthly-name">
+              <article class="plan plan--featured" data-reveal aria-labelledby="plan-monthly-name">
                 <header class="plan__header">
                   <h3 class="plan__name" id="plan-monthly-name">Monthly</h3>
                   <span class="plan__badge">Recommended</span>
@@ -654,8 +672,8 @@
           <!-- International — one wide membership card: the offer on the left,
                the membership benefits on the right. -->
           <div class="pricing__flat" id="plansIntl" hidden>
-            <div class="plans plans--intl">
-              <article class="plan plan--featured plan--intl" aria-labelledby="plan-intl-name">
+            <div class="plans plans--intl" data-reveal-group>
+              <article class="plan plan--featured plan--intl" data-reveal aria-labelledby="plan-intl-name">
                 <div class="intl__info">
                   <header class="plan__header">
                     <h3 class="plan__name" id="plan-intl-name">Squared Membership</h3>
@@ -711,7 +729,7 @@
           </div>
 
           <div class="cta">
-            <div class="cta__panel">
+            <div class="cta__panel" data-reveal>
               <div class="cta__body">
                 <p class="cta__eyebrow">Ready?</p>
                 <h3 class="cta__title">Stop doing it alone.</h3>
@@ -744,7 +762,7 @@
           </div>
 
           <!-- Final CTA — approved mobile (390px) frame: dark grid card -->
-          <div class="cta-mobile">
+          <div class="cta-mobile" data-reveal>
             <a class="cta-mobile__button" href="https://app.squared.ng/signup">
               <span class="cta-mobile__headline">Stop doing it alone.</span>
               <span class="cta-mobile__arrow" aria-hidden="true">

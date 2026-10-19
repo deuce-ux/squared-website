@@ -2863,7 +2863,154 @@ button {
 }
 
 /* --------------------------------------------------------------------------
-   13. Motion / print
+   13. Motion
+   Restrained, CSS-first. Only opacity and transform animate.
+   -------------------------------------------------------------------------- */
+
+/* Hero — page-load entrance */
+@keyframes sq-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero__title {
+  animation: sq-rise 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero__sub {
+  animation: sq-rise 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.hero__actions > * {
+  animation: sq-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero__actions > :first-child {
+  animation-delay: 0.16s;
+}
+
+.hero__actions > :last-child {
+  animation-delay: 0.24s;
+}
+
+.hero__dashboard {
+  animation: sq-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+}
+
+/* Scroll reveals — .motion is only added when JS + IntersectionObserver are
+   available, so content is visible with JS disabled or a failed script. */
+.motion [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion [data-reveal].is-visible,
+.motion [data-reveal]:focus-within,
+.motion [data-reveal]:focus-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Pricing region switch — opacity only, layout untouched. */
+@keyframes sq-pricing-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pricing__flat--enter {
+  animation: sq-pricing-in 0.22s ease-out both;
+}
+
+/* Selected decorative stickers — 4–5px float, long and unobtrusive. */
+@keyframes sq-float-stay {
+  0%,
+  100% {
+    transform: rotate(-8deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(-8deg) translate3d(0, -5px, 0);
+  }
+}
+
+@keyframes sq-float-problem {
+  0%,
+  100% {
+    transform: rotate(-19.713deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(-19.713deg) translate3d(0, 4px, 0);
+  }
+}
+
+@keyframes sq-float-growth {
+  0%,
+  100% {
+    transform: rotate(5.439deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(5.439deg) translate3d(0, -4px, 0);
+  }
+}
+
+.hero__sticker--stay-squared {
+  animation: sq-float-stay 9s ease-in-out infinite;
+}
+
+.problem__sticker {
+  animation: sq-float-problem 11s ease-in-out infinite;
+}
+
+.why__pill--growth {
+  animation: sq-float-growth 10s ease-in-out infinite;
+}
+
+/* Button craft — dimensions unchanged; arrow nudges 3px diagonally. */
+.btn-cta,
+.plan__join,
+.intl__cta,
+.cta__button,
+.drawer__join,
+.cta-mobile__button {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-join {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.plan__join-icon,
+.plan__join-arrow,
+.intl__cta-icon,
+.cta-mobile__arrow svg {
+  transition: transform 0.2s ease;
+}
+
+.plan__join:hover .plan__join-icon,
+.plan__join:focus-visible .plan__join-icon,
+.plan__join:hover .plan__join-arrow,
+.plan__join:focus-visible .plan__join-arrow,
+.intl__cta:hover .intl__cta-icon,
+.intl__cta:focus-visible .intl__cta-icon,
+.cta-mobile__button:hover .cta-mobile__arrow svg,
+.cta-mobile__button:focus-visible .cta-mobile__arrow svg {
+  transform: translate3d(3px, -3px, 0);
+}
+
+/* --------------------------------------------------------------------------
+   14. Motion preferences / print
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -2882,6 +3029,31 @@ button {
   .nav__more-toggle svg,
   .hero__sticker,
   .why__pill {
+    transition: none !important;
+  }
+
+  .hero__title,
+  .hero__sub,
+  .hero__actions > *,
+  .hero__dashboard,
+  .hero__sticker--stay-squared,
+  .problem__sticker,
+  .why__pill--growth,
+  .pricing__flat--enter {
+    animation: none !important;
+  }
+
+  .motion [data-reveal],
+  .motion [data-reveal].is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .plan__join-icon,
+  .plan__join-arrow,
+  .intl__cta-icon,
+  .cta-mobile__arrow svg {
     transition: none !important;
   }
 }

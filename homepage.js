@@ -133,8 +133,12 @@
   var plansNigeria = document.getElementById("plans");
   var plansInternational = document.getElementById("plansIntl");
   var pricingSection = document.querySelector(".pricing");
+  var currentRegion = "ng";
 
   function setRegion(region) {
+    if (region === currentRegion) return;
+    currentRegion = region;
+
     regionButtons.forEach(function (btn) {
       btn.setAttribute("aria-pressed", btn.dataset.region === region ? "true" : "false");
     });
@@ -144,6 +148,17 @@
     if (plansInternational) plansInternational.hidden = isNigeria;
     /* The frame-height floor on tablet and mobile assumes three cards. */
     if (pricingSection) pricingSection.classList.toggle("pricing--intl", !isNigeria);
+
+    /* Fade the incoming region in. Opacity only — no layout movement. */
+    var shown = isNigeria ? plansNigeria : plansInternational;
+    if (shown) {
+      shown.classList.remove("pricing__flat--enter");
+      void shown.offsetWidth;
+      shown.classList.add("pricing__flat--enter");
+    }
+
+    /* Pending cards inside a previously hidden region were never observed. */
+    revealWithin(shown);
   }
 
   regionButtons.forEach(function (btn) {
@@ -151,4 +166,60 @@
       setRegion(btn.dataset.region);
     });
   });
+
+  /* ------------------------------------------------------------------ *
+   * 4. Motion
+   *
+   * The .motion class is set by the inline head script only when
+   * IntersectionObserver is available and reduced motion is not requested.
+   * If anything here fails, the class is removed and all content is shown.
+   * ------------------------------------------------------------------ */
+  function revealWithin(root) {
+    if (!root) return;
+    Array.prototype.forEach.call(root.querySelectorAll("[data-reveal]"), function (el) {
+      el.classList.add("is-visible");
+    });
+  }
+
+  var motionRoot = document.documentElement;
+
+  if (motionRoot.classList.contains("motion")) {
+    try {
+      var revealElements = Array.prototype.slice.call(
+        document.querySelectorAll("[data-reveal]")
+      );
+
+      /* 70ms between siblings in a card row; capped so long rows stay quick. */
+      Array.prototype.forEach.call(
+        document.querySelectorAll("[data-reveal-group]"),
+        function (group) {
+          Array.prototype.forEach.call(
+            group.querySelectorAll("[data-reveal]"),
+            function (el, index) {
+              el.style.setProperty("--reveal-delay", Math.min(index * 70, 240) + "ms");
+            }
+          );
+        }
+      );
+
+      var revealObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          });
+        },
+        { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+      );
+
+      revealElements.forEach(function (el) {
+        revealObserver.observe(el);
+      });
+
+      motionRoot.setAttribute("data-motion-ready", "");
+    } catch (error) {
+      motionRoot.classList.remove("motion");
+    }
+  }
 })();
