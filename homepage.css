@@ -1159,7 +1159,11 @@ button {
 }
 
 .plan {
-  flex: 0 1 416px;
+  /* The three Naira cards share the pricing container's content box (grow from
+     a zero basis, fixed 22px gaps), so the row's right edge terminates on the
+     same vertical line as the region toggle above it. The single
+     international `.plan--intl` card sets its own flex and width. */
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1281,16 +1285,109 @@ button {
   color: #777777;
 }
 
-/* International: a single membership card, capped at the width of a Nigerian
-   card and centred, so one card never stretches across the three-column row. */
+/* --------------------------------------------------------------------------
+   International — one wide membership card.
+
+   The single membership is presented as a deliberate horizontal card: the
+   offer on the left, the membership benefits on the right, split by a hairline
+   divider. It is centred at ~84% of the pricing container so it reads as an
+   intentional composition rather than a leftover card from the Naira row.
+   The card presents the membership alone — no time-limited offer messaging.
+   -------------------------------------------------------------------------- */
 .plans--intl {
   justify-content: center;
 }
 
-.plan__trial {
+.plan--intl {
+  /* The explicit width is the constraint here, so the card must not grow into
+     the free space beside it — it stays centred at min(1120px, 88%). */
+  flex: 0 1 auto;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  min-height: 0;
+  width: min(1120px, 88%);
+  padding: 46px 48px;
+}
+
+/* -- left: the offer ------------------------------------------------------ */
+.intl__info {
+  flex: 0 1 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 21px;
+  padding-right: 48px;
+}
+
+.intl__price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--t-white);
+}
+
+.intl__amount {
+  font-family: var(--font-display);
+  font-size: 58px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -2.2px;
+}
+
+.intl__cadence {
+  color: var(--t-4);
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.intl__lede {
   color: var(--t-body);
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.intl__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 194px;
+  padding: 15px 26px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #090909;
   font-size: 13px;
-  line-height: 19px;
+  line-height: 15px;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.intl__cta:hover {
+  background: #e56b30;
+}
+
+.intl__cta-icon {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+}
+
+/* -- right: what the membership includes ---------------------------------- */
+.intl__benefits {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: 48px;
+  border-left: 1px solid var(--line);
+}
+
+.intl__features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 28px;
+  width: 100%;
 }
 
 .pricing__flat[hidden] {
@@ -1504,6 +1601,12 @@ button {
 
   .pricing {
     padding-bottom: 80px;
+  }
+
+  /* The single international card is shorter than the three-card Naira row,
+     so the run-down to the final CTA tightens in that state only. */
+  .pricing--intl .cta {
+    margin-top: 88px;
   }
 
   .cta__panel {
@@ -2072,15 +2175,58 @@ button {
     color: var(--t-5);
   }
 
-  .plans--intl .plan {
-    flex: 0 1 416px;
-    max-width: 416px;
+  /* International — keep the horizontal composition; the benefits drop to a
+     single column so the card fills the available width rather than floating
+     narrow in the middle of the section. */
+  .plan--intl {
+    min-height: 0;
+    width: auto;
+    padding: 30px;
   }
 
-  .plan__trial {
-    color: #b8b8b8;
-    font-size: 12px;
+  .intl__info {
+    flex: 0 1 296px;
+    gap: 15px;
+    padding-right: 30px;
+  }
+
+  .intl__amount {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .intl__cadence {
+    font-size: 13px;
     line-height: 17px;
+  }
+
+  .intl__lede {
+    font-size: 13px;
+    line-height: 19px;
+  }
+
+  .intl__cta {
+    gap: 9px;
+    min-width: 0;
+    padding: 13px 22px;
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  .intl__cta-icon {
+    flex: 0 0 13px;
+    width: 13px;
+    height: 13px;
+  }
+
+  .intl__benefits {
+    padding-left: 30px;
+    border-left-color: var(--line-2);
+  }
+
+  .intl__features {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px 20px;
   }
 
   /* -- final CTA (cream panel) --------------------------------------------- */
@@ -2505,15 +2651,63 @@ button {
     margin-top: 0;
   }
 
-  .plans--intl .plan {
-    flex: 1 1 auto;
-    max-width: none;
+  /* International — stack the offer above the benefits. Natural height, no
+     frame floor and no blank space. */
+  .plan--intl {
+    flex-direction: column;
+    min-height: 0;
+    width: auto;
+    padding: 24px 20px 26px;
   }
 
-  .plan__trial {
-    color: #b8b8b5;
-    font-size: 12px;
+  .intl__info {
+    flex: 0 0 auto;
+    gap: 15px;
+    padding-right: 0;
+  }
+
+  .intl__amount {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .intl__cadence {
+    font-size: 13px;
     line-height: 17px;
+  }
+
+  .intl__lede {
+    font-size: 13px;
+    line-height: 19px;
+  }
+
+  .intl__cta {
+    width: 100%;
+    gap: 10px;
+    min-width: 0;
+    margin-top: 4px;
+    padding: 14px 22px;
+    font-size: 13px;
+    line-height: 15px;
+  }
+
+  .intl__cta-icon {
+    flex: 0 0 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .intl__benefits {
+    display: block;
+    margin-top: 22px;
+    padding: 22px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .intl__features {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
   }
 
   /* -- final CTA (dark grid card) ------------------------------------------ */

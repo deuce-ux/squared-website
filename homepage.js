@@ -124,8 +124,8 @@
    * 3. Pricing region selector
    *
    * Nigeria shows the three published Naira plans. International shows
-   * the single USD membership card (monthly, 14-day free trial). Only
-   * one region's row is rendered at a time.
+   * the single USD membership card (monthly, $5.99). Only one region's
+   * card row is rendered at a time.
    * ------------------------------------------------------------------ */
   var regionButtons = Array.prototype.slice.call(
     document.querySelectorAll(".region__btn")
