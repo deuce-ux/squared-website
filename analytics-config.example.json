@@ -1,0 +1,3 @@
+{
+  "endpoint": "https://YOUR_PROJECT.supabase.co/functions/v1/analytics-ingest"
+}

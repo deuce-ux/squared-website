@@ -223,3 +223,11 @@
     }
   }
 })();
+
+/* Optional, consent-gated analytics. Disabled until analytics-config.json has
+   the deployed Supabase analytics-ingest endpoint. */
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+  import("./analytics.js").catch(function () {
+    /* Analytics is optional and must never block the homepage. */
+  });
+}

@@ -2,6 +2,15 @@
    SQUARED — script.js
    ============================================= */
 
+/* Load the first-party analytics client after the existing page script. A
+   missing endpoint, unsupported browser or failed import leaves the site
+   unchanged. */
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+  import("./analytics.js").catch(() => {
+    /* Analytics is optional and must never block the page. */
+  });
+}
+
 /* --- Nav: letter-by-letter hover animation --- */
 function buildNavLetters() {
   document.querySelectorAll('.nav-link').forEach(link => {
