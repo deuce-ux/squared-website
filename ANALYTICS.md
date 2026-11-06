@@ -24,6 +24,8 @@ belongs in this repository.
 - No visitor ID or marketing event is created before valid optional consent.
 - The consent choice and random visitor ID use a shared `.squared.ng` cookie so
   the application can stitch a consented journey.
+- The shared cookie is authoritative. Stale localStorage on one subdomain
+  cannot override a newer choice made on the other subdomain.
 - The client records `marketing_page_viewed`, `pricing_viewed`, and
   `signup_cta_clicked`.
 - It stores only landing path, referrer hostname, UTM source/medium/campaign,
@@ -33,6 +35,9 @@ belongs in this repository.
 - Rejection clears the browser visitor ID and queued events.
 - The footer receives an “Analytics choices” control so visitors can change a
   decision later.
+- A visitor who views pricing before opting in is reconsidered after opt-in, so
+  the interaction can be recorded from that point without duplicating pricing
+  events.
 - Failed tracking requests remain in a seven-day, 100-event local retry queue.
 - There is no third-party SDK, session replay, heatmap, or form autocapture.
 

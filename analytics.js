@@ -24,6 +24,7 @@ const PROPERTY_LIMITS = {
 
 let endpoint = "";
 let sending = false;
+let pricingObserved = false;
 
 function randomId() {
   if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") return globalThis.crypto.randomUUID();
@@ -45,26 +46,35 @@ function cookie(name) {
 
 function writeCookie(name, value, maxAge) {
   if (typeof document === "undefined") return;
-  const host = location.hostname;
-  const domain = host === "squared.ng" || host.endsWith(".squared.ng") ? "; Domain=.squared.ng" : "";
-  const secure = location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}${secure}`;
+  try {
+    const host = location.hostname;
+    const domain = host === "squared.ng" || host.endsWith(".squared.ng") ? "; Domain=.squared.ng" : "";
+    const secure = location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}${secure}`;
+  } catch {
+    // Blocked cookies must not disable consent controls or navigation.
+  }
+}
+
+export function resolveMarketingConsent(cookieValue, localValue) {
+  if (cookieValue === "granted" || cookieValue === "denied") return cookieValue;
+  if (localValue === "granted" || localValue === "denied") return localValue;
+  return null;
 }
 
 function consent() {
+  let localValue = null;
   try {
-    const stored = localStorage.getItem(CONSENT_KEY);
-    if (stored === "granted" || stored === "denied") return stored;
+    localValue = localStorage.getItem(CONSENT_KEY);
   } catch {
-    // Cookie is the cross-domain fallback.
+    // The shared cookie below remains authoritative when storage is blocked.
   }
-  const stored = cookie(CONSENT_KEY);
-  return stored === "granted" || stored === "denied" ? stored : null;
+  return resolveMarketingConsent(cookie(CONSENT_KEY), localValue);
 }
 
 function visitorId() {
   const existing = cookie(VISITOR_COOKIE);
-  if (existing) return existing;
+  if (existing && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing)) return existing;
   const created = randomId();
   writeCookie(VISITOR_COOKIE, created, 397 * 24 * 60 * 60);
   return created;
@@ -73,7 +83,8 @@ function visitorId() {
 function sessionId() {
   try {
     const parsed = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
-    if (parsed && parsed.id && parsed.expiresAt > Date.now()) return parsed.id;
+    if (parsed && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(parsed.id)
+      && parsed.expiresAt > Date.now()) return parsed.id;
   } catch {
     // Replace corrupt state.
   }
@@ -172,7 +183,12 @@ export async function flushMarketingQueue() {
   try {
     const queued = JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
     if (!queued.length) return;
-    if (await send(queued.slice(0, 20))) localStorage.setItem(QUEUE_KEY, JSON.stringify(queued.slice(20)));
+    const batch = queued.slice(0, 20);
+    if (await send(batch)) {
+      const sentIds = new Set(batch.map((event) => event.event_id));
+      const current = JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(current.filter((event) => !sentIds.has(event.event_id))));
+    }
   } catch {
     // Retain the queue for the next online visit.
   } finally {
@@ -216,24 +232,29 @@ function storeConsent(choice) {
   document.querySelector("[data-sq-analytics-banner]")?.remove();
   if (choice === "granted") {
     trackMarketingEvent("marketing_page_viewed", { page_type: "marketing" });
+    observePricing();
   }
 }
 
-function installConsentUi() {
-  if (consent()) return;
+function installConsentUi(force = false) {
+  const current = consent();
+  if (current && !force) return;
+  document.querySelector("[data-sq-analytics-banner]")?.remove();
   const banner = document.createElement("section");
   banner.dataset.sqAnalyticsBanner = "";
   banner.setAttribute("aria-label", "Optional analytics");
   banner.style.cssText = "position:fixed;z-index:10000;left:16px;right:16px;bottom:16px;max-width:620px;margin:auto;background:#fff;color:#17130f;border:1px solid rgba(23,19,15,.16);border-radius:14px;padding:16px;box-shadow:0 18px 48px rgba(23,19,15,.18);font:13px/1.5 'DM Sans',sans-serif;";
   banner.innerHTML = `
-    <p style="margin:0;font-weight:700">Optional website analytics</p>
+    <p style="margin:0;font-weight:700">${current ? "Website analytics choices" : "Optional website analytics"}</p>
     <p style="margin:6px 0 0;color:#625a52">Allow pseudonymous analytics to help us understand how people find Squared. We never send goal, task, or message content. <a href="https://app.squared.ng/privacy" style="color:#17130f;font-weight:600">Privacy Policy</a>.</p>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
-      <button type="button" data-analytics-allow style="border:0;border-radius:8px;background:#F26522;color:#fff;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">Allow analytics</button>
-      <button type="button" data-analytics-deny style="border:1px solid rgba(23,19,15,.18);border-radius:8px;background:#fff;color:#17130f;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">Decline</button>
+      <button type="button" data-analytics-allow aria-pressed="${current === "granted"}" style="border:0;border-radius:8px;background:#F26522;color:#fff;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">${current === "granted" ? "Analytics allowed" : "Allow analytics"}</button>
+      <button type="button" data-analytics-deny aria-pressed="${current === "denied"}" style="border:1px solid rgba(23,19,15,.18);border-radius:8px;background:#fff;color:#17130f;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">${current === "granted" ? "Withdraw analytics" : current === "denied" ? "Analytics disabled" : "Decline"}</button>
+      ${current ? '<button type="button" data-analytics-close style="border:0;background:none;color:#625a52;padding:9px 6px;font:600 12px \'DM Sans\',sans-serif">Close</button>' : ""}
     </div>`;
   banner.querySelector("[data-analytics-allow]").addEventListener("click", () => storeConsent("granted"));
   banner.querySelector("[data-analytics-deny]").addEventListener("click", () => storeConsent("denied"));
+  banner.querySelector("[data-analytics-close]")?.addEventListener("click", () => banner.remove());
   document.body.appendChild(banner);
 }
 
@@ -245,17 +266,20 @@ function installPreferenceControl() {
   button.dataset.sqAnalyticsChoices = "";
   button.textContent = "Analytics choices";
   button.style.cssText = "background:none;border:0;padding:0;margin-left:16px;font:inherit;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer";
-  button.addEventListener("click", installConsentUi);
+  button.addEventListener("click", () => installConsentUi(true));
   footer.appendChild(button);
 }
 
 function observePricing() {
+  if (pricingObserved) return;
   const pricing = document.querySelector(".pricing, [id*='pricing'], [data-pricing]");
   if (!pricing || !("IntersectionObserver" in window)) return;
   const observer = new IntersectionObserver((entries) => {
     if (!entries.some((entry) => entry.isIntersecting)) return;
-    trackMarketingEvent("pricing_viewed", { page_type: "pricing" });
-    observer.disconnect();
+    if (trackMarketingEvent("pricing_viewed", { page_type: "pricing" })) {
+      pricingObserved = true;
+      observer.disconnect();
+    }
   }, { threshold: 0.35 });
   observer.observe(pricing);
 }
@@ -296,6 +320,14 @@ export async function initialiseMarketingAnalytics() {
   if (typeof window === "undefined" || typeof document === "undefined" || !ALLOWED_PATHS.has(location.pathname)) return;
   endpoint = await loadEndpoint();
   if (!/^https:\/\/[^/]+/i.test(endpoint)) return;
+  if (consent() === "denied") {
+    try {
+      localStorage.removeItem(QUEUE_KEY);
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+      // Denied consent still prevents every new send.
+    }
+  }
   installPreferenceControl();
   installConsentUi();
   if (consent() === "granted") trackMarketingEvent("marketing_page_viewed", { page_type: "marketing" });
