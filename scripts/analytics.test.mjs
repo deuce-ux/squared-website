@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { resolveMarketingConsent, sanitizeMarketingProperties } from "../analytics.js";
+import { ANALYTICS_RETENTION_DAYS, resolveMarketingConsent, sanitizeMarketingProperties } from "../analytics.js";
 
 test("marketing analytics keeps only non-sensitive allowlisted properties", () => {
   assert.deepEqual(sanitizeMarketingProperties({
@@ -28,6 +28,14 @@ test("the marketing client uses canonical event names and shared cross-subdomain
   }
   assert.match(source, /Domain=\.squared\.ng/);
   assert.doesNotMatch(source, /document\.title|email:|goal_title|message_body|task_description/i);
+});
+
+test("the marketing client uses the approved 366-day visitor and consent lifetime", () => {
+  const source = readFileSync(new URL("../analytics.js", import.meta.url), "utf8");
+  assert.equal(ANALYTICS_RETENTION_DAYS, 366);
+  assert.match(source, /const RETENTION_SECONDS = ANALYTICS_RETENTION_DAYS \* 24 \* 60 \* 60/);
+  assert.equal((source.match(/writeCookie\([^\n]+RETENTION_SECONDS\)/g) ?? []).length, 2);
+  assert.doesNotMatch(source, /\b397\b/);
 });
 
 test("the shared cross-domain cookie overrides stale per-domain storage", () => {

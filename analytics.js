@@ -7,6 +7,8 @@ const QUEUE_KEY = "squared_analytics_queue_v1";
 const CONSENT_VERSION = "2026-11-v1";
 const MAX_QUEUE = 100;
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+export const ANALYTICS_RETENTION_DAYS = 366;
+const RETENTION_SECONDS = ANALYTICS_RETENTION_DAYS * 24 * 60 * 60;
 const ALLOWED_PATHS = new Set([
   "/", "/index.html", "/community", "/community.html", "/programs", "/programs.html",
   "/bookshop", "/bookshop.html", "/blog", "/blog.html", "/events", "/events.html",
@@ -76,7 +78,7 @@ function visitorId() {
   const existing = cookie(VISITOR_COOKIE);
   if (existing && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing)) return existing;
   const created = randomId();
-  writeCookie(VISITOR_COOKIE, created, 397 * 24 * 60 * 60);
+  writeCookie(VISITOR_COOKIE, created, RETENTION_SECONDS);
   return created;
 }
 
@@ -218,7 +220,7 @@ function storeConsent(choice) {
   } catch {
     // Cookie remains available.
   }
-  writeCookie(CONSENT_KEY, choice, 397 * 24 * 60 * 60);
+  writeCookie(CONSENT_KEY, choice, RETENTION_SECONDS);
   if (choice === "granted") visitorId();
   else {
     writeCookie(VISITOR_COOKIE, "", 0);

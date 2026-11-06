@@ -24,6 +24,9 @@ belongs in this repository.
 - No visitor ID or marketing event is created before valid optional consent.
 - The consent choice and random visitor ID use a shared `.squared.ng` cookie so
   the application can stitch a consented journey.
+- Visitor and consent cookies use the owner-selected 366-day maximum lifetime.
+  Existing visitor identifiers are reused while valid and are not renewed on
+  every visit.
 - The shared cookie is authoritative. Stale localStorage on one subdomain
   cannot override a newer choice made on the other subdomain.
 - The client records `marketing_page_viewed`, `pricing_viewed`, and
