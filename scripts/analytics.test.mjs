@@ -16,7 +16,7 @@ test("marketing analytics keeps only non-sensitive allowlisted properties", () =
 test("tracking is disabled without a configured endpoint and never imports a third-party SDK", () => {
   const source = readFileSync(new URL("../analytics.js", import.meta.url), "utf8");
   const config = JSON.parse(readFileSync(new URL("../analytics-config.json", import.meta.url), "utf8"));
-  assert.equal(config.endpoint, "");
+  assert.equal(config.endpoint, "https://icjagfkzeottwewaycjs.supabase.co/functions/v1/analytics-ingest");
   assert.doesNotMatch(source, /posthog|google-analytics|gtag\(|session[_-]?replay/i);
   assert.match(source, /consent\(\) !== "granted"/);
 });

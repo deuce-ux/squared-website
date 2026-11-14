@@ -1,5 +1,9 @@
 # Squared Marketing Analytics
 
+Production enablement was approved by the product owner acting as human reviewer
+on 14 November 2026, following review of the app analytics privacy and release
+gates. The configured endpoint targets the Squared App production project.
+
 `analytics.js` is loaded by both `homepage.js` and `script.js`. It covers the
 public marketing pages and intentionally ignores admin/login pages and redirect
 stubs.
