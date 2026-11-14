@@ -1,3 +1,4 @@
 {
-  "endpoint": "https://icjagfkzeottwewaycjs.supabase.co/functions/v1/analytics-ingest"
+  "endpoint": "https://icjagfkzeottwewaycjs.supabase.co/functions/v1/analytics-ingest",
+  "aggregateEndpoint": "https://icjagfkzeottwewaycjs.supabase.co/functions/v1/site-visit"
 }

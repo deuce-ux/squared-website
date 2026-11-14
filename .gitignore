@@ -1,3 +1,4 @@
 nul
 .vercel/
 .env*.local
+supabase/.temp/

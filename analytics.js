@@ -1,4 +1,5 @@
 /* Squared marketing analytics — consent-gated, first-party, no third-party SDK. */
+import { countPageLoad } from "./visit-counter.js";
 
 const CONSENT_KEY = "squared_analytics_consent_v1";
 const VISITOR_COOKIE = "squared_visitor_id";
@@ -248,7 +249,7 @@ function installConsentUi(force = false) {
   banner.style.cssText = "position:fixed;z-index:10000;left:16px;right:16px;bottom:16px;max-width:620px;margin:auto;background:#fff;color:#17130f;border:1px solid rgba(23,19,15,.16);border-radius:14px;padding:16px;box-shadow:0 18px 48px rgba(23,19,15,.18);font:13px/1.5 'DM Sans',sans-serif;";
   banner.innerHTML = `
     <p style="margin:0;font-weight:700">${current ? "Website analytics choices" : "Optional website analytics"}</p>
-    <p style="margin:6px 0 0;color:#625a52">Allow pseudonymous analytics to help us understand how people find Squared. We never send goal, task, or message content. <a href="https://app.squared.ng/privacy" style="color:#17130f;font-weight:600">Privacy Policy</a>.</p>
+    <p style="margin:6px 0 0;color:#625a52">Allow pseudonymous analytics to help us understand how people find Squared. We never send goal, task, or message content. A separate daily page-load counter uses no cookies or visitor IDs, regardless of this choice. <a href="https://app.squared.ng/privacy" style="color:#17130f;font-weight:600">Privacy Policy</a>.</p>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
       <button type="button" data-analytics-allow aria-pressed="${current === "granted"}" style="border:0;border-radius:8px;background:#F26522;color:#fff;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">${current === "granted" ? "Analytics allowed" : "Allow analytics"}</button>
       <button type="button" data-analytics-deny aria-pressed="${current === "denied"}" style="border:1px solid rgba(23,19,15,.18);border-radius:8px;background:#fff;color:#17130f;padding:9px 14px;font:600 12px 'DM Sans',sans-serif">${current === "granted" ? "Withdraw analytics" : current === "denied" ? "Analytics disabled" : "Decline"}</button>
@@ -306,12 +307,14 @@ function observeSignupClicks() {
 
 async function loadEndpoint() {
   if (globalThis.SQUARED_ANALYTICS_CONFIG && typeof globalThis.SQUARED_ANALYTICS_CONFIG.endpoint === "string") {
+    void countPageLoad(globalThis.SQUARED_ANALYTICS_CONFIG.aggregateEndpoint);
     return globalThis.SQUARED_ANALYTICS_CONFIG.endpoint.trim();
   }
   try {
     const response = await fetch("/analytics-config.json", { cache: "no-store" });
     if (!response.ok) return "";
     const config = await response.json();
+    void countPageLoad(config.aggregateEndpoint);
     return typeof config.endpoint === "string" ? config.endpoint.trim() : "";
   } catch {
     return "";
