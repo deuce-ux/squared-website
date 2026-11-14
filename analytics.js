@@ -100,14 +100,14 @@ function sessionId() {
   return created;
 }
 
-function channelFor(source, medium, referrer) {
+export function channelFor(source, medium, referrer) {
   const utmSource = String(source || "").toLowerCase();
   const utmMedium = String(medium || "").toLowerCase();
   const ref = String(referrer || "").toLowerCase();
+  if (/^(cpc|ppc|.*paid.*|display|cpm|retargeting)$/.test(utmMedium)) return "paid";
   if (utmSource === "google" || /google\.|bing\./.test(ref)) return "search";
   if (/instagram|facebook|tiktok|twitter|linkedin/.test(utmSource) || /instagram|facebook|tiktok|twitter|linkedin|(^|\.)x\.com/.test(ref)) return "social";
   if (utmMedium.includes("email") || utmSource.includes("newsletter")) return "email";
-  if (utmMedium.includes("cpc") || utmMedium.includes("paid")) return "paid";
   if (utmSource || ref) return "referral";
   return "direct";
 }

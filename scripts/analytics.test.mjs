@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { ANALYTICS_RETENTION_DAYS, resolveMarketingConsent, sanitizeMarketingProperties } from "../analytics.js";
+import { ANALYTICS_RETENTION_DAYS, channelFor, resolveMarketingConsent, sanitizeMarketingProperties } from "../analytics.js";
+
+test("paid campaign markers take precedence over Google and social referrers", () => {
+  assert.equal(channelFor("google", "cpc", "google.com"), "paid");
+  assert.equal(channelFor("instagram", "paid_social", "instagram.com"), "paid");
+  assert.equal(channelFor("", "ppc", ""), "paid");
+  assert.equal(channelFor("google", "", "google.com"), "search");
+  assert.equal(channelFor("instagram", "", "instagram.com"), "social");
+});
 
 test("marketing analytics keeps only non-sensitive allowlisted properties", () => {
   assert.deepEqual(sanitizeMarketingProperties({
